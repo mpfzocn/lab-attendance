@@ -74,6 +74,8 @@ tr:last-child td{border-bottom:0}
 .dur{background:var(--tint);color:var(--teal-d);font-weight:600;border-radius:6px;padding:3px 9px;font-size:13px}
 .tr{display:inline-flex;vertical-align:middle;margin-left:6px;color:var(--gold)}
 .more{display:block;margin:12px auto 0}
+.add-box{display:flex;gap:8px;margin-top:10px}
+.add-box input{flex:1}
 footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 @media(max-width:860px){.grid{grid-template-columns:1fr}}
 @media(max-width:600px){
@@ -96,6 +98,7 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
  tr{display:block;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:10px}
  td{display:flex;justify-content:space-between;align-items:center;gap:12px;border:0;padding:4px 0;white-space:normal;text-align:right}
  td::before{content:attr(data-l);color:var(--mute);text-align:left}
+ .add-box{flex-direction:column}
 }
 @media(prefers-reduced-motion:no-preference){.go{transition:background .15s}}
 </style>
@@ -126,7 +129,7 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
    <p class="sub">Enter your student ID, check the date, then add your in and out time.</p>
    <form id="f" autocomplete="off">
     <label for="sid" style="margin-top:0">Student ID</label>
-    <input id="sid" inputmode="numeric" maxlength="8" placeholder="e.g. 22902012">
+    <input id="sid" inputmode="numeric" maxlength="15" placeholder="e.g. 22902012 or 16207119">
     <div id="who" aria-live="polite"></div>
     <label for="dt">Date</label>
     <input type="date" id="dt">
@@ -160,6 +163,17 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
  <section class="card" id="admin" hidden>
   <h2>Admin tools</h2>
   <p class="sub" id="admtxt"></p>
+  
+  <div style="margin-bottom:20px;">
+    <h3 style="font-size:15px;margin:0 0 6px;">Add New Student</h3>
+    <div class="add-box">
+      <input id="new_sid" placeholder="Student ID (e.g. 16207119)">
+      <input id="new_sname" placeholder="Student Name (e.g. Md. Mazaharul Islam)">
+      <button class="btn2" id="btn_add_student">Add Student</button>
+    </div>
+    <div id="student_msg" style="margin-top:6px;font-size:13.5px;"></div>
+  </div>
+
   <button class="btn2" id="clr" style="border-color:var(--bad);color:var(--bad)">Clear all records on this device</button>
  </section>
 </main>
@@ -172,7 +186,40 @@ const SUPABASE_KEY='YOUR-ANON-OR-PUBLISHABLE-KEY';
 /* Leave as is to save entries only in this browser. */
 const ADMIN_PIN='1234';   // change this. Open the page with ?admin at the end of the link to see admin tools.
 
-const STUDENTS={"22902001":"Mobashira Anika","21902021":"Md. Jakaria Hasnat","21902027":"Puja Rani Dhar","21902026":"Md. Saifullah Al Hafiz Saikat","21902029":"Kapotakkhi","22902002":"Zawad Ibna Zihad","22902012":"Lily Chakma","22902009":"Maria Alam","22902029":"Marzia Morshed Mim","20902038":"Md. Mostakim","20902037":"Roman Hossain","19902003":"Tanbhir Hosen","19902036":"Fowzia Aktar","20902023":"Rupali Khatun","24902029":"Subarna Majumder","24902007":"Ipshita Hasan Hiya","23902004":"MD.Rohan Tanvir","23902005":"Md. Sabit Bin Nasim","23902018":"Nafisa Hakim","23902010":"Anamul Haque","23902017":"Zamiu Rahman","24902012":"K. M. Rashid Shariar Mehedi"};
+const DEFAULT_STUDENTS = {
+    "22902001": "Mobashira Anika",
+    "21902021": "Md. Jakaria Hasnat",
+    "21902027": "Puja Rani Dhar",
+    "21902026": "Md. Saifullah Al Hafiz Saikat",
+    "21902029": "Kapotakkhi",
+    "22902002": "Zawad Ibna Zihad",
+    "22902012": "Lily Chakma",
+    "22902009": "Maria Alam",
+    "22902029": "Marzia Morshed Mim",
+    "20902038": "Md. Mostakim",
+    "20902037": "Roman Hossain",
+    "19902003": "Tanbhir Hosen",
+    "19902036": "Fowzia Aktar",
+    "20902023": "Rupali Khatun",
+    "24902029": "Subarna Majumder",
+    "24902007": "Ipshita Hasan Hiya",
+    "23902004": "MD.Rohan Tanvir",
+    "23902005": "Md. Sabit Bin Nasim",
+    "23902018": "Nafisa Hakim",
+    "23902010": "Anamul Haque",
+    "23902017": "Zamiu Rahman",
+    "24902012": "K. M. Rashid Shariar Mehedi",
+    "16207119": "Md. Mazaharul Islam",
+    "18207059": "Tasnim Binth Abin"
+};
+
+// Load saved custom students from localStorage if available
+let customStudents = {};
+try {
+    customStudents = JSON.parse(localStorage.getItem('sodic_custom_students')) || {};
+} catch(e) { customStudents = {}; }
+
+const STUDENTS = { ...DEFAULT_STUDENTS, ...customStudents };
 
 const CLOUD=SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('YOUR-');
 const HD={apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY};
@@ -236,7 +283,7 @@ function setMsg(t,k){const m=$('#msg');m.textContent=t;m.style.color=k==='ok'?'v
 $('#sid').oninput=()=>{
  const id=$('#sid').value.trim(),w=$('#who');
  if(STUDENTS[id]){w.textContent='\u2713 '+STUDENTS[id];w.className='ok'}
- else if(id.length>=8){w.textContent='ID not found. Please check and try again.';w.className='bad'}
+ else if(id.length>=5){w.textContent='ID not found. Please check or add via admin.';w.className='bad'}
  else{w.textContent='';w.className=''}
 };
 $('#nin').onclick=()=>set24('tin',nowT());
@@ -328,9 +375,29 @@ if(location.search.includes('admin')){
   $('#admtxt').textContent='Records are stored in Supabase. To clear them, open your Supabase project, go to SQL Editor, and run: delete from entries;';
   $('#clr').hidden=true;
  }else{
-  $('#admtxt').textContent='Records are stored in this browser only. This removes every record saved on this device. It cannot be undone.';
+  $('#admtxt').textContent='Records are stored in this browser only.';
  }
 }
+
+$('#btn_add_student').onclick=()=>{
+ const sid = $('#new_sid').value.trim();
+ const sname = $('#new_sname').value.trim();
+ const msg = $('#student_msg');
+ if(!sid || !sname){
+  msg.textContent = 'Please enter both Student ID and Name.';
+  msg.style.color = 'var(--bad)';
+  return;
+ }
+ STUDENTS[sid] = sname;
+ customStudents[sid] = sname;
+ localStorage.setItem('sodic_custom_students', JSON.stringify(customStudents));
+ msg.textContent = `Added ${sname} (${sid}) successfully!`;
+ msg.style.color = 'var(--ok)';
+ $('#new_sid').value = '';
+ $('#new_sname').value = '';
+ renderTable();
+};
+
 $('#clr').onclick=()=>{
  if(prompt('Admin PIN')!==ADMIN_PIN)return alert('Wrong PIN.');
  if(prompt('Type DELETE to remove all records on this device.')!=='DELETE')return;
