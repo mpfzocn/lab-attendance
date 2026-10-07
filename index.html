@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Attendance Logger</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="date"], input[type="time"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[readonly] { background-color: #e9ecef; cursor: not-allowed; }
+        button { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
+        button:hover { background-color: #218838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .export-btn { background-color: #007bff; margin-top: 15px; }
+        .export-btn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
 
+<div class="container">
+    <h2>Lab Attendance Logger</h2>
+    
+    <div class="form-group">
+        <label for="studentId">Student ID:</label>
+        <input type="text" id="studentId" placeholder="Enter Student ID (e.g., 22902012)" oninput="autoFillName()">
+    </div>
+
+    <div class="form-group">
+        <label for="studentName">Student Name (Auto-filled):</label>
+        <input type="text" id="studentName" placeholder="Name will appear automatically" readonly>
+    </div>
+
+    <div class="form-group">
+        <label for="logDate">Date:</label>
+        <input type="date" id="logDate">
+    </div>
+
+    <div class="form-group">
+        <label for="checkIn">Check-In Time:</label>
+        <input type="time" id="checkIn">
+    </div>
+
+    <div class="form-group">
+        <label for="checkOut">Check-Out Time:</label>
+        <input type="time" id="checkOut">
+    </div>
+
+    <button onclick="logAttendance()">Log Entry</button>
+
+    <h3>Attendance Records</h3>
+    <table id="attendanceTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+
+    <button class="export-btn" onclick="exportToCSV()">Export Records to CSV</button>
+</div>
+
+<script>
+    const studentDatabase = {
+        "22902001": "Mobashira Anika",
+        "21902021": "Md. Jakaria Hasnat",
+        "21902027": "Puja Rani Dhar",
+        "21902026": "Md. Saifullah Al Hafiz Saikat",
+        "21902029": "Kapotakkhi",
+        "22902002": "Zawad Ibna Zihad",
+        "22902012": "Lily Chakma",
+        "22902009": "Maria Alam",
+        "22902029": "Marzia Morshed Mim",
+        "20902038": "Md. Mostakim",
+        "20902037": "Roman Hossain",
+        "19902003": "Tanbhir Hosen",
+        "19902036": "Fowzia Aktar",
+        "20902023": "Rupali Khatun",
+        "24902029": "Subarna Majumder",
+        "24902007": "Ipshita Hasan Hiya",
+        "23902004": "MD.Rohan Tanvir",
+        "23902005": "Md. Sabit Bin Nasim",
+        "23902018": "Nafisa Hakim",
+        "23902010": "Anamul Haque",
+        "23902017": "Zamiu Rahman",
+        "24902012": "K. M. Rashid Shariar Mehedi"
+    };
+
+    document.getElementById('logDate').valueAsDate = new Date();
+
+    function autoFillName() {
+        const idInput = document.getElementById('studentId').value.trim();
+        const nameInput = document.getElementById('studentName');
+        
+        if (studentDatabase[idInput]) {
+            nameInput.value = studentDatabase[idInput];
+        } else {
+            nameInput.value = "";
+        }
+    }
+
+    function logAttendance() {
+        const id = document.getElementById('studentId').value.trim();
+        const name = document.getElementById('studentName').value;
+        const date = document.getElementById('logDate').value;
+        const checkIn = document.getElementById('checkIn').value;
+        const checkOut = document.getElementById('checkOut').value;
+
+        if (!id || !name) {
+            alert('Please enter a valid Student ID matching the records.');
+            return;
+        }
+
+        if (!date || (!checkIn && !checkOut)) {
+            alert('Please select a date and at least one time (Check-In or Check-Out).');
+            return;
+        }
+
+        const tableBody = document.getElementById('tableBody');
+        const newRow = tableBody.insertRow();
+
+        newRow.insertCell(0).innerText = date;
+        newRow.insertCell(1).innerText = id;
+        newRow.insertCell(2).innerText = name;
+        newRow.insertCell(3).innerText = checkIn || 'N/A';
+        newRow.insertCell(4).innerText = checkOut || 'N/A';
+
+        document.getElementById('studentId').value = '';
+        document.getElementById('studentName').value = '';
+        document.getElementById('checkIn').value = '';
+        document.getElementById('checkOut').value = '';
+    }
+
+    function exportToCSV() {
+        let csv = 'Date,Student ID,Student Name,Check-In,Check-Out\n';
+        const rows = document.querySelectorAll('#tableBody tr');
+
+        if (rows.length === 0) {
+            alert('No records available to export.');
+            return;
+        }
+
+        rows.forEach(row => {
+            const cols = row.querySelectorAll('td');
+            const rowData = Array.from(cols).map(c => `"${c.innerText}"`).join(',');
+            csv += rowData + '\n';
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'lab_attendance.csv');
+        a.click();
+    }
+</script>
+
+</body>
+</html>
