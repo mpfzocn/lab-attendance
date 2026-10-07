@@ -197,11 +197,9 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 <footer>SODIC-CU, University of Chittagong</footer>
 
 <script>
-/* ===== OPTIONAL: paste your Supabase details to share one record across all phones ===== */
 const SUPABASE_URL='https://YOUR-PROJECT.supabase.co';
 const SUPABASE_KEY='YOUR-ANON-OR-PUBLISHABLE-KEY';
-/* Leave as is to save entries only in this browser. */
-const ADMIN_PIN='1234';   // change this. Open the page with ?admin at the end of the link to see admin tools.
+const ADMIN_PIN='1234';
 
 const DEFAULT_STUDENTS = {
     "22902001": "Mobashira Anika",
@@ -230,7 +228,6 @@ const DEFAULT_STUDENTS = {
     "18207059": "Tasnim Binth Abin"
 };
 
-// Load saved custom students from localStorage if available
 let customStudents = {};
 try {
     customStudents = JSON.parse(localStorage.getItem('sodic_custom_students')) || {};
@@ -283,9 +280,9 @@ setInterval(tick,1000);tick();
 $('#dot').classList.toggle('on',CLOUD);
 $('#mode').textContent=CLOUD?'Shared database connected':'Saving on this device only';
 
-/* ---------- 12-hour time pickers (stored as 24-hour HH:MM) ---------- */
+/* ---------- 12-hour time pickers ---------- */
 function buildTP(id){
- const hh='<option value="">Hour</option>'+[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('');
+ const hh='<option value="">Hour</option>'+[...Array(12)].map((_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');
  const mm='<option value="">Min</option>'+[...Array(60)].map((_,i)=>`<option value="${pad(i)}">${pad(i)}</option>`).join('');
  $('#'+id).innerHTML=`<select aria-label="Hour">${hh}</select><select aria-label="Minutes">${mm}</select><select aria-label="AM or PM"><option value="">AM/PM</option><option>AM</option><option>PM</option></select>`;
 }
@@ -305,13 +302,30 @@ $('#sid').oninput=()=>{
 };
 $('#nin').onclick=()=>set24('tin',nowT());
 $('#nout').onclick=()=>set24('tout',nowT());
+
+/* Helper: Check time overlap for re-entries */
+function isOverlapping(sid, date, newIn, newOut) {
+ const startA = tm(newIn), endA = tm(newOut);
+ return rows.some(r => {
+  if (r.sid !== sid || r.date !== date) return false;
+  const startB = tm(r.tin), endB = tm(r.tout);
+  return Math.max(startA, startB) < Math.min(endA, endB);
+ });
+}
+
 $('#f').onsubmit=async ev=>{
  ev.preventDefault();
  const sid=$('#sid').value.trim(),date=$('#dt').value,tin=get24('tin'),tout=get24('tout'),b=$('#go');
  if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
  if(!date||!tin||!tout)return setMsg('Date, in time and out time are all required (hour, minutes and AM/PM).','bad');
  if(tin===tout)return setMsg('In and out time are the same.','bad');
- if(rows.some(r=>r.sid===sid&&r.date===date&&r.tin===tin&&r.tout===tout))return setMsg('This entry is already recorded.','bad');
+ if(tm(tin) >= tm(tout))return setMsg('Out time must be later than In time.','bad');
+ 
+ // Overlap check for multiple daily entries
+ if(isOverlapping(sid, date, tin, tout)){
+  return setMsg('Time overlaps with an existing entry for this student today.','bad');
+ }
+
  b.disabled=true;setMsg('Saving...');
  try{
   await addRow({sid,date,tin,tout});
@@ -376,7 +390,7 @@ function renderTable(){
 
 /* ---------- export ---------- */
 $('#csv').onclick=()=>{
- const l=monthRows().sort((a,b)=>a.date.localeCompare(b.date)||a.tin.localeCompare(b.tin));
+ const l=monthRows().sort((a,b)=>a.date.localeCompare(b.date)||a.tin.localeCompare(a.tin));
  if(!l.length)return setMsg('No records to export for this month.','bad');
  const q=c=>'"'+String(c).replace(/"/g,'""')+'"';
  const csv=['Date,Student ID,Student Name,In,Out,Duration,Hours'].concat(l.map(r=>[r.date,r.sid,STUDENTS[r.sid]||'',t12(r.tin),t12(r.tout),fmt(diff(r.tin,r.tout)),(diff(r.tin,r.tout)/60).toFixed(2)].map(q).join(','))).join('\n');
@@ -385,7 +399,7 @@ $('#csv').onclick=()=>{
  a.download='SODIC_CU_Lab_Attendance_'+ym+'.csv';a.click();
 };
 
-/* ---------- admin (open the page with ?admin) ---------- */
+/* ---------- admin ---------- */
 if(location.search.includes('admin')){
  $('#admin').hidden=false;
  if(CLOUD){
