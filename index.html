@@ -1,449 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SODIC-CU Lab Attendance Portal</title>
-    <!-- Google Fonts & Chart.js -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success: #10b981;
-            --success-hover: #059669;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --border: #e2e8f0;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 30px 15px;
-            background-color: var(--bg);
-            color: var(--text);
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .header-card {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
-            margin-bottom: 25px;
-        }
-
-        .header-card h1 {
-            margin: 0;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .header-card p {
-            margin: 8px 0 0 0;
-            opacity: 0.9;
-            font-size: 14px;
-        }
-
-        .card {
-            background: var(--card);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
-            border: 1px solid var(--border);
-            margin-bottom: 25px;
-        }
-
-        .grid-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group.full-width {
-            grid-column: span 2;
-        }
-
-        label {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #475569;
-        }
-
-        input {
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-
-        input[readonly] {
-            background-color: #f1f5f9;
-            color: #64748b;
-        }
-
-        button.btn-submit {
-            background-color: var(--success);
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 15px;
-            transition: background-color 0.2s;
-        }
-
-        button.btn-submit:hover {
-            background-color: var(--success-hover);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 14px;
-        }
-
-        th {
-            background-color: #f8fafc;
-            color: #475569;
-            font-weight: 600;
-        }
-
-        .duration-badge {
-            background-color: #e0e7ff;
-            color: #3730a3;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            display: inline-block;
-        }
-
-        .btn-export {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-weight: 500;
-            cursor: pointer;
-            float: right;
-            margin-bottom: 15px;
-        }
-
-        .btn-export:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .month-select {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            font-family: inherit;
-        }
-
-        @media (max-width: 600px) {
-            .grid-form { grid-template-columns: 1fr; }
-            .form-group.full-width { grid-column: span 1; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SODIC-CU Lab Attendance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--navy:#0b2a43;--teal:#0d7c86;--teal-d:#0a5f67;--tint:#e6f2f3;--bg:#f2f5f7;--card:#fff;--ink:#14222d;--mute:#5f7280;--line:#dbe3e8;--ok:#17794a;--bad:#b3261e;--r:10px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'IBM Plex Sans',system-ui,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:0 18px}
+.top{background:var(--navy);color:#fff;border-bottom:3px solid var(--teal)}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 18px}
+.brand{display:flex;align-items:center;gap:14px}
+.mark{width:46px;height:46px;border:1.5px solid rgba(255,255,255,.55);border-radius:8px;display:grid;place-items:center;font:700 18px 'Source Serif 4',serif;letter-spacing:.5px}
+h1{margin:0;font:700 24px/1.2 'Source Serif 4',serif}
+.brand p{margin:2px 0 0;font-size:13.5px;color:#b7cad8}
+.clock{text-align:right}
+#clk{font:600 22px 'Source Serif 4',serif;font-variant-numeric:tabular-nums}
+#cdate{font-size:13px;color:#b7cad8}
+main{padding-top:20px;padding-bottom:30px}
+.tool{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.month{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:4px}
+.month b{min-width:140px;text-align:center;font-weight:600}
+.ib{border:0;background:none;width:34px;height:34px;border-radius:7px;font-size:18px;color:var(--teal-d);cursor:pointer}
+.ib:hover{background:var(--tint)}
+.badge{font-size:13px;color:var(--mute);display:flex;align-items:center;gap:7px}
+.dot{width:9px;height:9px;border-radius:50%;background:#c28a00}.dot.on{background:var(--ok)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:18px}
+.stat{padding:16px 20px;border-right:1px solid var(--line)}.stat:last-child{border-right:0}
+.stat span{display:block;font-size:13px;color:var(--mute)}
+.stat b{font:700 28px/1.25 'Source Serif 4',serif;color:var(--navy);font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:18px;margin-bottom:18px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.card h2{margin:0 0 4px;font:700 19px 'Source Serif 4',serif;color:var(--navy)}
+.sub{margin:0 0 16px;font-size:13.5px;color:var(--mute)}
+label{display:block;font-size:13px;font-weight:500;color:var(--mute);margin:12px 0 5px}
+input{width:100%;padding:11px 12px;font:inherit;color:var(--ink);background:#fbfcfd;border:1px solid var(--line);border-radius:8px}
+input:focus,button:focus-visible{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+#sid{font-size:18px;letter-spacing:1px;font-variant-numeric:tabular-nums}
+#who{min-height:26px;margin-top:6px;font-weight:600;font-size:14.5px}
+#who.ok{color:var(--ok)}#who.bad{color:var(--bad)}
+.t3{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:10px}
+.t3 label{margin-top:12px}
+.quick{display:flex;gap:8px;margin-top:10px}
+.lnk{border:1px solid var(--line);background:none;color:var(--teal-d);border-radius:7px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer}
+.lnk:hover{background:var(--tint)}
+.go{width:100%;margin-top:18px;padding:13px;border:0;border-radius:8px;background:var(--teal);color:#fff;font:600 16px 'IBM Plex Sans',sans-serif;cursor:pointer}
+.go:hover{background:var(--teal-d)}.go:disabled{opacity:.6;cursor:wait}
+#msg{min-height:22px;margin-top:10px;font-size:14px}
+.cbox{position:relative;width:100%}
+.empty{color:var(--mute);padding:30px 0;text-align:center}
+.lh{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.lh .r{display:flex;gap:8px;align-items:center}
+.lh input{width:210px;padding:8px 10px}
+.btn2{border:1px solid var(--teal);color:var(--teal-d);background:none;border-radius:8px;padding:8px 14px;font:500 14px 'IBM Plex Sans',sans-serif;cursor:pointer}
+.btn2:hover{background:var(--tint)}
+.sc{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--tint);color:var(--navy);text-align:left;font-weight:600;padding:10px 12px;white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.dur{background:var(--tint);color:var(--teal-d);font-weight:600;border-radius:6px;padding:3px 9px;font-size:13px}
+.more{display:block;margin:12px auto 0}
+footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}.clock{display:none}}
+@media(max-width:560px){.stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}h1{font-size:20px}.t3{grid-template-columns:1fr 1fr}.t3>div:first-child{grid-column:span 2}.lh input{width:100%}.lh .r{width:100%}}
+@media(prefers-reduced-motion:no-preference){.go{transition:background .15s}}
+</style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header-card">
-        <h1>SODIC-CU Lab Attendance Portal</h1>
-        <p>Smart Entry/Exit Tracker & Monthly Analytics</p>
+<header class="top"><div class="wrap bar">
+ <div class="brand"><div class="mark" aria-hidden="true">CU</div>
+  <div><h1>SODIC-CU Lab Attendance</h1><p>Department of Oceanography, University of Chittagong</p></div></div>
+ <div class="clock"><div id="clk"></div><div id="cdate"></div></div>
+</div></header>
+
+<main class="wrap">
+ <div class="tool">
+  <div class="month"><button class="ib" id="pm" aria-label="Previous month">&#8249;</button><b id="mlabel"></b><button class="ib" id="nm" aria-label="Next month">&#8250;</button></div>
+  <div class="badge"><span class="dot" id="dot"></span><span id="mode"></span></div>
+ </div>
+
+ <section class="stats" id="stats"></section>
+
+ <div class="grid">
+  <section class="card">
+   <h2>Log your lab time</h2>
+   <p class="sub">Enter your student ID, check the date, then add your in and out time.</p>
+   <form id="f" autocomplete="off">
+    <label for="sid">Student ID</label>
+    <input id="sid" inputmode="numeric" maxlength="8" placeholder="e.g. 22902012">
+    <div id="who" aria-live="polite"></div>
+    <div class="t3">
+     <div><label for="dt">Date</label><input type="date" id="dt"></div>
+     <div><label for="tin">In</label><input type="time" id="tin"></div>
+     <div><label for="tout">Out</label><input type="time" id="tout"></div>
     </div>
+    <div class="quick"><button type="button" class="lnk" id="nin">Set In to now</button><button type="button" class="lnk" id="nout">Set Out to now</button></div>
+    <button class="go" id="go" type="submit">Log attendance</button>
+    <div id="msg" role="status" aria-live="polite"></div>
+   </form>
+  </section>
 
-    <!-- Attendance Logging Form -->
-    <div class="card">
-        <div class="grid-form">
-            <div class="form-group">
-                <label for="studentId">Student ID</label>
-                <input type="text" id="studentId" placeholder="e.g. 22902012" oninput="autoFillName()">
-            </div>
+  <section class="card">
+   <h2>Hours in the lab</h2>
+   <p class="sub" id="csub"></p>
+   <div class="cbox" id="cbox"><canvas id="chart"></canvas></div>
+   <div class="empty" id="cempty" hidden>No entries for this month yet.</div>
+  </section>
+ </div>
 
-            <div class="form-group">
-                <label for="studentName">Student Name</label>
-                <input type="text" id="studentName" placeholder="Auto-filled name" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="logDate">Date</label>
-                <input type="date" id="logDate">
-            </div>
-
-            <div class="form-group">
-                <!-- Helper container for two times -->
-                <div style="display: flex; gap: 10px;">
-                    <div style="flex:1;">
-                        <label for="checkIn">Check-In</label>
-                        <input type="time" id="checkIn" style="width: 100%;">
-                    </div>
-                    <div style="flex:1;">
-                        <label for="checkOut">Check-Out</label>
-                        <input type="time" id="checkOut" style="width: 100%;">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button class="btn-submit" onclick="logAttendance()">Log Attendance</button>
-    </div>
-
-    <!-- Monthly Summary Graph -->
-    <div class="card">
-        <div class="chart-header">
-            <h3 style="margin: 0;">Monthly Total Hours</h3>
-            <input type="month" id="monthFilter" class="month-select" onchange="updateChart()">
-        </div>
-        <canvas id="monthlyChart" height="120"></canvas>
-    </div>
-
-    <!-- Records Table -->
-    <div class="card">
-        <button class="btn-export" onclick="exportToCSV()">Export CSV</button>
-        <h3 style="margin-top: 0;">Recent Logs</h3>
-        <table id="attendanceTable">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>In</th>
-                    <th>Out</th>
-                    <th>Duration</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-            </tbody>
-        </table>
-    </div>
-</div>
+ <section class="card">
+  <div class="lh">
+   <div><h2>Attendance records</h2><p class="sub" style="margin:0" id="lsub"></p></div>
+   <div class="r"><input id="q" type="search" placeholder="Search name or ID" aria-label="Search records"><button class="btn2" id="csv">Export CSV</button></div>
+  </div>
+  <div class="sc"><table><thead><tr><th>Date</th><th>Student ID</th><th>Name</th><th>In</th><th>Out</th><th>Duration</th></tr></thead><tbody id="tb"></tbody></table></div>
+  <div class="empty" id="tempty" hidden>No records found.</div>
+  <button class="btn2 more" id="more" hidden></button>
+ </section>
+</main>
+<footer>SODIC-CU, University of Chittagong</footer>
 
 <script>
-    // Embedded Student Database[cite: 1]
-    const studentDatabase = {
-        "22902001": "Mobashira Anika",
-        "21902021": "Md. Jakaria Hasnat",
-        "21902027": "Puja Rani Dhar",
-        "21902026": "Md. Saifullah Al Hafiz Saikat",
-        "21902029": "Kapotakkhi",
-        "22902002": "Zawad Ibna Zihad",
-        "22902012": "Lily Chakma",
-        "22902009": "Maria Alam",
-        "22902029": "Marzia Morshed Mim",
-        "20902038": "Md. Mostakim",
-        "20902037": "Roman Hossain",
-        "19902003": "Tanbhir Hosen",
-        "19902036": "Fowzia Aktar",
-        "20902023": "Rupali Khatun",
-        "24902029": "Subarna Majumder",
-        "24902007": "Ipshita Hasan Hiya",
-        "23902004": "MD.Rohan Tanvir",
-        "23902005": "Md. Sabit Bin Nasim",
-        "23902018": "Nafisa Hakim",
-        "23902010": "Anamul Haque",
-        "23902017": "Zamiu Rahman",
-        "24902012": "K. M. Rashid Shariar Mehedi"
-    };
+/* ===== OPTIONAL: paste your Supabase details to share one record across all phones ===== */
+const SUPABASE_URL='https://YOUR-PROJECT.supabase.co';
+const SUPABASE_KEY='YOUR-ANON-OR-PUBLISHABLE-KEY';
+/* Leave as is to save entries only in this browser. */
 
-    let attendanceData = JSON.parse(localStorage.getItem('sodic_attendance')) || [
-        { date: '2026-10-07', id: '21902021', name: 'Md. Jakaria Hasnat', checkIn: '09:20', checkOut: '15:18', durationHours: 5.97, durationText: '5h 58m' },
-        { date: '2026-10-06', id: '21902021', name: 'Md. Jakaria Hasnat', checkIn: '08:18', checkOut: '20:16', durationHours: 11.97, durationText: '11h 58m' },
-        { date: '2026-10-06', id: '20902038', name: 'Md. Mostakim', checkIn: '08:16', checkOut: '19:16', durationHours: 11.0, durationText: '11h 0m' }
-    ];
+const STUDENTS={"22902001":"Mobashira Anika","21902021":"Md. Jakaria Hasnat","21902027":"Puja Rani Dhar","21902026":"Md. Saifullah Al Hafiz Saikat","21902029":"Kapotakkhi","22902002":"Zawad Ibna Zihad","22902012":"Lily Chakma","22902009":"Maria Alam","22902029":"Marzia Morshed Mim","20902038":"Md. Mostakim","20902037":"Roman Hossain","19902003":"Tanbhir Hosen","19902036":"Fowzia Aktar","20902023":"Rupali Khatun","24902029":"Subarna Majumder","24902007":"Ipshita Hasan Hiya","23902004":"MD.Rohan Tanvir","23902005":"Md. Sabit Bin Nasim","23902018":"Nafisa Hakim","23902010":"Anamul Haque","23902017":"Zamiu Rahman","24902012":"K. M. Rashid Shariar Mehedi"};
 
-    let chartInstance = null;
+const CLOUD=SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('YOUR-');
+const HD={apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY};
+const LS='sodic_attendance_v2';
+const $=s=>document.querySelector(s);
+const pad=n=>String(n).padStart(2,'0');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const nowT=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
+const tm=t=>{const [h,m]=t.split(':').map(Number);return h*60+m};
+const diff=(a,b)=>{let d=tm(b)-tm(a);if(d<0)d+=1440;return d};
+const fmt=m=>Math.floor(m/60)+'h '+pad(m%60)+'m';
 
-    // Initialization
-    const today = new Date();
-    document.getElementById('logDate').valueAsDate = today;
-    document.getElementById('monthFilter').value = today.toISOString().substring(0, 7);
+let rows=[],ym=todayStr().slice(0,7),showAll=false,chart=null;
 
-    window.onload = function() {
-        renderTable();
-        initChart();
-    };
+/* ---------- storage ---------- */
+async function loadRows(){
+ if(!CLOUD){try{rows=JSON.parse(localStorage.getItem(LS))||[]}catch(e){rows=[]}return}
+ let all=[],from=0;
+ try{
+  for(;;){
+   const r=await fetch(SUPABASE_URL+'/rest/v1/entries?select=student_id,date,time_in,time_out&order=date.desc,time_in.desc',{headers:{...HD,Range:from+'-'+(from+999)}});
+   if(!r.ok)throw 0;const p=await r.json();all=all.concat(p);
+   if(p.length<1000)break;from+=1000;
+  }
+  rows=all.map(e=>({sid:e.student_id,date:e.date,tin:e.time_in,tout:e.time_out}));
+ }catch(e){setMsg('Could not load records. Check your connection.','bad')}
+}
+async function addRow(r){
+ if(!CLOUD){rows.push(r);localStorage.setItem(LS,JSON.stringify(rows));return}
+ const res=await fetch(SUPABASE_URL+'/rest/v1/entries',{method:'POST',headers:{...HD,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({student_id:r.sid,date:r.date,time_in:r.tin,time_out:r.tout})});
+ if(!res.ok)throw new Error(res.status);
+ rows.push(r);
+}
 
-    function autoFillName() {
-        const idInput = document.getElementById('studentId').value.trim();
-        const nameInput = document.getElementById('studentName');
-        nameInput.value = studentDatabase[idInput] || "";
-    }
+/* ---------- header ---------- */
+function tick(){
+ const d=new Date();
+ $('#clk').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+ $('#cdate').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+setInterval(tick,1000);tick();
+$('#dot').classList.toggle('on',CLOUD);
+$('#mode').textContent=CLOUD?'Shared database connected':'Saving on this device only';
 
-    function calculateDuration(checkIn, checkOut) {
-        if (!checkIn || !checkOut) return { text: 'N/A', hours: 0 };
-        
-        const [inH, inM] = checkIn.split(':').map(Number);
-        const [outH, outM] = checkOut.split(':').map(Number);
-        
-        let inMinutes = inH * 60 + inM;
-        let outMinutes = outH * 60 + outM;
+/* ---------- form ---------- */
+$('#dt').value=todayStr();
+const setMsg=(t,k)=>{const m=$('#msg');m.textContent=t;m.style.color=k==='ok'?'var(--ok)':k==='bad'?'var(--bad)':'var(--mute)'};
+$('#sid').oninput=()=>{
+ const id=$('#sid').value.trim(),w=$('#who');
+ if(STUDENTS[id]){w.textContent='\u2713 '+STUDENTS[id];w.className='ok'}
+ else if(id.length>=8){w.textContent='ID not found. Please check and try again.';w.className='bad'}
+ else{w.textContent='';w.className=''}
+};
+$('#nin').onclick=()=>$('#tin').value=nowT();
+$('#nout').onclick=()=>$('#tout').value=nowT();
+$('#f').onsubmit=async ev=>{
+ ev.preventDefault();
+ const sid=$('#sid').value.trim(),date=$('#dt').value,tin=$('#tin').value,tout=$('#tout').value,b=$('#go');
+ if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
+ if(!date||!tin||!tout)return setMsg('Date, in time and out time are all required.','bad');
+ if(tin===tout)return setMsg('In and out time are the same.','bad');
+ if(rows.some(r=>r.sid===sid&&r.date===date&&r.tin===tin&&r.tout===tout))return setMsg('This entry is already recorded.','bad');
+ b.disabled=true;setMsg('Saving...');
+ try{
+  await addRow({sid,date,tin,tout});
+  setMsg('Saved: '+STUDENTS[sid]+', '+fmt(diff(tin,tout))+' on '+date+'.','ok');
+  $('#sid').value='';$('#tin').value='';$('#tout').value='';$('#sid').oninput();
+  if(date.slice(0,7)!==ym){ym=date.slice(0,7)}
+  render();
+ }catch(e){setMsg('Could not save. Check your connection and try again.','bad')}
+ b.disabled=false;
+};
 
-        if (outMinutes < inMinutes) outMinutes += 24 * 60; // Crosses midnight handling
+/* ---------- month nav ---------- */
+function shift(n){const [y,m]=ym.split('-').map(Number);const d=new Date(y,m-1+n,1);ym=d.getFullYear()+'-'+pad(d.getMonth()+1);showAll=false;render()}
+$('#pm').onclick=()=>shift(-1);$('#nm').onclick=()=>shift(1);
+$('#q').oninput=()=>{showAll=false;renderTable()};
+$('#more').onclick=()=>{showAll=!showAll;renderTable()};
 
-        const diffMinutes = outMinutes - inMinutes;
-        const hrs = Math.floor(diffMinutes / 60);
-        const mins = diffMinutes % 60;
+/* ---------- render ---------- */
+const monthRows=()=>rows.filter(r=>r.date.startsWith(ym));
+function render(){
+ const [y,m]=ym.split('-').map(Number);
+ $('#mlabel').textContent=new Date(y,m-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+ renderStats();renderChart();renderTable();
+}
+function renderStats(){
+ const mr=monthRows(),tot=mr.reduce((a,r)=>a+diff(r.tin,r.tout),0),t=todayStr();
+ const present=new Set(rows.filter(r=>r.date===t).map(r=>r.sid)).size;
+ const items=[['Students in lab today',present],['Visits this month',mr.length],['Total hours this month',fmt(tot).replace(/ \d+m$/,'')+' '+pad(tot%60)+'m'],['Average per visit',mr.length?fmt(Math.round(tot/mr.length)):'-']];
+ $('#stats').innerHTML=items.map(([l,v])=>`<div class="stat"><span>${l}</span><b>${v}</b></div>`).join('');
+}
+const valuePlugin={id:'val',afterDatasetsDraw(c){const x=c.ctx;c.getDatasetMeta(0).data.forEach((b,i)=>{x.save();x.fillStyle='#14222d';x.font='600 12px "IBM Plex Sans"';x.textBaseline='middle';x.fillText(c.data.datasets[0].data[i].toFixed(1)+' h',b.x+7,b.y);x.restore()})}};
+function renderChart(){
+ const by={};monthRows().forEach(r=>{by[r.sid]=(by[r.sid]||0)+diff(r.tin,r.tout)/60});
+ const arr=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+ $('#cempty').hidden=arr.length>0;$('#cbox').hidden=!arr.length;
+ $('#csub').textContent=arr.length?'Total hours per student, '+$('#mlabel').textContent+'.':'';
+ if(!arr.length||typeof Chart==='undefined')return;
+ $('#cbox').style.height=Math.max(220,arr.length*38+50)+'px';
+ const labels=arr.map(([id])=>STUDENTS[id]||id),data=arr.map(a=>+a[1].toFixed(2));
+ if(!chart){
+  chart=new Chart($('#chart'),{type:'bar',plugins:[valuePlugin],
+   data:{labels,datasets:[{data,backgroundColor:'#0d7c86',borderRadius:4,barThickness:20}]},
+   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:56}},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.parsed.x.toFixed(2)+' hours'}}},
+    scales:{x:{beginAtZero:true,grid:{color:'#e8eef1'},title:{display:true,text:'Hours'},ticks:{font:{family:'IBM Plex Sans'}}},y:{grid:{display:false},ticks:{font:{family:'IBM Plex Sans',size:12.5}}}}}});
+ }else{chart.data.labels=labels;chart.data.datasets[0].data=data;chart.resize();chart.update()}
+}
+function renderTable(){
+ const q=$('#q').value.trim().toLowerCase();
+ let l=monthRows().filter(r=>!q||r.sid.includes(q)||(STUDENTS[r.sid]||'').toLowerCase().includes(q))
+  .sort((a,b)=>b.date.localeCompare(a.date)||b.tin.localeCompare(a.tin));
+ $('#lsub').textContent=l.length+' record'+(l.length===1?'':'s')+' in '+$('#mlabel').textContent;
+ const vis=showAll?l:l.slice(0,12);
+ $('#tb').innerHTML=vis.map(r=>`<tr><td>${r.date}</td><td>${r.sid}</td><td>${esc(STUDENTS[r.sid]||'?')}</td><td>${r.tin}</td><td>${r.tout}</td><td><span class="dur">${fmt(diff(r.tin,r.tout))}</span></td></tr>`).join('');
+ $('#tempty').hidden=l.length>0;
+ $('#more').hidden=l.length<=12;$('#more').textContent=showAll?'Show fewer':'Show all '+l.length+' records';
+}
 
-        return {
-            text: `${hrs}h ${mins}m`,
-            hours: parseFloat((diffMinutes / 60).toFixed(2))
-        };
-    }
+/* ---------- export ---------- */
+$('#csv').onclick=()=>{
+ const l=monthRows().sort((a,b)=>a.date.localeCompare(b.date)||a.tin.localeCompare(b.tin));
+ if(!l.length)return setMsg('No records to export for this month.','bad');
+ const q=c=>'"'+String(c).replace(/"/g,'""')+'"';
+ const csv=['Date,Student ID,Student Name,In,Out,Duration,Hours'].concat(l.map(r=>[r.date,r.sid,STUDENTS[r.sid]||'',r.tin,r.tout,fmt(diff(r.tin,r.tout)),(diff(r.tin,r.tout)/60).toFixed(2)].map(q).join(','))).join('\n');
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+ a.download='SODIC_CU_Lab_Attendance_'+ym+'.csv';a.click();
+};
 
-    function logAttendance() {
-        const id = document.getElementById('studentId').value.trim();
-        const name = document.getElementById('studentName').value;
-        const date = document.getElementById('logDate').value;
-        const checkIn = document.getElementById('checkIn').value;
-        const checkOut = document.getElementById('checkOut').value;
-
-        if (!id || !name) {
-            alert('Please enter a valid registered Student ID.');
-            return;
-        }
-
-        if (!date || (!checkIn && !checkOut)) {
-            alert('Please select a date and check-in/out time.');
-            return;
-        }
-
-        const duration = calculateDuration(checkIn, checkOut);
-
-        const newRecord = {
-            date,
-            id,
-            name,
-            checkIn: checkIn || 'N/A',
-            checkOut: checkOut || 'N/A',
-            durationHours: duration.hours,
-            durationText: duration.text
-        };
-
-        attendanceData.unshift(newRecord);
-        localStorage.setItem('sodic_attendance', JSON.stringify(attendanceData));
-
-        renderTable();
-        updateChart();
-
-        // Clear input fields
-        document.getElementById('studentId').value = '';
-        document.getElementById('studentName').value = '';
-        document.getElementById('checkIn').value = '';
-        document.getElementById('checkOut').value = '';
-    }
-
-    function renderTable() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-
-        attendanceData.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.date}</td>
-                <td>${item.id}</td>
-                <td>${item.name}</td>
-                <td>${item.checkIn}</td>
-                <td>${item.checkOut}</td>
-                <td><span class="duration-badge">${item.durationText}</span></td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    function initChart() {
-        const ctx = document.getElementById('monthlyChart').getContext('2d');
-        chartInstance = new Chart(ctx, {
-            type: 'bar',
-            data: { labels: [], datasets: [{ label: 'Total Hours Spent in Lab', data: [], backgroundColor: '#2563eb', borderRadius: 6 }] },
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } } }
-            }
-        });
-        updateChart();
-    }
-
-    function updateChart() {
-        const selectedMonth = document.getElementById('monthFilter').value; // YYYY-MM
-        const totals = {};
-
-        attendanceData.forEach(item => {
-            if (item.date.startsWith(selectedMonth)) {
-                totals[item.name] = (totals[item.name] || 0) + item.durationHours;
-            }
-        });
-
-        const labels = Object.keys(totals);
-        const data = Object.values(totals);
-
-        chartInstance.data.labels = labels;
-        chartInstance.data.datasets[0].data = data;
-        chartInstance.update();
-    }
-
-    function exportToCSV() {
-        if (attendanceData.length === 0) {
-            alert('No data available to export.');
-            return;
-        }
-
-        let csv = 'Date,Student ID,Student Name,Check-In,Check-Out,Duration\n';
-        attendanceData.forEach(r => {
-            csv += `"${r.date}","${r.id}","${r.name}","${r.checkIn}","${r.checkOut}","${r.durationText}"\n`;
-        });
-
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `SODIC_CU_Lab_Attendance_${document.getElementById('monthFilter').value}.csv`;
-        a.click();
-    }
+/* ---------- start ---------- */
+loadRows().then(render);
+if(CLOUD)setInterval(()=>loadRows().then(render),60000);
 </script>
-
 </body>
 </html>
