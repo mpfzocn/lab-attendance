@@ -283,9 +283,9 @@ $('#mode').textContent=CLOUD?'Shared database connected':'Saving on this device 
 
 /* ---------- 12-hour time pickers ---------- */
 function buildTP(id){
- const hh='<option value="">Hour</option>'+[...Array(12)].map((_,i)=>`<option value="i+1">{i+1}</option>`).join('');
- const mm='<option value="">Min</option>'+[...Array(60)].map((_,i)=>`<option value="pad(i)">{pad(i)}</option>`).join('');
- ('#'+id).innerHTML=`<selectaria-label="Hour">{hh}</select><select aria-label="Minutes">${mm}</select><select aria-label="AM or PM"><option value="">AM/PM</option><option>AM</option><option>PM</option></select>`;
+ const hh='<option value="">Hour</option>'+[...Array(12)].map((_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');
+ const mm='<option value="">Min</option>'+[...Array(60)].map((_,i)=>`<option value="${pad(i)}">${pad(i)}</option>`).join('');
+ $('#'+id).innerHTML=`<select aria-label="Hour">${hh}</select><select aria-label="Minutes">${mm}</select><select aria-label="AM or PM"><option value="">AM/PM</option><option>AM</option><option>PM</option></select>`;
 }
 function get24(id){const [h,m,p]=[...$('#'+id).children].map(s=>s.value);if(!h||m===''||!p)return '';let H=(+h)%12;if(p==='PM')H+=12;return pad(H)+':'+m}
 function set24(id,v){const s=[...$('#'+id).children];if(!v){s.forEach(x=>x.value='');return}const [H,M]=v.split(':').map(Number);s[0].value=String(H%12||12);s[1].value=pad(M);s[2].value=H>=12?'PM':'AM'}
@@ -296,7 +296,7 @@ buildTP('tin');buildTP('tout');
 $('#dt').value=todayStr();
 function setMsg(t,k){const m=$('#msg');m.textContent=t;m.style.color=k==='ok'?'var(--ok)':k==='bad'?'var(--bad)':'var(--mute)'}
 $('#sid').oninput=()=>{
- const id=('#sid').value.trim(),w=('#who');
+ const id=$('#sid').value.trim(),w=$('#who');
  if(STUDENTS[id]){w.textContent='\u2713 '+STUDENTS[id];w.className='ok'}
  else if(id.length>=5){w.textContent='ID not found. Please check or add via admin.';w.className='bad'}
  else{w.textContent='';w.className=''}
@@ -315,8 +315,8 @@ function isOverlapping(sid, date, newIn, newOut) {
 
 $('#f').onsubmit=async ev=>{
  ev.preventDefault();
- const sid=('#sid').value.trim(),date=('#dt').value,tin=get24('tin'),tout=get24('tout'),b=$('#go');
- if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
+ const sid=$('#sid').value.trim(),date=$('#dt').value,tin=get24('tin'),tout=get24('tout'),b=$('#go');
+ if(!sid||!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
  if(!date||!tin||!tout)return setMsg('Date, in time and out time are all required (hour, minutes and AM/PM).','bad');
  if(tin===tout)return setMsg('In and out time are the same.','bad');
  if(tm(tin) >= tm(tout))return setMsg('Out time must be later than In time.','bad');
@@ -328,7 +328,7 @@ $('#f').onsubmit=async ev=>{
  try{
   await addRow({sid,date,tin,tout});
   setMsg('Saved: '+STUDENTS[sid]+', '+fmt(diff(tin,tout))+' ('+t12(tin)+' to '+t12(tout)+') on '+date+'.','ok');
-  ('#sid').value='';set24('tin','');set24('tout','');('#sid').oninput();
+  $('#sid').value='';set24('tin','');set24('tout','');$('#sid').oninput();
   ym=date.slice(0,7);showAll=false;
   render();
  }catch(e){setMsg('Could not save. Check your connection and try again.','bad')}
@@ -337,7 +337,7 @@ $('#f').onsubmit=async ev=>{
 
 /* ---------- month nav ---------- */
 function shift(n){const [y,m]=ym.split('-').map(Number);const d=new Date(y,m-1+n,1);ym=d.getFullYear()+'-'+pad(d.getMonth()+1);showAll=false;render()}
-('#pm').onclick=()=>shift(-1);('#nm').onclick=()=>shift(1);
+$('#pm').onclick=()=>shift(-1);$('#nm').onclick=()=>shift(1);
 $('#q').oninput=()=>{showAll=false;renderTable()};
 $('#more').onclick=()=>{showAll=!showAll;renderTable()};
 
@@ -352,14 +352,14 @@ function renderStats(){
  const mr=monthRows(),tot=mr.reduce((a,r)=>a+diff(r.tin,r.tout),0),t=todayStr();
  const present=new Set(rows.filter(r=>r.date===t).map(r=>r.sid)).size;
  const items=[['Students in lab today',present],['Visits this month',mr.length],['Total hours this month',fmt(tot)],['Average per visit',mr.length?fmt(Math.round(tot/mr.length)):'-']];
- ('#stats').innerHTML=items.map(([l,v])=>`<divclass="stat"><span>{l}</span><b>${v}</b></div>`).join('');
+ $('#stats').innerHTML=items.map(([l,v])=>`<div class="stat"><span>${l}</span><b>${v}</b></div>`).join('');
 }
 const valuePlugin={id:'val',afterDatasetsDraw(c){const x=c.ctx;c.getDatasetMeta(0).data.forEach((b,i)=>{x.save();x.fillStyle='#14222d';x.font='600 12px "IBM Plex Sans"';x.textBaseline='middle';x.fillText(c.data.datasets[0].data[i].toFixed(1)+' h',b.x+7,b.y);x.restore()})}};
 function renderChart(){
  const by={};monthRows().forEach(r=>{by[r.sid]=(by[r.sid]||0)+diff(r.tin,r.tout)/60});
  const arr=Object.entries(by).sort((a,b)=>b[1]-a[1]);
- ('#cempty').hidden=arr.length>0;('#cbox').hidden=!arr.length;$('#champ').hidden=!arr.length;
- ('#csub').textContent=arr.length?'Totalhoursperstudent,'+('#mlabel').textContent+'.':'';
+ $('#cempty').hidden=arr.length>0;$('#cbox').hidden=!arr.length;$('#champ').hidden=!arr.length;
+ $('#csub').textContent=arr.length?'Total hours per student, '+$('#mlabel').textContent+'.':'';
  if(!arr.length)return;
  $('#champ').innerHTML=TROPHY+'<span>Longest total time in lab: <b>'+esc(STUDENTS[arr[0][0]]||arr[0][0])+'</b>, '+arr[0][1].toFixed(1)+' hours</span>';
  if(typeof Chart==='undefined')return;
@@ -379,11 +379,11 @@ function renderTable(){
  const mx=Math.max(0,...mr.map(r=>diff(r.tin,r.tout)));
  let l=mr.filter(r=>!q||r.sid.includes(q)||(STUDENTS[r.sid]||'').toLowerCase().includes(q))
   .sort((a,b)=>b.date.localeCompare(a.date)||b.tin.localeCompare(a.tin));
- ('#lsub').innerHTML=l.length+'record'+(l.length===1?'':'s')+'in'+('#mlabel').textContent+(mx?' &nbsp;<span class="tr" style="margin:0">'+TROPHY+'</span> longest single stay':'');
+ $('#lsub').innerHTML=l.length+' record'+(l.length===1?'':'s')+' in '+$('#mlabel').textContent+(mx?' &nbsp;<span class="tr" style="margin:0">'+TROPHY+'</span> longest single stay':'');
  const vis=showAll?l:l.slice(0,12);
- $('#tb').innerHTML=vis.map(r=>{const d=diff(r.tin,r.tout);return `<tr><td data-l="Date">${r.date}</td><td data-l="Student ID">r.sid</td><tddata-l="Name">{esc(STUDENTS[r.sid]||'?')}</td><td data-l="In">t12(r.tin)</td><tddata-l="Out">{t12(r.tout)}</td><td data-l="Duration"><span><span class="dur">fmt(d)</span>{d===mx?'<span class="tr" title="Longest single stay this month">'+TROPHY+'</span>':''}</span></td></tr>`}).join('');
+ $('#tb').innerHTML=vis.map(r=>{const d=diff(r.tin,r.tout);return `<tr><td data-l="Date">${r.date}</td><td data-l="Student ID">${r.sid}</td><td data-l="Name">${esc(STUDENTS[r.sid]||'?')}</td><td data-l="In">${t12(r.tin)}</td><td data-l="Out">${t12(r.tout)}</td><td data-l="Duration"><span><span class="dur">${fmt(d)}</span>${d===mx?'<span class="tr" title="Longest single stay this month">'+TROPHY+'</span>':''}</span></td></tr>`}).join('');
  $('#tempty').hidden=l.length>0;
- ('#more').hidden=l.length<=12;('#more').textContent=showAll?'Show fewer':'Show all '+l.length+' records';
+ $('#more').hidden=l.length<=12;$('#more').textContent=showAll?'Show fewer':'Show all '+l.length+' records';
 }
 
 /* ---------- export ---------- */
@@ -420,7 +420,7 @@ $('#btn_add_student').onclick=()=>{
  STUDENTS[sid] = sname;
  customStudents[sid] = sname;
  localStorage.setItem('sodic_custom_students', JSON.stringify(customStudents));
- msg.textContent = `Added sname({sid}) successfully!`;
+ msg.textContent = `Added ${sname} (${sid}) successfully!`;
  msg.style.color = 'var(--ok)';
  $('#new_sid').value = '';
  $('#new_sname').value = '';
