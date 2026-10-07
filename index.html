@@ -3,76 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Attendance Logger</title>
+    <title>SODIC-CU Lab Attendance Portal</title>
+    <!-- Google Fonts & Chart.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { color: #333; text-align: center; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="date"], input[type="time"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        input[readonly] { background-color: #e9ecef; cursor: not-allowed; }
-        button { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
-        button:hover { background-color: #218838; }
-        table { width: 100%; border-collapse: collapse; margin-top: 25px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #007bff; color: white; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        .export-btn { background-color: #007bff; margin-top: 15px; }
-        .export-btn:hover { background-color: #0056b3; }
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #10b981;
+            --success-hover: #059669;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 30px 15px;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+            margin-bottom: 25px;
+        }
+
+        .header-card h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header-card p {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
+        }
+
+        .grid-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #475569;
+        }
+
+        input {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        input[readonly] {
+            background-color: #f1f5f9;
+            color: #64748b;
+        }
+
+        button.btn-submit {
+            background-color: var(--success);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+        }
+
+        button.btn-submit:hover {
+            background-color: var(--success-hover);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .duration-badge {
+            background-color: #e0e7ff;
+            color: #3730a3;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .btn-export {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            float: right;
+            margin-bottom: 15px;
+        }
+
+        .btn-export:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .month-select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+        }
+
+        @media (max-width: 600px) {
+            .grid-form { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Lab Attendance Logger</h2>
-    
-    <div class="form-group">
-        <label for="studentId">Student ID:</label>
-        <input type="text" id="studentId" placeholder="Enter Student ID (e.g., 22902012)" oninput="autoFillName()">
+    <div class="header-card">
+        <h1>SODIC-CU Lab Attendance Portal</h1>
+        <p>Smart Entry/Exit Tracker & Monthly Analytics</p>
     </div>
 
-    <div class="form-group">
-        <label for="studentName">Student Name (Auto-filled):</label>
-        <input type="text" id="studentName" placeholder="Name will appear automatically" readonly>
+    <!-- Attendance Logging Form -->
+    <div class="card">
+        <div class="grid-form">
+            <div class="form-group">
+                <label for="studentId">Student ID</label>
+                <input type="text" id="studentId" placeholder="e.g. 22902012" oninput="autoFillName()">
+            </div>
+
+            <div class="form-group">
+                <label for="studentName">Student Name</label>
+                <input type="text" id="studentName" placeholder="Auto-filled name" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="logDate">Date</label>
+                <input type="date" id="logDate">
+            </div>
+
+            <div class="form-group">
+                <!-- Helper container for two times -->
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex:1;">
+                        <label for="checkIn">Check-In</label>
+                        <input type="time" id="checkIn" style="width: 100%;">
+                    </div>
+                    <div style="flex:1;">
+                        <label for="checkOut">Check-Out</label>
+                        <input type="time" id="checkOut" style="width: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="logAttendance()">Log Attendance</button>
     </div>
 
-    <div class="form-group">
-        <label for="logDate">Date:</label>
-        <input type="date" id="logDate">
+    <!-- Monthly Summary Graph -->
+    <div class="card">
+        <div class="chart-header">
+            <h3 style="margin: 0;">Monthly Total Hours</h3>
+            <input type="month" id="monthFilter" class="month-select" onchange="updateChart()">
+        </div>
+        <canvas id="monthlyChart" height="120"></canvas>
     </div>
 
-    <div class="form-group">
-        <label for="checkIn">Check-In Time:</label>
-        <input type="time" id="checkIn">
+    <!-- Records Table -->
+    <div class="card">
+        <button class="btn-export" onclick="exportToCSV()">Export CSV</button>
+        <h3 style="margin-top: 0;">Recent Logs</h3>
+        <table id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>In</th>
+                    <th>Out</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
     </div>
-
-    <div class="form-group">
-        <label for="checkOut">Check-Out Time:</label>
-        <input type="time" id="checkOut">
-    </div>
-
-    <button onclick="logAttendance()">Log Entry</button>
-
-    <h3>Attendance Records</h3>
-    <table id="attendanceTable">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Student ID</th>
-                <th>Student Name</th>
-                <th>Check-In</th>
-                <th>Check-Out</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody">
-        </tbody>
-    </table>
-
-    <button class="export-btn" onclick="exportToCSV()">Export Records to CSV</button>
 </div>
 
 <script>
+    // Embedded Student Database[cite: 1]
     const studentDatabase = {
         "22902001": "Mobashira Anika",
         "21902021": "Md. Jakaria Hasnat",
@@ -98,17 +289,49 @@
         "24902012": "K. M. Rashid Shariar Mehedi"
     };
 
-    document.getElementById('logDate').valueAsDate = new Date();
+    let attendanceData = JSON.parse(localStorage.getItem('sodic_attendance')) || [
+        { date: '2026-10-07', id: '21902021', name: 'Md. Jakaria Hasnat', checkIn: '09:20', checkOut: '15:18', durationHours: 5.97, durationText: '5h 58m' },
+        { date: '2026-10-06', id: '21902021', name: 'Md. Jakaria Hasnat', checkIn: '08:18', checkOut: '20:16', durationHours: 11.97, durationText: '11h 58m' },
+        { date: '2026-10-06', id: '20902038', name: 'Md. Mostakim', checkIn: '08:16', checkOut: '19:16', durationHours: 11.0, durationText: '11h 0m' }
+    ];
+
+    let chartInstance = null;
+
+    // Initialization
+    const today = new Date();
+    document.getElementById('logDate').valueAsDate = today;
+    document.getElementById('monthFilter').value = today.toISOString().substring(0, 7);
+
+    window.onload = function() {
+        renderTable();
+        initChart();
+    };
 
     function autoFillName() {
         const idInput = document.getElementById('studentId').value.trim();
         const nameInput = document.getElementById('studentName');
+        nameInput.value = studentDatabase[idInput] || "";
+    }
+
+    function calculateDuration(checkIn, checkOut) {
+        if (!checkIn || !checkOut) return { text: 'N/A', hours: 0 };
         
-        if (studentDatabase[idInput]) {
-            nameInput.value = studentDatabase[idInput];
-        } else {
-            nameInput.value = "";
-        }
+        const [inH, inM] = checkIn.split(':').map(Number);
+        const [outH, outM] = checkOut.split(':').map(Number);
+        
+        let inMinutes = inH * 60 + inM;
+        let outMinutes = outH * 60 + outM;
+
+        if (outMinutes < inMinutes) outMinutes += 24 * 60; // Crosses midnight handling
+
+        const diffMinutes = outMinutes - inMinutes;
+        const hrs = Math.floor(diffMinutes / 60);
+        const mins = diffMinutes % 60;
+
+        return {
+            text: `${hrs}h ${mins}m`,
+            hours: parseFloat((diffMinutes / 60).toFixed(2))
+        };
     }
 
     function logAttendance() {
@@ -119,50 +342,105 @@
         const checkOut = document.getElementById('checkOut').value;
 
         if (!id || !name) {
-            alert('Please enter a valid Student ID matching the records.');
+            alert('Please enter a valid registered Student ID.');
             return;
         }
 
         if (!date || (!checkIn && !checkOut)) {
-            alert('Please select a date and at least one time (Check-In or Check-Out).');
+            alert('Please select a date and check-in/out time.');
             return;
         }
 
-        const tableBody = document.getElementById('tableBody');
-        const newRow = tableBody.insertRow();
+        const duration = calculateDuration(checkIn, checkOut);
 
-        newRow.insertCell(0).innerText = date;
-        newRow.insertCell(1).innerText = id;
-        newRow.insertCell(2).innerText = name;
-        newRow.insertCell(3).innerText = checkIn || 'N/A';
-        newRow.insertCell(4).innerText = checkOut || 'N/A';
+        const newRecord = {
+            date,
+            id,
+            name,
+            checkIn: checkIn || 'N/A',
+            checkOut: checkOut || 'N/A',
+            durationHours: duration.hours,
+            durationText: duration.text
+        };
 
+        attendanceData.unshift(newRecord);
+        localStorage.setItem('sodic_attendance', JSON.stringify(attendanceData));
+
+        renderTable();
+        updateChart();
+
+        // Clear input fields
         document.getElementById('studentId').value = '';
         document.getElementById('studentName').value = '';
         document.getElementById('checkIn').value = '';
         document.getElementById('checkOut').value = '';
     }
 
-    function exportToCSV() {
-        let csv = 'Date,Student ID,Student Name,Check-In,Check-Out\n';
-        const rows = document.querySelectorAll('#tableBody tr');
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
 
-        if (rows.length === 0) {
-            alert('No records available to export.');
+        attendanceData.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.date}</td>
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${item.checkIn}</td>
+                <td>${item.checkOut}</td>
+                <td><span class="duration-badge">${item.durationText}</span></td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function initChart() {
+        const ctx = document.getElementById('monthlyChart').getContext('2d');
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: [], datasets: [{ label: 'Total Hours Spent in Lab', data: [], backgroundColor: '#2563eb', borderRadius: 6 }] },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } } }
+            }
+        });
+        updateChart();
+    }
+
+    function updateChart() {
+        const selectedMonth = document.getElementById('monthFilter').value; // YYYY-MM
+        const totals = {};
+
+        attendanceData.forEach(item => {
+            if (item.date.startsWith(selectedMonth)) {
+                totals[item.name] = (totals[item.name] || 0) + item.durationHours;
+            }
+        });
+
+        const labels = Object.keys(totals);
+        const data = Object.values(totals);
+
+        chartInstance.data.labels = labels;
+        chartInstance.data.datasets[0].data = data;
+        chartInstance.update();
+    }
+
+    function exportToCSV() {
+        if (attendanceData.length === 0) {
+            alert('No data available to export.');
             return;
         }
 
-        rows.forEach(row => {
-            const cols = row.querySelectorAll('td');
-            const rowData = Array.from(cols).map(c => `"${c.innerText}"`).join(',');
-            csv += rowData + '\n';
+        let csv = 'Date,Student ID,Student Name,Check-In,Check-Out,Duration\n';
+        attendanceData.forEach(r => {
+            csv += `"${r.date}","${r.id}","${r.name}","${r.checkIn}","${r.checkOut}","${r.durationText}"\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.setAttribute('href', url);
-        a.setAttribute('download', 'lab_attendance.csv');
+        a.href = url;
+        a.download = `SODIC_CU_Lab_Attendance_${document.getElementById('monthFilter').value}.csv`;
         a.click();
     }
 </script>
