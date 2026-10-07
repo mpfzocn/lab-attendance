@@ -194,9 +194,10 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
   <button class="btn2" id="clr" style="border-color:var(--bad);color:var(--bad)">Clear all records on this device</button>
  </section>
 </main>
-<footer>SODIC-CU, University of Chittagong</footer>
+<footer>SODIC-CU, Department of Oceanography, University of Chittagong</footer>
 
 <script>
+/* To sync across all devices, create a free project at supabase.com and replace these variables: */
 const SUPABASE_URL='https://YOUR-PROJECT.supabase.co';
 const SUPABASE_KEY='YOUR-ANON-OR-PUBLISHABLE-KEY';
 const ADMIN_PIN='1234';
@@ -270,7 +271,7 @@ async function addRow(r){
  rows.push(r);
 }
 
-/* ---------- header clock (12-hour) ---------- */
+/* ---------- header clock ---------- */
 function tick(){
  const d=new Date(),h=d.getHours();
  $('#clk').textContent=(h%12||12)+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())+' '+(h>=12?'PM':'AM');
@@ -303,7 +304,6 @@ $('#sid').oninput=()=>{
 $('#nin').onclick=()=>set24('tin',nowT());
 $('#nout').onclick=()=>set24('tout',nowT());
 
-/* Helper: Check time overlap for re-entries */
 function isOverlapping(sid, date, newIn, newOut) {
  const startA = tm(newIn), endA = tm(newOut);
  return rows.some(r => {
@@ -320,8 +320,6 @@ $('#f').onsubmit=async ev=>{
  if(!date||!tin||!tout)return setMsg('Date, in time and out time are all required (hour, minutes and AM/PM).','bad');
  if(tin===tout)return setMsg('In and out time are the same.','bad');
  if(tm(tin) >= tm(tout))return setMsg('Out time must be later than In time.','bad');
- 
- // Overlap check for multiple daily entries
  if(isOverlapping(sid, date, tin, tout)){
   return setMsg('Time overlaps with an existing entry for this student today.','bad');
  }
