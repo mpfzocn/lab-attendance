@@ -156,6 +156,12 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
   <div class="empty" id="tempty" hidden>No records found.</div>
   <button class="btn2 more" id="more" hidden></button>
  </section>
+
+ <section class="card" id="admin" hidden>
+  <h2>Admin tools</h2>
+  <p class="sub" id="admtxt"></p>
+  <button class="btn2" id="clr" style="border-color:var(--bad);color:var(--bad)">Clear all records on this device</button>
+ </section>
 </main>
 <footer>SODIC-CU, University of Chittagong</footer>
 
@@ -164,6 +170,7 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 const SUPABASE_URL='https://YOUR-PROJECT.supabase.co';
 const SUPABASE_KEY='YOUR-ANON-OR-PUBLISHABLE-KEY';
 /* Leave as is to save entries only in this browser. */
+const ADMIN_PIN='1234';   // change this. Open the page with ?admin at the end of the link to see admin tools.
 
 const STUDENTS={"22902001":"Mobashira Anika","21902021":"Md. Jakaria Hasnat","21902027":"Puja Rani Dhar","21902026":"Md. Saifullah Al Hafiz Saikat","21902029":"Kapotakkhi","22902002":"Zawad Ibna Zihad","22902012":"Lily Chakma","22902009":"Maria Alam","22902029":"Marzia Morshed Mim","20902038":"Md. Mostakim","20902037":"Roman Hossain","19902003":"Tanbhir Hosen","19902036":"Fowzia Aktar","20902023":"Rupali Khatun","24902029":"Subarna Majumder","24902007":"Ipshita Hasan Hiya","23902004":"MD.Rohan Tanvir","23902005":"Md. Sabit Bin Nasim","23902018":"Nafisa Hakim","23902010":"Anamul Haque","23902017":"Zamiu Rahman","24902012":"K. M. Rashid Shariar Mehedi"};
 
@@ -312,6 +319,23 @@ $('#csv').onclick=()=>{
  const a=document.createElement('a');
  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
  a.download='SODIC_CU_Lab_Attendance_'+ym+'.csv';a.click();
+};
+
+/* ---------- admin (open the page with ?admin) ---------- */
+if(location.search.includes('admin')){
+ $('#admin').hidden=false;
+ if(CLOUD){
+  $('#admtxt').textContent='Records are stored in Supabase. To clear them, open your Supabase project, go to SQL Editor, and run: delete from entries;';
+  $('#clr').hidden=true;
+ }else{
+  $('#admtxt').textContent='Records are stored in this browser only. This removes every record saved on this device. It cannot be undone.';
+ }
+}
+$('#clr').onclick=()=>{
+ if(prompt('Admin PIN')!==ADMIN_PIN)return alert('Wrong PIN.');
+ if(prompt('Type DELETE to remove all records on this device.')!=='DELETE')return;
+ localStorage.removeItem(LS);rows=[];showAll=false;render();
+ setMsg('All records on this device were cleared.','ok');
 };
 
 /* ---------- start ---------- */
