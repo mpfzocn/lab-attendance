@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
 <style>
 :root{--navy:#0b2a43;--teal:#0d7c86;--teal-d:#0a5f67;--tint:#e6f2f3;--gold:#c9962b;--green:#17794a;--bg:#f2f5f7;--card:#fff;--ink:#14222d;--mute:#5f7280;--line:#dbe3e8;--bad:#b3261e;--r:10px}
 *{box-sizing:border-box}
@@ -47,7 +48,6 @@ main{padding-top:20px;padding-bottom:30px}
 .card h3{margin:0 0 4px;font:700 16px 'Source Serif 4',serif;color:var(--navy)}
 .sub{margin:0 0 14px;font-size:13.5px;color:var(--mute)}
 
-/* Collapsible Section Styles */
 details.card-toggle{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:18px;padding:0;overflow:hidden}
 details.card-toggle summary{padding:16px 22px;font:700 18px 'Source Serif 4',serif;color:var(--navy);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;user-select:none;background:#fff}
 details.card-toggle summary::-webkit-details-marker{display:none}
@@ -124,6 +124,7 @@ tr[data-day]{cursor:pointer}
 .labactivities{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
 .labactivities h3{margin-bottom:4px}
 footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
+
 @media(max-width:860px){.grid,.cgrid{grid-template-columns:1fr}}
 @media(max-width:600px){
  .wrap{padding:0 12px}
@@ -150,210 +151,479 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 }
 </style>
 </head>
+
 <body>
 
-<header class="top"><div class="wrap bar">
- <div class="brand"><div class="mark" aria-hidden="true">CU</div>
-  <div><h1>SODIC-CU Lab Attendance</h1><p>Department of Oceanography, University of Chittagong</p></div></div>
- <div class="clock"><div id="clk"></div><div id="cdate"></div></div>
-</div></header>
+<header class="top">
+<div class="wrap bar">
+ <div class="brand">
+  <div class="mark" aria-hidden="true">CU</div>
+  <div>
+   <h1>SODIC-CU Lab Attendance</h1>
+   <p>Department of Oceanography, University of Chittagong</p>
+  </div>
+ </div>
+ <div class="clock">
+  <div id="clk"></div>
+  <div id="cdate"></div>
+ </div>
+</div>
+</header>
 
 <main class="wrap">
- <figure class="hero" id="hero">
-  <img src="SODIC-CU.jpg" width="1600" height="900" alt="The SODIC-CU lab building with two radomes and a satellite dish, University of Chittagong" onerror="document.getElementById('hero').hidden=true">
-  <figcaption><b>Our lab</b><br>SODIC-CU, Department of Oceanography, University of Chittagong</figcaption>
- </figure>
 
- <div class="tool">
-  <div class="month"><button class="ib" id="pm" aria-label="Previous month">&#8249;</button><b id="mlabel"></b><button class="ib" id="nm" aria-label="Next month">&#8250;</button></div>
-  <div class="badge"><span class="dot" id="dot"></span><span id="mode"></span></div>
+<figure class="hero" id="hero">
+ <img src="SODIC-CU.jpg" width="1600" height="900"
+      alt="The SODIC-CU lab building with two radomes and a satellite dish, University of Chittagong"
+      onerror="document.getElementById('hero').hidden=true">
+ <figcaption>
+  <b>Our lab</b><br>
+  SODIC-CU, Department of Oceanography, University of Chittagong
+ </figcaption>
+</figure>
+
+<div class="tool">
+ <div class="month">
+  <button class="ib" id="pm" aria-label="Previous month">&#8249;</button>
+  <b id="mlabel"></b>
+  <button class="ib" id="nm" aria-label="Next month">&#8250;</button>
  </div>
+ <div class="badge">
+  <span class="dot" id="dot"></span>
+  <span id="mode"></span>
+ </div>
+</div>
 
- <section class="stats" id="stats"></section>
+<section class="stats" id="stats"></section>
 
- <!-- 1. LOG YOUR LAB TIME -->
- <section class="card">
-  <h2>Log your lab time</h2>
-  <p class="sub">Arriving: enter your ID and tap Check in. Leaving: enter your ID and tap Check out. A blank time uses the current time.</p>
-  <form id="f" autocomplete="off" onsubmit="return false">
-   <label for="sid" style="margin-top:0">Student ID</label>
-   <input id="sid" inputmode="numeric" maxlength="8" placeholder="e.g. 22902012">
-   <div id="who" aria-live="polite"></div>
-   <label for="dt">Date</label>
-   <input type="date" id="dt">
-   <label id="lin">In time (optional)</label><div class="tp" id="tin" role="group" aria-labelledby="lin"></div>
-   <label id="lout">Out time (optional)</label><div class="tp" id="tout" role="group" aria-labelledby="lout"></div>
-   <label for="workingSummary">Working Summary</label>
-   <select id="workingSummary" multiple size="9" aria-label="Working Summary">
-    <option value="Project Works">Project Works</option>
-    <option value="Literature Review">Literature Review</option>
-    <option value="Research Methodology Development">Research Methodology Development</option>
-    <option value="Data Analysis / Interpretation">Data Analysis / Interpretation</option>
-    <option value="Figure Preparation">Figure Preparation</option>
-    <option value="Data Collection">Data Collection</option>
-    <option value="Research Documentation / Report Writing">Research Documentation / Report Writing</option>
-    <option value="Presentation Preparation">Presentation Preparation</option>
-    <option value="Preparing Manuscripts">Preparing Manuscripts</option>
-    <option value="Other Research-related Work">Other Research-related Work</option>
-   </select>
-   <div class="small" style="margin-top:5px">Select one or more activities completed during this lab session.</div>
-   <div class="two"><button type="button" class="go in" id="bin">Check in</button><button type="button" class="go out" id="bout">Check out</button></div>
-   <div id="msg" role="status" aria-live="polite"></div>
-  </form>
- </section>
+<!-- 1. LOG YOUR LAB TIME -->
+<section class="card">
 
- <!-- 2. WHO IS IN THE LAB NOW -->
- <section class="card" id="livecard">
-  <h2>Who is in the lab now</h2>
-  <p class="sub" id="liveSub"></p>
-  <div class="champ g" id="cLong" hidden></div>
-  <div class="champ s" id="cShort" hidden></div>
-  <div class="cbox" id="liveBox" hidden><canvas id="liveChart"></canvas></div>
-  <h3 style="margin-top:18px">Today's entries by student</h3>
-  <p class="sub" style="margin-bottom:8px" id="liveEnt">How many times each student entered the lab today, and when.</p>
-  <div class="sc"><table><thead><tr><th>Student</th><th>Entries today</th><th>Status</th><th>In and out times</th><th>Total today</th></tr></thead><tbody id="liveTb"></tbody></table></div>
-  <div class="empty" id="liveEmpty" hidden>No entries yet today.</div>
-  <div class="labactivities">
-   <h3>Lab Activities</h3>
-   <p class="sub" style="margin-bottom:8px">Working summaries submitted at check out by students.</p>
-   <div class="sc"><table><thead><tr><th>Student</th><th>Working Summary</th></tr></thead><tbody id="labActTb"></tbody></table></div>
-   <div class="empty" id="labActEmpty" hidden>No working summaries submitted yet today.</div>
-  </div>
- </section>
+<h2>Log your lab time</h2>
 
- <!-- 3. HIDDEN/COLLAPSIBLE: Single-day in and out times -->
- <details class="card-toggle">
-  <summary>Single-day in and out times</summary>
-  <div class="toggle-body">
-   <div class="lh">
-    <div><p class="sub" style="margin:0" id="tlSub">Pick a day to see every student's in and out time.</p></div>
-    <div class="r"><input type="date" id="tlDate" aria-label="Choose day"></div>
-   </div>
-   <div class="cbox" id="tlBox" hidden><canvas id="tlChart"></canvas></div>
-   <div class="empty" id="tlEmpty" hidden>No entries on this day.</div>
-   <div class="sc"><table><thead><tr><th>Student</th><th>Entry no.</th><th>In time</th><th>Out time</th><th>Duration</th></tr></thead><tbody id="tlTb"></tbody></table></div>
-  </div>
- </details>
+<p class="sub">
+Arriving: enter your ID and tap Check in.
+Leaving: enter your ID and tap Check out.
+A blank time uses the current time.
+</p>
 
- <section class="card">
-  <h2>Hours in the lab</h2>
-  <p class="sub" id="csub"></p>
-  <div class="champ g" id="champ" hidden></div>
-  <div class="cbox" id="cbox"><canvas id="chart"></canvas></div>
-  <div class="empty" id="cempty" hidden>No entries for this month yet.</div>
- </section>
+<form id="f" autocomplete="off" onsubmit="return false">
 
- <section class="card">
-  <h2>Daily report calendar</h2>
-  <p class="sub">Every day of <span id="calMonth"></span>. Each day shows students and total hours. Click a day for details.</p>
-  <div class="cgrid">
-   <div><div class="cal" id="cal"></div><div class="legend"><i></i> fewer hours to more hours &nbsp;|&nbsp; grey = Friday and Saturday</div></div>
-   <div id="dayPanel"></div>
-  </div>
- </section>
+<label for="sid" style="margin-top:0">Student ID</label>
+<input id="sid" inputmode="numeric" maxlength="8" placeholder="e.g. 22902012">
 
- <!-- 4. HIDDEN/COLLAPSIBLE: Student by day report -->
- <details class="card-toggle">
-  <summary>Student by day report</summary>
-  <div class="toggle-body">
-   <div class="lh">
-    <div><p class="sub" style="margin:0" id="mxsub"></p></div>
-    <button class="btn2" id="csvM">Download student by day report</button>
-   </div>
-   <div class="mxw"><table class="mx" id="mx"></table></div>
-   <div class="empty" id="mxEmpty" hidden>No entries for this month yet.</div>
-  </div>
- </details>
+<div id="who" aria-live="polite"></div>
 
- <!-- 5. HIDDEN/COLLAPSIBLE: Daily report for the month -->
- <details class="card-toggle">
-  <summary>Daily report for the month</summary>
-  <div class="toggle-body">
-   <div class="lh">
-    <div><p class="sub" style="margin:0" id="dsub"></p></div>
-    <button class="btn2" id="csvD">Download daily report</button>
-   </div>
-   <div class="sc"><table><thead><tr><th>Date</th><th>Students</th><th>Entries</th><th>Total hours</th><th>Average per student</th><th>Longest stay</th></tr></thead><tbody id="dtb"></tbody></table></div>
-  </div>
- </details>
+<label for="dt">Date</label>
+<input type="date" id="dt">
 
- <!-- 6. HIDDEN/COLLAPSIBLE: Attendance records -->
- <details class="card-toggle">
-  <summary>Attendance records</summary>
-  <div class="toggle-body">
-   <div class="lh">
-    <div><p class="sub" style="margin:0" id="lsub"></p></div>
-    <div class="r"><input id="q" type="search" placeholder="Search name or ID" aria-label="Search records"><button class="btn2" id="csv">Export CSV</button></div>
-   </div>
-   <div class="sc"><table><thead><tr><th>Date</th><th>Student ID</th><th>Name</th><th>In</th><th>Out</th><th>Duration</th></tr></thead><tbody id="tb"></tbody></table></div>
-   <div class="empty" id="tempty" hidden>No records found.</div>
-   <button class="btn2 more" id="more" hidden></button>
-  </div>
- </details>
+<label id="lin">In time (optional)</label>
+<div class="tp" id="tin" role="group" aria-labelledby="lin"></div>
 
- <!-- ADMIN PANEL -->
- <section class="card" id="admin" hidden>
-  <h2>Admin tools</h2>
-  <p class="sub" id="admtxt"></p>
-  
-  <div style="margin-bottom:20px; border-top:1px solid var(--line); padding-top:14px">
-   <h3>Add / Update Student Directory</h3>
-   <p class="sub">Quickly register a new Student ID and Name into Supabase so students can log in immediately.</p>
-   <div style="display:grid; grid-template-columns:1fr 2fr auto; gap:10px; align-items:end">
-    <div>
-     <label for="newSid" style="margin-top:0">Student ID</label>
-     <input id="newSid" placeholder="e.g. 24902030">
-    </div>
-    <div>
-     <label for="newName" style="margin-top:0">Student Full Name</label>
-     <input id="newName" placeholder="e.g. John Doe">
-    </div>
-    <button class="btn2" id="btnSaveStudent" style="background:var(--teal); color:#fff">Save Student</button>
-   </div>
-   <div id="admMsg"></div>
-  </div>
+<label id="lout">Out time (optional)</label>
+<div class="tp" id="tout" role="group" aria-labelledby="lout"></div>
 
-  <button class="btn2" id="clr" style="border-color:var(--bad);color:var(--bad)">Clear all records on this device</button>
- </section>
+<label for="workingSummary">Working Summary</label>
+
+<select id="workingSummary" multiple size="9" aria-label="Working Summary">
+ <option value="Project Works">Project Works</option>
+ <option value="Literature Review">Literature Review</option>
+ <option value="Research Methodology Development">Research Methodology Development</option>
+ <option value="Data Analysis / Interpretation">Data Analysis / Interpretation</option>
+ <option value="Figure Preparation">Figure Preparation</option>
+ <option value="Data Collection">Data Collection</option>
+ <option value="Research Documentation / Report Writing">Research Documentation / Report Writing</option>
+ <option value="Presentation Preparation">Presentation Preparation</option>
+ <option value="Preparing Manuscripts">Preparing Manuscripts</option>
+ <option value="Other Research-related Work">Other Research-related Work</option>
+</select>
+
+<div class="small" style="margin-top:5px">
+Select one or more activities completed during this lab session.
+</div>
+
+<div class="two">
+ <button type="button" class="go in" id="bin">Check in</button>
+ <button type="button" class="go out" id="bout">Check out</button>
+</div>
+
+<div id="msg" role="status" aria-live="polite"></div>
+
+</form>
+</section>
+
+<!-- 2. WHO IS IN THE LAB NOW -->
+<section class="card" id="livecard">
+
+<h2>Who is in the lab now</h2>
+
+<p class="sub" id="liveSub"></p>
+
+<div class="champ g" id="cLong" hidden></div>
+<div class="champ s" id="cShort" hidden></div>
+
+<div class="cbox" id="liveBox" hidden>
+ <canvas id="liveChart"></canvas>
+</div>
+
+<h3 style="margin-top:18px">Today's entries by student</h3>
+
+<p class="sub" style="margin-bottom:8px" id="liveEnt">
+How many times each student entered the lab today, and when.
+</p>
+
+<div class="sc">
+<table>
+<thead>
+<tr>
+<th>Student</th>
+<th>Entries today</th>
+<th>Status</th>
+<th>In and out times</th>
+<th>Total today</th>
+</tr>
+</thead>
+<tbody id="liveTb"></tbody>
+</table>
+</div>
+
+<div class="empty" id="liveEmpty" hidden>
+No entries yet today.
+</div>
+
+<div class="labactivities">
+
+<h3>Lab Activities</h3>
+
+<p class="sub" style="margin-bottom:8px">
+Working summaries submitted at check out by students.
+</p>
+
+<div class="sc">
+<table>
+<thead>
+<tr>
+<th>Student</th>
+<th>Working Summary</th>
+</tr>
+</thead>
+<tbody id="labActTb"></tbody>
+</table>
+</div>
+
+<div class="empty" id="labActEmpty" hidden>
+No working summaries submitted yet today.
+</div>
+
+</div>
+</section>
+
+<!-- 3. HIDDEN/COLLAPSIBLE: Single-day in and out times -->
+<details class="card-toggle">
+
+<summary>Single-day in and out times</summary>
+
+<div class="toggle-body">
+
+<div class="lh">
+
+<div>
+<p class="sub" style="margin:0" id="tlSub">
+Pick a day to see every student's in and out time.
+</p>
+</div>
+
+<div class="r">
+<input type="date" id="tlDate" aria-label="Choose day">
+</div>
+
+</div>
+
+<div class="cbox" id="tlBox" hidden>
+<canvas id="tlChart"></canvas>
+</div>
+
+<div class="empty" id="tlEmpty" hidden>
+No entries on this day.
+</div>
+
+<div class="sc">
+<table>
+<thead>
+<tr>
+<th>Student</th>
+<th>Entry no.</th>
+<th>In time</th>
+<th>Out time</th>
+<th>Duration</th>
+</tr>
+</thead>
+<tbody id="tlTb"></tbody>
+</table>
+</div>
+
+</div>
+</details>
+
+<section class="card">
+
+<h2>Hours in the lab</h2>
+
+<p class="sub" id="csub"></p>
+
+<div class="champ g" id="champ" hidden></div>
+
+<div class="cbox" id="cbox">
+<canvas id="chart"></canvas>
+</div>
+
+<div class="empty" id="cempty" hidden>
+No entries for this month yet.
+</div>
+
+</section>
+
+<section class="card">
+
+<h2>Daily report calendar</h2>
+
+<p class="sub">
+Every day of <span id="calMonth"></span>.
+Each day shows students and total hours.
+Click a day for details.
+</p>
+
+<div class="cgrid">
+
+<div>
+<div class="cal" id="cal"></div>
+
+<div class="legend">
+<i></i>
+fewer hours to more hours
+&nbsp;|&nbsp;
+grey = Friday and Saturday
+</div>
+</div>
+
+<div id="dayPanel"></div>
+
+</div>
+</section>
+
+<!-- 4. HIDDEN/COLLAPSIBLE: Attendance records -->
+<details class="card-toggle">
+
+<summary>Attendance records</summary>
+
+<div class="toggle-body">
+
+<div class="lh">
+
+<div>
+<p class="sub" style="margin:0" id="lsub"></p>
+</div>
+
+<div class="r">
+<input id="q" type="search"
+       placeholder="Search name or ID"
+       aria-label="Search records">
+<button class="btn2" id="csv">Export CSV</button>
+</div>
+
+</div>
+
+<div class="sc">
+
+<table>
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Student ID</th>
+<th>Name</th>
+<th>In</th>
+<th>Out</th>
+<th>Duration</th>
+</tr>
+</thead>
+
+<tbody id="tb"></tbody>
+
+</table>
+</div>
+
+<div class="empty" id="tempty" hidden>
+No records found.
+</div>
+
+<button class="btn2 more" id="more" hidden></button>
+
+</div>
+</details>
+
+<!-- ADMIN PANEL -->
+<section class="card" id="admin" hidden>
+
+<h2>Admin tools</h2>
+
+<p class="sub" id="admtxt"></p>
+
+<div style="margin-bottom:20px;border-top:1px solid var(--line);padding-top:14px">
+
+<h3>Add / Update Student Directory</h3>
+
+<p class="sub">
+Quickly register a new Student ID and Name into Supabase so students can log in immediately.
+</p>
+
+<div style="display:grid;grid-template-columns:1fr 2fr auto;gap:10px;align-items:end">
+
+<div>
+<label for="newSid" style="margin-top:0">Student ID</label>
+<input id="newSid" placeholder="e.g. 24902030">
+</div>
+
+<div>
+<label for="newName" style="margin-top:0">Student Full Name</label>
+<input id="newName" placeholder="e.g. John Doe">
+</div>
+
+<button class="btn2" id="btnSaveStudent"
+style="background:var(--teal);color:#fff">
+Save Student
+</button>
+
+</div>
+
+<div id="admMsg"></div>
+
+</div>
+
+<button class="btn2" id="clr"
+style="border-color:var(--bad);color:var(--bad)">
+Clear all records on this device
+</button>
+
+</section>
+
 </main>
-<footer>SODIC-CU, Department of Oceanography, University of Chittagong</footer>
+
+<footer>
+SODIC-CU, Department of Oceanography, University of Chittagong
+</footer>
 
 <script>
+
 /* ===== Config ===== */
+
 const SUPABASE_URL='https://obctddlksvgejgohmmms.supabase.co';
+
 const SUPABASE_KEY='sb_publishable_ttLMNzSc2_Dpt09clK-M-w_g7i_wcCo';
+
 const ADMIN_PIN='1234';
 
-const STUDENTS={"22902001":"Mobashira Anika","21902021":"Md. Jakaria Hasnat","21902027":"Puja Rani Dhar","21902026":"Md. Saifullah Al Hafiz Saikat","21902029":"Kapotakkhi","22902002":"Zawad Ibna Zihad","22902012":"Lily Chakma","22902009":"Maria Alam","22902010":"Marzia Morshed Mim","20902038":"Md. Mostakim","20902037":"Roman Hossain","19902003":"Tanbhir Hosen","19902036":"Fowzia Aktar","20902023":"Rupali Khatun","24902029":"Subarna Majumder","24902007":"Ipshita Hasan Hiya","23902004":"MD.Rohan Tanvir","23902005":"Md. Sabit Bin Nasim","23902018":"Nafisa Hakim","23902010":"Anamul Haque","23902017":"Zamiu Rahman","24902012":"K. M. Rashid Shariar Mehedi","16207119":"Md. Mazaharul Islam","18207059":"Tasnim Binth Abin","24902014":"M A Wasif Ur Rahman","24902005":"Tanjina Islam","24902026":"Sarah Tarannum"};
+const STUDENTS={
+"22902001":"Mobashira Anika",
+"21902021":"Md. Jakaria Hasnat",
+"21902027":"Puja Rani Dhar",
+"21902026":"Md. Saifullah Al Hafiz Saikat",
+"21902029":"Kapotakkhi",
+"22902002":"Zawad Ibna Zihad",
+"22902012":"Lily Chakma",
+"22902009":"Maria Alam",
+"22902010":"Marzia Morshed Mim",
+"20902038":"Md. Mostakim",
+"20902037":"Roman Hossain",
+"19902003":"Tanbhir Hosen",
+"19902036":"Fowzia Aktar",
+"20902023":"Rupali Khatun",
+"24902029":"Subarna Majumder",
+"24902007":"Ipshita Hasan Hiya",
+"23902004":"MD.Rohan Tanvir",
+"23902005":"Md. Sabit Bin Nasim",
+"23902018":"Nafisa Hakim",
+"23902010":"Anamul Haque",
+"23902017":"Zamiu Rahman",
+"24902012":"K. M. Rashid Shariar Mehedi",
+"16207119":"Md. Mazaharul Islam",
+"18207059":"Tasnim Binth Abin",
+"24902014":"M A Wasif Ur Rahman",
+"24902005":"Tanjina Islam",
+"24902026":"Sarah Tarannum"
+};
 
-let sb=null, CLOUD=false;
+let sb=null,CLOUD=false;
+
 if(SUPABASE_URL && SUPABASE_KEY && window.supabase){
-  try {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    CLOUD = true;
-  } catch(e) { console.error("Supabase error:", e); }
+ try{
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  CLOUD=true;
+ }catch(e){
+  console.error("Supabase error:",e);
+ }
 }
 
 const LS='sodic_attendance_v3';
 const LS_STU='sodic_students_v1';
+
 const $=s=>document.querySelector(s);
+
 const pad=n=>String(n).padStart(2,'0');
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({
+ '&':'&amp;',
+ '<':'&lt;',
+ '>':'&gt;',
+ '"':'&quot;'
+}[c]));
+
 const TROPHY='<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M7 3h10v2h3v3a4 4 0 0 1-4 4h-.4A5.5 5.5 0 0 1 13 14.9V17h3v2h1v2H7v-2h1v-2h3v-2.1A5.5 5.5 0 0 1 8.4 12H8a4 4 0 0 1-4-4V5h3V3Zm0 4H6v1a2 2 0 0 0 1 1.7V7Zm10 0v2.7A2 2 0 0 0 18 8V7h-1Z"/></svg>';
+
 const CLOCK='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
-const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
-const nowT=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
-const tm=t=>{const [h,m]=t.split(':').map(Number);return h*60+m};
-const diff=(a,b)=>{let d=tm(b)-tm(a);if(d<0)d+=1440;return d};
+
+const todayStr=()=>{
+ const d=new Date();
+ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+};
+
+const nowT=()=>{
+ const d=new Date();
+ return pad(d.getHours())+':'+pad(d.getMinutes());
+};
+
+const tm=t=>{
+ const [h,m]=t.split(':').map(Number);
+ return h*60+m;
+};
+
+const diff=(a,b)=>{
+ let d=tm(b)-tm(a);
+ if(d<0)d+=1440;
+ return d;
+};
+
 const fmt=m=>Math.floor(m/60)+'h '+pad(m%60)+'m';
-const t12=t=>{const [h,m]=t.split(':').map(Number);return (h%12||12)+':'+pad(m)+' '+(h>=12?'PM':'AM')};
+
+const t12=t=>{
+ const [h,m]=t.split(':').map(Number);
+ return (h%12||12)+':'+pad(m)+' '+(h>=12?'PM':'AM');
+};
+
 const nm=id=>STUDENTS[id]||id;
+
 const WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-let rows=[],ym=todayStr().slice(0,7),selDay=todayStr(),showAll=false,charts={};
+let rows=[],
+    ym=todayStr().slice(0,7),
+    selDay=todayStr(),
+    showAll=false,
+    charts={};
 
 /* ---------- student loader ---------- */
+
 async function loadStudents(){
+
  try{
   const localSt=JSON.parse(localStorage.getItem(LS_STU))||{};
   Object.assign(STUDENTS,localSt);
@@ -361,361 +631,2081 @@ async function loadStudents(){
 
  if(CLOUD && sb){
   try{
-   const { data, error } = await sb.from('students').select('student_id,name');
+   const {data,error}=await sb
+    .from('students')
+    .select('student_id,name');
+
    if(!error && data){
-    data.forEach(s=>{STUDENTS[s.student_id]=s.name;});
+    data.forEach(s=>{
+     STUDENTS[s.student_id]=s.name;
+    });
    }
   }catch(e){}
  }
 }
 
 /* ---------- rows ---------- */
+
 const isOpen=r=>!r.tout;
-const elapsed=r=>Math.max(0,Math.floor((Date.now()-new Date(r.date+'T'+r.tin+':00').getTime())/60000));
-const durMin=r=>r.tout?diff(r.tin,r.tout):(r.date===todayStr()?elapsed(r):0);
+
+const elapsed=r=>
+ Math.max(
+  0,
+  Math.floor(
+   (Date.now()-new Date(r.date+'T'+r.tin+':00').getTime())/60000
+  )
+ );
+
+const durMin=r=>
+ r.tout
+ ?diff(r.tin,r.tout)
+ :(r.date===todayStr()?elapsed(r):0);
+
 const monthRows=()=>rows.filter(r=>r.date.startsWith(ym));
+
 function groupDay(date){
- const g={};rows.filter(r=>r.date===date).forEach(r=>{(g[r.sid]=g[r.sid]||[]).push(r)});
- return Object.keys(g).map(sid=>{const a=g[sid].sort((x,y)=>x.tin.localeCompare(y.tin));return{sid,a,n:a.length,total:a.reduce((s,r)=>s+durMin(r),0)}}).sort((x,y)=>y.total-x.total);
+
+ const g={};
+
+ rows
+ .filter(r=>r.date===date)
+ .forEach(r=>{
+  (g[r.sid]=g[r.sid]||[]).push(r);
+ });
+
+ return Object.keys(g)
+ .map(sid=>{
+  const a=g[sid].sort((x,y)=>x.tin.localeCompare(y.tin));
+
+  return{
+   sid,
+   a,
+   n:a.length,
+   total:a.reduce((s,r)=>s+durMin(r),0)
+  };
+ })
+ .sort((x,y)=>y.total-x.total);
 }
-const times=(a,d)=>a.map((r,i)=>(a.length>1?(i+1)+'. ':'')+'In '+t12(r.tin)+', Out '+(r.tout?t12(r.tout):(d===todayStr()?'still in lab':'not recorded'))).join('<br>');
+
+const times=(a,d)=>
+ a.map((r,i)=>
+  (a.length>1?(i+1)+'. ':'')+
+  'In '+t12(r.tin)+
+  ', Out '+
+  (r.tout
+   ? t12(r.tout)
+   : (d===todayStr()?'still in lab':'not recorded'))
+ ).join('<br>');
 
 /* ---------- storage ---------- */
-const persist=()=>{try{localStorage.setItem(LS,JSON.stringify(rows))}catch(e){alert('Browser storage is unavailable.')}};
-async function loadRows(){
- await loadStudents();
- if(!CLOUD || !sb){try{rows=JSON.parse(localStorage.getItem(LS))||[]}catch(e){rows=[]}return}
+
+const persist=()=>{
  try{
-  const { data, error } = await sb.from('entries').select('id,student_id,date,time_in,time_out,working_summary').order('date', {ascending: false}).order('time_in', {ascending: false});
-  if(error) throw error;
-  rows = data.map(e=>({id:e.id,sid:e.student_id,date:e.date,tin:String(e.time_in).slice(0,5),tout:e.time_out?String(e.time_out).slice(0,5):null,working_summary:e.working_summary||''}));
- }catch(e){console.error(e);setMsg('Could not load records. Check connection.','bad')}
+  localStorage.setItem(LS,JSON.stringify(rows));
+ }catch(e){
+  alert('Browser storage is unavailable.');
+ }
+};
+
+async function loadRows(){
+
+ await loadStudents();
+
+ if(!CLOUD || !sb){
+  try{
+   rows=JSON.parse(localStorage.getItem(LS))||[];
+  }catch(e){
+   rows=[];
+  }
+  return;
+ }
+
+ try{
+
+  const {data,error}=await sb
+   .from('entries')
+   .select('id,student_id,date,time_in,time_out,working_summary')
+   .order('date',{ascending:false})
+   .order('time_in',{ascending:false});
+
+  if(error)throw error;
+
+  rows=data.map(e=>({
+   id:e.id,
+   sid:e.student_id,
+   date:e.date,
+   tin:String(e.time_in).slice(0,5),
+   tout:e.time_out?String(e.time_out).slice(0,5):null,
+   working_summary:e.working_summary||''
+  }));
+
+ }catch(e){
+  console.error(e);
+  setMsg('Could not load records. Check connection.','bad');
+ }
 }
+
 async function insertRow(r){
- if(!CLOUD || !sb){rows.push({...r,id:Date.now()+Math.random()});persist();return}
- const { error } = await sb.from('entries').insert([{student_id:r.sid,date:r.date,time_in:r.tin,time_out:r.tout||null,working_summary:r.working_summary||''}]);
- if(error) throw error;
+
+ if(!CLOUD || !sb){
+  rows.push({
+   ...r,
+   id:Date.now()+Math.random()
+  });
+  persist();
+  return;
+ }
+
+ const {error}=await sb
+  .from('entries')
+  .insert([{
+   student_id:r.sid,
+   date:r.date,
+   time_in:r.tin,
+   time_out:r.tout||null,
+   working_summary:r.working_summary||''
+  }]);
+
+ if(error)throw error;
 }
+
 async function closeRow(r,tout,workingSummary){
- if(!CLOUD || !sb){r.tout=tout;r.working_summary=workingSummary||'';persist();return}
- const { error } = await sb.from('entries').update({time_out:tout,working_summary:workingSummary||''}).eq('id',r.id);
- if(error) throw error;
+
+ if(!CLOUD || !sb){
+
+  r.tout=tout;
+  r.working_summary=workingSummary||'';
+
+  persist();
+  return;
+ }
+
+ const {error}=await sb
+  .from('entries')
+  .update({
+   time_out:tout,
+   working_summary:workingSummary||''
+  })
+  .eq('id',r.id);
+
+ if(error)throw error;
 }
 
 /* ---------- header ---------- */
+
 function tick(){
- const d=new Date(),h=d.getHours();
- $('#clk').textContent=(h%12||12)+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())+' '+(h>=12?'PM':'AM');
- $('#cdate').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+ const d=new Date();
+ const h=d.getHours();
+
+ $('#clk').textContent=
+  (h%12||12)+':'+
+  pad(d.getMinutes())+':'+
+  pad(d.getSeconds())+
+  ' '+(h>=12?'PM':'AM');
+
+ $('#cdate').textContent=
+  d.toLocaleDateString(
+   'en-GB',
+   {
+    weekday:'long',
+    day:'numeric',
+    month:'long',
+    year:'numeric'
+   }
+ );
 }
-setInterval(tick,1000);tick();
+
+setInterval(tick,1000);
+tick();
+
 $('#dot').classList.toggle('on',CLOUD);
-$('#mode').textContent=CLOUD?'Shared database connected':'Saving on this device only';
+
+$('#mode').textContent=
+ CLOUD
+ ?'Shared database connected'
+ :'Saving on this device only';
 
 /* ---------- 12-hour pickers ---------- */
+
 function buildTP(id){
- const hh='<option value="">Hour</option>'+[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('');
- const mm='<option value="">Min</option>'+[...Array(60)].map((_,i)=>`<option value="${pad(i)}">${pad(i)}</option>`).join('');
- $('#'+id).innerHTML=`<select aria-label="Hour">${hh}</select><select aria-label="Minutes">${mm}</select><select aria-label="AM or PM"><option value="">AM/PM</option><option>AM</option><option>PM</option></select>`;
+
+ const hh=
+  '<option value="">Hour</option>'+
+  [...Array(12)]
+  .map((_,i)=>`<option>${i+1}</option>`)
+  .join('');
+
+ const mm=
+  '<option value="">Min</option>'+
+  [...Array(60)]
+  .map((_,i)=>`<option value="${pad(i)}">${pad(i)}</option>`)
+  .join('');
+
+ $('#'+id).innerHTML=
+  `<select aria-label="Hour">${hh}</select>
+   <select aria-label="Minutes">${mm}</select>
+   <select aria-label="AM or PM">
+    <option value="">AM/PM</option>
+    <option>AM</option>
+    <option>PM</option>
+   </select>`;
 }
-function get24(id){const [h,m,p]=[...$('#'+id).children].map(s=>s.value);if(!h&&m===''&&!p)return '';if(!h||m===''||!p)return null;let H=(+h)%12;if(p==='PM')H+=12;return pad(H)+':'+m}
-function set24(id,v){const s=[...$('#'+id).children];if(!v){s.forEach(x=>x.value='');return}const [H,M]=v.split(':').map(Number);s[0].value=String(H%12||12);s[1].value=pad(M);s[2].value=H>=12?'PM':'AM'}
-buildTP('tin');buildTP('tout');
+
+function get24(id){
+
+ const [h,m,p]=[...$('#'+id).children]
+  .map(s=>s.value);
+
+ if(!h && m==='' && !p)return '';
+
+ if(!h || m==='' || !p)return null;
+
+ let H=(+h)%12;
+
+ if(p==='PM')H+=12;
+
+ return pad(H)+':'+m;
+}
+
+function set24(id,v){
+
+ const s=[...$('#'+id).children];
+
+ if(!v){
+  s.forEach(x=>x.value='');
+  return;
+ }
+
+ const [H,M]=v.split(':').map(Number);
+
+ s[0].value=String(H%12||12);
+ s[1].value=pad(M);
+ s[2].value=H>=12?'PM':'AM';
+}
+
+buildTP('tin');
+buildTP('tout');
+
 $('#dt').value=todayStr();
 $('#tlDate').value=todayStr();
 
 /* ---------- form ---------- */
-function setMsg(t,k){const m=$('#msg');m.textContent=t;m.style.color=k==='ok'?'var(--green)':k==='bad'?'var(--bad)':'var(--mute)'}
+
+function setMsg(t,k){
+
+ const m=$('#msg');
+
+ m.textContent=t;
+
+ m.style.color=
+  k==='ok'
+  ?'var(--green)'
+  :k==='bad'
+   ?'var(--bad)'
+   :'var(--mute)';
+}
+
 $('#sid').oninput=()=>{
- const id=$('#sid').value.trim(),w=$('#who');
- if(STUDENTS[id]){w.textContent='\u2713 '+STUDENTS[id];w.className='ok'}
- else if(id.length>=8){w.textContent='ID not found. Please check and try again.';w.className='bad'}
- else{w.textContent='';w.className=''}
+
+ const id=$('#sid').value.trim();
+ const w=$('#who');
+
+ if(STUDENTS[id]){
+  w.textContent='\u2713 '+STUDENTS[id];
+  w.className='ok';
+ }
+
+ else if(id.length>=8){
+  w.textContent='ID not found. Please check and try again.';
+  w.className='bad';
+ }
+
+ else{
+  w.textContent='';
+  w.className='';
+ }
 };
-function resetForm(){$('#sid').value='';set24('tin','');set24('tout','');Array.from($('#workingSummary').options).forEach(o=>o.selected=false);$('#sid').oninput()}
+
+function resetForm(){
+
+ $('#sid').value='';
+
+ set24('tin','');
+ set24('tout','');
+
+ Array.from($('#workingSummary').options)
+  .forEach(o=>o.selected=false);
+
+ $('#sid').oninput();
+}
+
 async function run(btn,fn){
- const all=[...document.querySelectorAll('.go')];all.forEach(b=>b.disabled=true);setMsg('Saving...');
- try{await fn();await loadRows();render()}
- catch(e){console.error(e);setMsg('Could not save. Check database connection or RLS rules.','bad')}
+
+ const all=[...document.querySelectorAll('.go')];
+
+ all.forEach(b=>b.disabled=true);
+
+ setMsg('Saving...');
+
+ try{
+  await fn();
+  await loadRows();
+  render();
+ }
+
+ catch(e){
+  console.error(e);
+  setMsg(
+   'Could not save. Check database connection or RLS rules.',
+   'bad'
+  );
+ }
+
  all.forEach(b=>b.disabled=false);
 }
-const openRowsOf=sid=>rows.filter(r=>r.sid===sid&&isOpen(r)).sort((a,b)=>(b.date+b.tin).localeCompare(a.date+a.tin));
+
+const openRowsOf=sid=>
+ rows
+ .filter(r=>r.sid===sid&&isOpen(r))
+ .sort((a,b)=>
+  (b.date+b.tin).localeCompare(a.date+a.tin)
+ );
+
+/* ---------- check in ---------- */
+
 $('#bin').onclick=()=>{
- const sid=$('#sid').value.trim(),date=$('#dt').value||todayStr(),tin=get24('tin');
- if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
- if(tin===null)return setMsg('Please complete the in time or leave it blank.','bad');
+
+ const sid=$('#sid').value.trim();
+ const date=$('#dt').value||todayStr();
+ const tin=get24('tin');
+
+ if(!STUDENTS[sid])
+  return setMsg(
+   'Enter a registered student ID.',
+   'bad'
+  );
+
+ if(tin===null)
+  return setMsg(
+   'Please complete the in time or leave it blank.',
+   'bad'
+  );
+
  const op=openRowsOf(sid)[0];
- if(op)return setMsg(nm(sid)+' is already checked in since '+t12(op.tin)+(op.date!==todayStr()?' on '+op.date:'')+'. Tap Check out first.','bad');
+
+ if(op)
+  return setMsg(
+   nm(sid)+' is already checked in since '+
+   t12(op.tin)+
+   (op.date!==todayStr()?' on '+op.date:'')+
+   '. Tap Check out first.',
+   'bad'
+  );
+
  const t=tin||nowT();
- run(null,async()=>{await insertRow({sid,date,tin:t,tout:null});setMsg('Checked in: '+nm(sid)+' at '+t12(t)+'. Remember to check out when you leave.','ok');resetForm()});
+
+ run(null,async()=>{
+  await insertRow({
+   sid,
+   date,
+   tin:t,
+   tout:null
+  });
+
+  setMsg(
+   'Checked in: '+nm(sid)+
+   ' at '+t12(t)+
+   '. Remember to check out when you leave.',
+   'ok'
+  );
+
+  resetForm();
+ });
 };
-const SUMMARY_EXEMPT_IDS=new Set(['16207119','18207059']);
+
+/* ---------- working summary / checkout ---------- */
+
+const SUMMARY_EXEMPT_IDS=
+ new Set([
+  '16207119',
+  '18207059'
+ ]);
+
 $('#bout').onclick=()=>{
- const sid=$('#sid').value.trim(),tout=get24('tout'),workingSummary=Array.from($('#workingSummary').selectedOptions).map(o=>o.value).join('; ');
- if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
- if(tout===null)return setMsg('Please complete the out time or leave it blank.','bad');
- if(!SUMMARY_EXEMPT_IDS.has(sid)&&!workingSummary)return setMsg('Please enter your Working Summary before checking out.','bad');
+
+ const sid=$('#sid').value.trim();
+
+ const tout=get24('tout');
+
+ const workingSummary=
+  Array.from(
+   $('#workingSummary').selectedOptions
+  )
+  .map(o=>o.value)
+  .join('; ');
+
+ if(!STUDENTS[sid])
+  return setMsg(
+   'Enter a registered student ID.',
+   'bad'
+  );
+
+ if(tout===null)
+  return setMsg(
+   'Please complete the out time or leave it blank.',
+   'bad'
+  );
+
+ if(
+  !SUMMARY_EXEMPT_IDS.has(sid) &&
+  !workingSummary
+ )
+  return setMsg(
+   'Please enter your Working Summary before checking out.',
+   'bad'
+  );
+
  const op=openRowsOf(sid)[0];
- if(!op)return setMsg('No check-in found for '+nm(sid)+'. Check in first.','bad');
+
+ if(!op)
+  return setMsg(
+   'No check-in found for '+nm(sid)+'. Check in first.',
+   'bad'
+  );
+
  const t=tout||nowT();
- if(op.date===todayStr()&&tm(t)<=tm(op.tin))return setMsg('Out time must be after in time ('+t12(op.tin)+').','bad');
- run(null,async()=>{await closeRow(op,t,workingSummary);setMsg('Checked out: '+nm(sid)+' at '+t12(t)+'. Total '+fmt(diff(op.tin,t))+'. Thank you.','ok');resetForm()});
+
+ if(
+  op.date===todayStr() &&
+  tm(t)<=tm(op.tin)
+ )
+  return setMsg(
+   'Out time must be after in time ('+
+   t12(op.tin)+').',
+   'bad'
+  );
+
+ run(null,async()=>{
+
+  await closeRow(
+   op,
+   t,
+   workingSummary
+  );
+
+  setMsg(
+   'Checked out: '+nm(sid)+
+   ' at '+t12(t)+
+   '. Total '+fmt(diff(op.tin,t))+
+   '. Thank you.',
+   'ok'
+  );
+
+  resetForm();
+ });
 };
 
 /* ---------- month nav ---------- */
-function shift(n){const [y,m]=ym.split('-').map(Number);const d=new Date(y,m-1+n,1);ym=d.getFullYear()+'-'+pad(d.getMonth()+1);selDay=ym===todayStr().slice(0,7)?todayStr():null;showAll=false;$('#tlDate').value=selDay||ym+'-01';render()}
-$('#pm').onclick=()=>shift(-1);$('#nm').onclick=()=>shift(1);
-$('#q').oninput=()=>{showAll=false;renderTable()};
-$('#more').onclick=()=>{showAll=!showAll;renderTable()};
-$('#tlDate').onchange=()=>{const v=$('#tlDate').value;if(!v)return;if(v.slice(0,7)!==ym){ym=v.slice(0,7);selDay=v;showAll=false;render()}else{selDay=v;renderCal();renderDaily();renderTimeline()}};
-function pickDay(ds){selDay=ds;$('#tlDate').value=ds;renderCal();renderDaily();renderTimeline()}
+
+function shift(n){
+
+ const [y,m]=ym.split('-').map(Number);
+
+ const d=new Date(
+  y,
+  m-1+n,
+  1
+ );
+
+ ym=
+  d.getFullYear()+
+  '-'+
+  pad(d.getMonth()+1);
+
+ selDay=
+  ym===todayStr().slice(0,7)
+  ?todayStr()
+  :null;
+
+ showAll=false;
+
+ $('#tlDate').value=
+  selDay||ym+'-01';
+
+ render();
+}
+
+$('#pm').onclick=()=>shift(-1);
+$('#nm').onclick=()=>shift(1);
+
+$('#q').oninput=()=>{
+ showAll=false;
+ renderTable();
+};
+
+$('#more').onclick=()=>{
+ showAll=!showAll;
+ renderTable();
+};
+
+$('#tlDate').onchange=()=>{
+
+ const v=$('#tlDate').value;
+
+ if(!v)return;
+
+ if(v.slice(0,7)!==ym){
+
+  ym=v.slice(0,7);
+  selDay=v;
+  showAll=false;
+  render();
+
+ }
+
+ else{
+
+  selDay=v;
+  renderCal();
+  renderTimeline();
+
+ }
+};
+
+function pickDay(ds){
+
+ selDay=ds;
+
+ $('#tlDate').value=ds;
+
+ renderCal();
+ renderTimeline();
+};
 
 /* ---------- charts ---------- */
-const valuePlugin={id:'val',afterDatasetsDraw(c){const x=c.ctx,f=c.$fmt||(v=>v.toFixed(1)+' h');c.getDatasetMeta(0).data.forEach((b,i)=>{x.save();x.fillStyle='#14222d';x.font='600 12px "IBM Plex Sans"';x.textBaseline='middle';x.fillText(f(c.data.datasets[0].data[i]),b.x+7,b.y);x.restore()})}};
-const hf=v=>fmt(Math.round(v*60));
-function drawBar(key,canvas,box,labels,vals,cols){
- if(typeof Chart==='undefined')return;
- $(box).style.height=Math.max(150,labels.length*38+50)+'px';
- let c=charts[key];
- if(!c){
-  c=charts[key]=new Chart($(canvas),{type:'bar',plugins:[valuePlugin],
-   data:{labels:[],datasets:[{data:[],backgroundColor:[],borderRadius:4,barThickness:20}]},
-   options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:64}},
-    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>i[0].label.split('|')[0],label:i=>' '+hf(i.parsed.x)}}},
-    scales:{x:{beginAtZero:true,grid:{color:'#e8eef1'},title:{display:true,text:'Hours'},ticks:{font:{family:'IBM Plex Sans'}}},
-     y:{grid:{display:false},ticks:{font:{family:'IBM Plex Sans',size:12},callback(v){const p=this.getLabelForValue(v).split('|'),n=p[0],s=n.length>16?n.slice(0,15)+'\u2026':n;return p[1]?s+' \u00d7'+p[1]:s}}}}}});
+
+const valuePlugin={
+ id:'val',
+
+ afterDatasetsDraw(c){
+
+  const x=c.ctx;
+
+  const f=
+   c.$fmt||
+   (v=>v.toFixed(1)+' h');
+
+  c
+  .getDatasetMeta(0)
+  .data
+  .forEach((b,i)=>{
+
+   x.save();
+
+   x.fillStyle='#14222d';
+
+   x.font=
+    '600 12px "IBM Plex Sans"';
+
+   x.textBaseline='middle';
+
+   x.fillText(
+    f(c.data.datasets[0].data[i]),
+    b.x+7,
+    b.y
+   );
+
+   x.restore();
+
+  });
  }
- c.$fmt=hf;c.data.labels=labels;c.data.datasets[0].data=vals;c.data.datasets[0].backgroundColor=cols;c.resize();c.update();
+};
+
+const hf=v=>
+ fmt(Math.round(v*60));
+
+function drawBar(
+ key,
+ canvas,
+ box,
+ labels,
+ vals,
+ cols
+){
+
+ if(typeof Chart==='undefined')
+  return;
+
+ $(box).style.height=
+  Math.max(
+   150,
+   labels.length*38+50
+  )+'px';
+
+ let c=charts[key];
+
+ if(!c){
+
+  c=charts[key]=new Chart(
+   $(canvas),
+   {
+    type:'bar',
+    plugins:[valuePlugin],
+
+    data:{
+     labels:[],
+     datasets:[
+      {
+       data:[],
+       backgroundColor:[],
+       borderRadius:4,
+       barThickness:20
+      }
+     ]
+    },
+
+    options:{
+     indexAxis:'y',
+     responsive:true,
+     maintainAspectRatio:false,
+
+     layout:{
+      padding:{
+       right:64
+      }
+     },
+
+     plugins:{
+      legend:{
+       display:false
+      },
+
+      tooltip:{
+       callbacks:{
+        title:i=>
+         i[0].label.split('|')[0],
+
+        label:i=>
+         ' '+hf(i.parsed.x)
+       }
+      }
+     },
+
+     scales:{
+
+      x:{
+       beginAtZero:true,
+       grid:{
+        color:'#e8eef1'
+       },
+       title:{
+        display:true,
+        text:'Hours'
+       },
+       ticks:{
+        font:{
+         family:'IBM Plex Sans'
+        }
+       }
+      },
+
+      y:{
+       grid:{
+        display:false
+       },
+
+       ticks:{
+        font:{
+         family:'IBM Plex Sans',
+         size:12
+        },
+
+        callback(v){
+
+         const p=
+          this
+          .getLabelForValue(v)
+          .split('|');
+
+         const n=p[0];
+
+         const s=
+          n.length>16
+          ?n.slice(0,15)+'\u2026'
+          :n;
+
+         return p[1]
+          ?s+' \u00d7'+p[1]
+          :s;
+        }
+       }
+      }
+
+     }
+    }
+   }
+  );
+ }
+
+ c.$fmt=hf;
+
+ c.data.labels=labels;
+
+ c.data.datasets[0].data=vals;
+
+ c.data.datasets[0].backgroundColor=cols;
+
+ c.resize();
+
+ c.update();
 }
 
 /* ---------- render ---------- */
+
 function render(){
+
  const [y,m]=ym.split('-').map(Number);
- const ml=new Date(y,m-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
- $('#mlabel').textContent=ml;$('#calMonth').textContent=ml;
- renderStats();renderLive();renderLabActivities();renderTimeline();renderChart(ml);renderCal();renderMatrix(ml);renderDaily(ml);renderTable(ml);
+
+ const ml=
+  new Date(y,m-1,1)
+  .toLocaleDateString(
+   'en-GB',
+   {
+    month:'long',
+    year:'numeric'
+   }
+  );
+
+ $('#mlabel').textContent=ml;
+
+ $('#calMonth').textContent=ml;
+
+ renderStats();
+ renderLive();
+ renderLabActivities();
+ renderTimeline();
+ renderChart(ml);
+ renderCal();
+ renderTable(ml);
 }
+
 function renderStats(){
- const t=todayStr(),mr=monthRows(),tot=mr.reduce((a,r)=>a+durMin(r),0);
- const nowIn=rows.filter(r=>isOpen(r)&&r.date===t).length;
- const today=new Set(rows.filter(r=>r.date===t).map(r=>r.sid)).size;
- $('#stats').innerHTML=[['In the lab now',nowIn],['Students today',today],['Visits this month',mr.length],['Total hours this month',fmt(tot)]].map(([l,v])=>`<div class="stat"><span>${l}</span><b>${v}</b></div>`).join('');
+
+ const t=todayStr();
+
+ const mr=monthRows();
+
+ const tot=
+  mr.reduce(
+   (a,r)=>a+durMin(r),
+   0
+  );
+
+ const nowIn=
+  rows.filter(
+   r=>isOpen(r)&&r.date===t
+  ).length;
+
+ const today=
+  new Set(
+   rows
+   .filter(r=>r.date===t)
+   .map(r=>r.sid)
+  ).size;
+
+ $('#stats').innerHTML=
+  [
+   ['In the lab now',nowIn],
+   ['Students today',today],
+   ['Visits this month',mr.length],
+   ['Total hours this month',fmt(tot)]
+  ]
+  .map(
+   ([l,v])=>
+    `<div class="stat">
+      <span>${l}</span>
+      <b>${v}</b>
+     </div>`
+  )
+  .join('');
 }
+
 function renderLive(){
- const t=todayStr(),g=groupDay(t),live=rows.filter(r=>isOpen(r)&&r.date===t);
- const cnt={};g.forEach(x=>cnt[x.sid]=x.n);
- const cur=live.map(r=>({sid:r.sid,el:elapsed(r)})).sort((a,b)=>b.el-a.el);
- $('#liveSub').textContent=cur.length?cur.length+' student'+(cur.length>1?'s':'')+' in the lab. Time so far, updated every minute.':(g.length?'Nobody is checked in right now.':'Nobody has checked in yet today.');
- $('#cLong').hidden=!cur.length;$('#cShort').hidden=cur.length<2;$('#liveBox').hidden=!cur.length;
+
+ const t=todayStr();
+
+ const g=groupDay(t);
+
+ const live=
+  rows.filter(
+   r=>isOpen(r)&&r.date===t
+  );
+
+ const cnt={};
+
+ g.forEach(x=>{
+  cnt[x.sid]=x.n;
+ });
+
+ const cur=
+  live
+  .map(
+   r=>({
+    sid:r.sid,
+    el:elapsed(r)
+   })
+  )
+  .sort(
+   (a,b)=>b.el-a.el
+  );
+
+ $('#liveSub').textContent=
+  cur.length
+  ?cur.length+
+   ' student'+
+   (cur.length>1?'s':'')+
+   ' in the lab. Time so far, updated every minute.'
+  :(g.length
+   ?'Nobody is checked in right now.'
+   :'Nobody has checked in yet today.');
+
+ $('#cLong').hidden=!cur.length;
+ $('#cShort').hidden=cur.length<2;
+ $('#liveBox').hidden=!cur.length;
+
  if(cur.length){
-  const a=cur[0],b=cur[cur.length-1];
-  $('#cLong').innerHTML=TROPHY+'<span>Longest time in lab so far: <b>'+esc(nm(a.sid))+'</b>, '+fmt(a.el)+'</span>';
-  $('#cShort').innerHTML=CLOCK+'<span>Shortest time in lab so far: <b>'+esc(nm(b.sid))+'</b>, '+fmt(b.el)+'</span>';
-  drawBar('live','#liveChart','#liveBox',cur.map(c=>nm(c.sid)+'|'+cnt[c.sid]),cur.map(c=>c.el/60),cur.map((c,i)=>i===0?'#c9962b':(i===cur.length-1&&cur.length>1?'#0b2a43':'#17794a')));
+
+  const a=cur[0];
+  const b=cur[cur.length-1];
+
+  $('#cLong').innerHTML=
+   TROPHY+
+   '<span>Longest time in lab so far: <b>'+
+   esc(nm(a.sid))+
+   '</b>, '+
+   fmt(a.el)+
+   '</span>';
+
+  $('#cShort').innerHTML=
+   CLOCK+
+   '<span>Shortest time in lab so far: <b>'+
+   esc(nm(b.sid))+
+   '</b>, '+
+   fmt(b.el)+
+   '</span>';
+
+  drawBar(
+   'live',
+   '#liveChart',
+   '#liveBox',
+   cur.map(
+    c=>nm(c.sid)+'|'+cnt[c.sid]
+   ),
+   cur.map(
+    c=>c.el/60
+   ),
+   cur.map(
+    (c,i)=>
+     i===0
+     ?'#c9962b'
+     :(i===cur.length-1&&cur.length>1
+       ?'#0b2a43'
+       :'#17794a')
+   )
+  );
  }
- const liveS=new Set(live.map(r=>r.sid)),ent=g.reduce((s,x)=>s+x.n,0);
- $('#liveEnt').textContent=g.length?g.length+' student'+(g.length>1?'s':'')+', '+ent+' entr'+(ent===1?'y':'ies')+' today. The number shows how many times each student entered the lab.':'How many times each student entered the lab today, and when.';
- const gs=g.slice().sort((a,b)=>(liveS.has(b.sid)-liveS.has(a.sid))||b.total-a.total);
+
+ const liveS=
+  new Set(
+   live.map(r=>r.sid)
+  );
+
+ const ent=
+  g.reduce(
+   (s,x)=>s+x.n,
+   0
+  );
+
+ $('#liveEnt').textContent=
+  g.length
+  ?g.length+
+   ' student'+
+   (g.length>1?'s':'')+
+   ', '+
+   ent+
+   ' entr'+
+   (ent===1?'y':'ies')+
+   ' today. The number shows how many times each student entered the lab.'
+  :'How many times each student entered the lab today, and when.';
+
+ const gs=
+  g.slice()
+  .sort(
+   (a,b)=>
+    (liveS.has(b.sid)-liveS.has(a.sid))||
+    b.total-a.total
+  );
+
  $('#liveEmpty').hidden=g.length>0;
- $('#liveTb').innerHTML=gs.map(x=>{
-  const op=x.a.find(isOpen),outs=x.a.filter(r=>r.tout).map(r=>r.tout).sort(),lastOut=outs.length?outs[outs.length-1]:'';
-  const st=op?`<span class="pill live">In lab since ${t12(op.tin)}</span>`:`<span class="pill left">Left ${lastOut?t12(lastOut):''}</span>`;
-  return `<tr><td data-l="Student"><b>${esc(nm(x.sid))}</b><div class="small">${x.sid}</div></td><td data-l="Entries today"><span class="pill cnt">${x.n}</span>${x.n===1?'time':'times'}</td><td data-l="Status">${st}</td><td data-l="In and out times" class="small">${times(x.a,t)}</td><td data-l="Total today"><span class="dur">${fmt(x.total)}</span></td></tr>`}).join('');
+
+ $('#liveTb').innerHTML=
+  gs
+  .map(x=>{
+
+   const op=
+    x.a.find(isOpen);
+
+   const outs=
+    x.a
+    .filter(r=>r.tout)
+    .map(r=>r.tout)
+    .sort();
+
+   const lastOut=
+    outs.length
+    ?outs[outs.length-1]
+    :'';
+
+   const st=
+    op
+    ?`<span class="pill live">
+       In lab since ${t12(op.tin)}
+      </span>`
+    :`<span class="pill left">
+       Left ${lastOut?t12(lastOut):''}
+      </span>`;
+
+   return `
+   <tr>
+    <td data-l="Student">
+     <b>${esc(nm(x.sid))}</b>
+     <div class="small">${x.sid}</div>
+    </td>
+
+    <td data-l="Entries today">
+     <span class="pill cnt">${x.n}</span>
+     ${x.n===1?'time':'times'}
+    </td>
+
+    <td data-l="Status">${st}</td>
+
+    <td data-l="In and out times" class="small">
+     ${times(x.a,t)}
+    </td>
+
+    <td data-l="Total today">
+     <span class="dur">${fmt(x.total)}</span>
+    </td>
+   </tr>`;
+
+  })
+  .join('');
 }
+
+/* ---------- lab activities ---------- */
 
 function renderLabActivities(){
+
  const t=todayStr();
- const exempt=new Set(['16207119','18207059']);
- const a=rows.filter(r=>r.date===t&&r.tout&&r.working_summary&&!exempt.has(r.sid)).sort((x,y)=>(y.tout+y.tin).localeCompare(x.tout+x.tin));
+
+ const exempt=
+  new Set([
+   '16207119',
+   '18207059'
+  ]);
+
+ const a=
+  rows
+  .filter(
+   r=>
+    r.date===t &&
+    r.tout &&
+    r.working_summary &&
+    !exempt.has(r.sid)
+  )
+  .sort(
+   (x,y)=>
+    (y.tout+y.tin)
+    .localeCompare(x.tout+x.tin)
+  );
+
  $('#labActEmpty').hidden=a.length>0;
- $('#labActTb').innerHTML=a.map(r=>`<tr><td data-l="Student"><b>${esc(nm(r.sid))}</b><div class="small">${r.sid}</div></td><td data-l="Working Summary" class="small">${esc(r.working_summary)}</td></tr>`).join('');
+
+ $('#labActTb').innerHTML=
+  a
+  .map(r=>
+   `<tr>
+    <td data-l="Student">
+     <b>${esc(nm(r.sid))}</b>
+     <div class="small">${r.sid}</div>
+    </td>
+
+    <td data-l="Working Summary" class="small">
+     ${esc(r.working_summary)}
+    </td>
+   </tr>`
+  )
+  .join('');
 }
+
+/* ---------- single-day timeline ---------- */
 
 function renderTimeline(){
- const d=$('#tlDate').value||todayStr(),isT=d===todayStr(),nowM=tm(nowT());
- const g=groupDay(d).sort((a,b)=>a.a[0].tin.localeCompare(b.a[0].tin));
- if(charts.tl){charts.tl.destroy();charts.tl=null}
- $('#tlEmpty').hidden=g.length>0;$('#tlBox').hidden=!g.length;
- if(!g.length){$('#tlTb').innerHTML='';$('#tlSub').textContent='Pick a day to see every student\'s in and out time.';return}
- const ent=g.reduce((s,x)=>s+x.n,0),title=new Date(d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
- $('#tlSub').textContent=title+': '+g.length+' student'+(g.length>1?'s':'')+', '+ent+' entr'+(ent===1?'y':'ies')+'.';
- const end=r=>r.tout?(tm(r.tout)>tm(r.tin)?tm(r.tout):1440):(isT?Math.max(nowM,tm(r.tin)+1):tm(r.tin)+5);
- const K=Math.max(...g.map(x=>x.n)),pal=['#0d7c86','#c9962b','#0b2a43','#17794a','#7a4fa3','#b3261e'];
- let lo=1440,hi=0;g.forEach(x=>x.a.forEach(r=>{lo=Math.min(lo,tm(r.tin));hi=Math.max(hi,end(r))}));
- const xmin=Math.max(0,Math.floor(lo/60)-1),xmax=Math.min(24,Math.ceil(hi/60)+1);
- const ds=[...Array(K)].map((_,i)=>({label:'Entry '+(i+1),grouped:false,barThickness:18,borderRadius:3,backgroundColor:pal[i%pal.length],
-  data:g.map(x=>x.a[i]?[tm(x.a[i].tin)/60,end(x.a[i])/60]:null),rec:g.map(x=>x.a[i]||null)}));
- $('#tlBox').style.height=Math.max(180,g.length*40+100)+'px';
- if(typeof Chart!=='undefined')charts.tl=new Chart($('#tlChart'),{type:'bar',
-  data:{labels:g.map(x=>nm(x.sid)),datasets:ds},
-  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-   plugins:{legend:{display:K>1,position:'bottom'},tooltip:{callbacks:{label:c=>{const r=c.dataset.rec[c.dataIndex];return r?' In '+t12(r.tin)+', Out '+(r.tout?t12(r.tout):(isT?'still in lab':'not recorded'))+' ('+fmt(durMin(r))+')':''}}}},
-   scales:{x:{min:xmin,max:xmax,grid:{color:'#e8eef1'},title:{display:true,text:'Time of day'},ticks:{stepSize:1,font:{family:'IBM Plex Sans'},callback:v=>t12(pad(Math.floor(v)%24)+':00')}},
-    y:{grid:{display:false},ticks:{font:{family:'IBM Plex Sans',size:12},callback(v){const n=this.getLabelForValue(v);return n.length>18?n.slice(0,17)+'\u2026':n}}}}}});
- $('#tlTb').innerHTML=g.flatMap(x=>x.a.map((r,i)=>`<tr><td data-l="Student"><b>${esc(nm(x.sid))}</b></td><td data-l="Entry no.">${i+1} of ${x.n}</td><td data-l="In time">${t12(r.tin)}</td><td data-l="Out time">${r.tout?t12(r.tout):(isT?'<span class="pill live">In lab</span>':'-')}</td><td data-l="Duration"><span class="dur">${fmt(durMin(r))}</span></td></tr>`)).join('');
+
+ const d=
+  $('#tlDate').value||todayStr();
+
+ const isT=d===todayStr();
+
+ const nowM=tm(nowT());
+
+ const g=
+  groupDay(d)
+  .sort(
+   (a,b)=>
+    a.a[0].tin.localeCompare(
+     b.a[0].tin
+    )
+  );
+
+ if(charts.tl){
+  charts.tl.destroy();
+  charts.tl=null;
+ }
+
+ $('#tlEmpty').hidden=g.length>0;
+ $('#tlBox').hidden=!g.length;
+
+ if(!g.length){
+
+  $('#tlTb').innerHTML='';
+
+  $('#tlSub').textContent=
+   'Pick a day to see every student\'s in and out time.';
+
+  return;
+ }
+
+ const ent=
+  g.reduce(
+   (s,x)=>s+x.n,
+   0
+  );
+
+ const title=
+  new Date(d+'T00:00:00')
+  .toLocaleDateString(
+   'en-GB',
+   {
+    weekday:'long',
+    day:'numeric',
+    month:'long',
+    year:'numeric'
+   }
+  );
+
+ $('#tlSub').textContent=
+  title+
+  ': '+
+  g.length+
+  ' student'+
+  (g.length>1?'s':'')+
+  ', '+
+  ent+
+  ' entr'+
+  (ent===1?'y':'ies')+
+  '.';
+
+ const end=r=>
+  r.tout
+  ?(
+   tm(r.tout)>tm(r.tin)
+   ?tm(r.tout)
+   :1440
+  )
+  :(
+   isT
+   ?Math.max(
+     nowM,
+     tm(r.tin)+1
+    )
+   :tm(r.tin)+5
+  );
+
+ const K=
+  Math.max(
+   ...g.map(x=>x.n)
+  );
+
+ const pal=[
+  '#0d7c86',
+  '#c9962b',
+  '#0b2a43',
+  '#17794a',
+  '#7a4fa3',
+  '#b3261e'
+ ];
+
+ let lo=1440;
+ let hi=0;
+
+ g.forEach(x=>
+  x.a.forEach(r=>{
+   lo=Math.min(
+    lo,
+    tm(r.tin)
+   );
+
+   hi=Math.max(
+    hi,
+    end(r)
+   );
+  })
+ );
+
+ const xmin=
+  Math.max(
+   0,
+   Math.floor(lo/60)-1
+  );
+
+ const xmax=
+  Math.min(
+   24,
+   Math.ceil(hi/60)+1
+  );
+
+ const ds=
+  [...Array(K)]
+  .map(
+   (_,i)=>({
+    label:'Entry '+(i+1),
+    grouped:false,
+    barThickness:18,
+    borderRadius:3,
+    backgroundColor:
+     pal[i%pal.length],
+
+    data:
+     g.map(
+      x=>
+       x.a[i]
+       ?[
+        tm(x.a[i].tin)/60,
+        end(x.a[i])/60
+       ]
+       :null
+     ),
+
+    rec:
+     g.map(
+      x=>x.a[i]||null
+     )
+   })
+  );
+
+ $('#tlBox').style.height=
+  Math.max(
+   180,
+   g.length*40+100
+  )+'px';
+
+ if(typeof Chart!=='undefined')
+
+  charts.tl=
+   new Chart(
+    $('#tlChart'),
+    {
+     type:'bar',
+
+     data:{
+      labels:
+       g.map(x=>nm(x.sid)),
+      datasets:ds
+     },
+
+     options:{
+      indexAxis:'y',
+      responsive:true,
+      maintainAspectRatio:false,
+
+      plugins:{
+
+       legend:{
+        display:K>1,
+        position:'bottom'
+       },
+
+       tooltip:{
+        callbacks:{
+         label:c=>{
+          const r=
+           c.dataset.rec[c.dataIndex];
+
+          return r
+           ?' In '+t12(r.tin)+
+            ', Out '+
+            (
+             r.tout
+             ?t12(r.tout)
+             :(isT
+              ?'still in lab'
+              :'not recorded')
+            )+
+            ' ('+
+            fmt(durMin(r))+
+            ')'
+           :'';
+         }
+        }
+       }
+      },
+
+      scales:{
+
+       x:{
+        min:xmin,
+        max:xmax,
+        grid:{
+         color:'#e8eef1'
+        },
+        title:{
+         display:true,
+         text:'Time of day'
+        },
+        ticks:{
+         stepSize:1,
+         font:{
+          family:'IBM Plex Sans'
+         },
+         callback:
+          v=>
+           t12(
+            pad(
+             Math.floor(v)%24
+            )+
+            ':00'
+           )
+        }
+       },
+
+       y:{
+        grid:{
+         display:false
+        },
+        ticks:{
+         font:{
+          family:'IBM Plex Sans',
+          size:12
+         },
+         callback(v){
+          const n=
+           this.getLabelForValue(v);
+
+          return n.length>18
+           ?n.slice(0,17)+'\u2026'
+           :n;
+         }
+        }
+       }
+
+      }
+     }
+    }
+   );
+
+ $('#tlTb').innerHTML=
+  g
+  .flatMap(
+   x=>
+    x.a.map(
+     (r,i)=>
+      `<tr>
+
+       <td data-l="Student">
+        <b>${esc(nm(x.sid))}</b>
+       </td>
+
+       <td data-l="Entry no.">
+        ${i+1} of ${x.n}
+       </td>
+
+       <td data-l="In time">
+        ${t12(r.tin)}
+       </td>
+
+       <td data-l="Out time">
+        ${
+         r.tout
+         ?t12(r.tout)
+         :(isT
+          ?'<span class="pill live">In lab</span>'
+          :'-')
+        }
+       </td>
+
+       <td data-l="Duration">
+        <span class="dur">
+         ${fmt(durMin(r))}
+        </span>
+       </td>
+
+      </tr>`
+    )
+  )
+  .join('');
 }
+
+/* ---------- monthly hours chart ---------- */
 
 function renderChart(ml){
- const by={};monthRows().forEach(r=>{by[r.sid]=(by[r.sid]||0)+durMin(r)/60});
- const arr=Object.entries(by).filter(a=>a[1]>0).sort((a,b)=>b[1]-a[1]);
- $('#cempty').hidden=arr.length>0;$('#cbox').hidden=!arr.length;$('#champ').hidden=!arr.length;
- $('#csub').textContent=arr.length?'Total hours per student, '+ml+'.':'';
+
+ const by={};
+
+ monthRows()
+ .forEach(r=>{
+  by[r.sid]=
+   (by[r.sid]||0)+
+   durMin(r)/60;
+ });
+
+ const arr=
+  Object.entries(by)
+  .filter(a=>a[1]>0)
+  .sort(
+   (a,b)=>b[1]-a[1]
+  );
+
+ $('#cempty').hidden=arr.length>0;
+ $('#cbox').hidden=!arr.length;
+ $('#champ').hidden=!arr.length;
+
+ $('#csub').textContent=
+  arr.length
+  ?'Total hours per student, '+ml+'.'
+  :'';
+
  if(!arr.length)return;
- $('#champ').innerHTML=TROPHY+'<span>Longest total time in lab: <b>'+esc(nm(arr[0][0]))+'</b>, '+hf(arr[0][1])+'</span>';
- drawBar('month','#chart','#cbox',arr.map(a=>nm(a[0])),arr.map(a=>+a[1].toFixed(3)),arr.map((_,i)=>i===0?'#c9962b':'#0d7c86'));
+
+ $('#champ').innerHTML=
+  TROPHY+
+  '<span>Longest total time in lab: <b>'+
+  esc(nm(arr[0][0]))+
+  '</b>, '+
+  hf(arr[0][1])+
+  '</span>';
+
+ drawBar(
+  'month',
+  '#chart',
+  '#cbox',
+  arr.map(a=>nm(a[0])),
+  arr.map(a=>+a[1].toFixed(3)),
+  arr.map(
+   (_,i)=>
+    i===0
+    ?'#c9962b'
+    :'#0d7c86'
+  )
+ );
 }
 
-/* ---------- calendar + daily report ---------- */
+/* ---------- calendar ---------- */
+
 function dayStats(){
+
  const per={};
- monthRows().forEach(r=>{const p=per[r.date]=per[r.date]||{s:new Set(),n:0,min:0,best:null};p.s.add(r.sid);p.n++;const d=durMin(r);p.min+=d;if(!p.best||d>p.best.d)p.best={d,sid:r.sid}});
+
+ monthRows()
+ .forEach(r=>{
+
+  const p=
+   per[r.date]=
+   per[r.date]||
+   {
+    s:new Set(),
+    n:0,
+    min:0,
+    best:null
+   };
+
+  p.s.add(r.sid);
+
+  p.n++;
+
+  const d=durMin(r);
+
+  p.min+=d;
+
+  if(!p.best||d>p.best.d)
+   p.best={
+    d,
+    sid:r.sid
+   };
+ });
+
  return per;
 }
+
 function renderCal(){
- const [y,m]=ym.split('-').map(Number),n=new Date(y,m,0).getDate(),first=new Date(y,m-1,1).getDay(),per=dayStats(),t=todayStr();
- const mx=Math.max(1,...Object.values(per).map(p=>p.min));
- let h=WD.map(d=>`<div class="wd">${d}</div>`).join('');
- for(let i=0;i<first;i++)h+='<span></span>';
+
+ const [y,m]=
+  ym.split('-').map(Number);
+
+ const n=
+  new Date(y,m,0).getDate();
+
+ const first=
+  new Date(y,m-1,1).getDay();
+
+ const per=dayStats();
+
+ const t=todayStr();
+
+ const mx=
+  Math.max(
+   1,
+   ...Object.values(per)
+    .map(p=>p.min)
+  );
+
+ let h=
+  WD
+  .map(d=>`<div class="wd">${d}</div>`)
+  .join('');
+
+ for(let i=0;i<first;i++)
+  h+='<span></span>';
+
  for(let d=1;d<=n;d++){
-  const ds=ym+'-'+pad(d),wd=new Date(y,m-1,d).getDay(),p=per[ds],a=p?0.12+0.78*(p.min/mx):0;
-  h+=`<button type="button" data-d="${ds}" class="${wd>=5?'we ':''}${ds===t?'td ':''}${ds===selDay?'sel':''}" style="${p?`background:rgba(13,124,134,${a.toFixed(2)});color:${a>0.5?'#fff':'#14222d'};border-color:rgba(13,124,134,.5)`:''}" aria-label="${ds}"><span class="dn">${d}</span>${p?`<span class="cs">${p.s.size} st</span><span class="ch">${(p.min/60).toFixed(1)}h</span>`:''}</button>`;
+
+  const ds=
+   ym+'-'+pad(d);
+
+  const wd=
+   new Date(
+    y,
+    m-1,
+    d
+   ).getDay();
+
+  const p=per[ds];
+
+  const a=
+   p
+   ?0.12+
+    0.78*(p.min/mx)
+   :0;
+
+  h+=
+   `<button type="button"
+    data-d="${ds}"
+    class="${
+     wd>=5?'we ':''
+    }${
+     ds===t?'td ':''
+    }${
+     ds===selDay?'sel':''
+    }"
+    style="${
+     p
+     ?`background:rgba(13,124,134,${a.toFixed(2)});
+       color:${a>0.5?'#fff':'#14222d'};
+       border-color:rgba(13,124,134,.5)`
+     :''
+    }"
+    aria-label="${ds}">
+
+    <span class="dn">${d}</span>
+
+    ${
+     p
+     ?`<span class="cs">
+        ${p.s.size} st
+       </span>
+       <span class="ch">
+        ${(p.min/60).toFixed(1)}h
+       </span>`
+     :''
+    }
+
+   </button>`;
  }
+
  $('#cal').innerHTML=h;
- document.querySelectorAll('#cal button').forEach(b=>b.onclick=()=>pickDay(b.dataset.d));
+
+ document
+ .querySelectorAll('#cal button')
+ .forEach(
+  b=>
+   b.onclick=()=>
+    pickDay(b.dataset.d)
+ );
+
  renderDay();
 }
-function renderDay(){
- const el=$('#dayPanel');
- if(!selDay||!selDay.startsWith(ym)){el.innerHTML='<p class="empty">Click a day in the calendar to see who was in the lab.</p>';return}
- const [y,m,d]=selDay.split('-').map(Number),title=new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
- const g=groupDay(selDay),tot=g.reduce((s,x)=>s+x.total,0),ent=g.reduce((s,x)=>s+x.n,0);
- if(!g.length){el.innerHTML=`<h3>${title}</h3><p class="empty">No entries on this day.</p>`;return}
- el.innerHTML=`<h3>${title}</h3><p class="sub">${g.length} student${g.length>1?'s':''}, ${ent} entr${ent===1?'y':'ies'}, ${fmt(tot)} in total.</p><div class="sc"><table><thead><tr><th>Student</th><th>Entries</th><th>In and out times</th><th>Total</th></tr></thead><tbody>`+
-  g.map(x=>`<tr><td data-l="Student"><b>${esc(nm(x.sid))}</b></td><td data-l="Entries"><b>${x.n}</b></td><td data-l="In and out times" class="small">${times(x.a,selDay)}</td><td data-l="Total"><span class="dur">${fmt(x.total)}</span></td></tr>`).join('')+'</tbody></table></div>';
-}
-function dailyData(){
- const [y,m]=ym.split('-').map(Number),n=new Date(y,m,0).getDate(),per=dayStats(),out=[];
- for(let d=1;d<=n;d++){const ds=ym+'-'+pad(d),wd=new Date(y,m-1,d).getDay(),p=per[ds];out.push({ds,d,wd,p})}
- return out;
-}
-function renderDaily(ml){
- const data=dailyData(),act=data.filter(x=>x.p),T=act.reduce((a,x)=>a+x.p.min,0),E=act.reduce((a,x)=>a+x.p.n,0);
- $('#dsub').textContent=act.length+' of '+data.length+' days with entries';
- $('#dtb').innerHTML=data.map(x=>{
-  const lab=pad(x.d)+' '+WD[x.wd],cls=(x.wd>=5?'we ':'')+(x.ds===selDay?'sel ':'')+(x.p?'':'nodata');
-  if(!x.p)return `<tr data-day="${x.ds}" class="${cls}"><td data-l="Date">${lab}</td><td data-l="Students">-</td><td data-l="Entries">-</td><td data-l="Total hours">-</td><td data-l="Average per student">-</td><td data-l="Longest stay">-</td></tr>`;
-  return `<tr data-day="${x.ds}" class="${cls}"><td data-l="Date"><b>${lab}</b></td><td data-l="Students">${x.p.s.size}</td><td data-l="Entries">${x.p.n}</td><td data-l="Total hours"><span class="dur">${fmt(x.p.min)}</span></td><td data-l="Average per student">${fmt(Math.round(x.p.min/x.p.s.size))}</td><td data-l="Longest stay">${esc(nm(x.p.best.sid))}, ${fmt(x.p.best.d)}</td></tr>`}).join('')+
-  `<tr class="tot"><td data-l="Month total">Month total</td><td data-l="Students">${new Set(monthRows().map(r=>r.sid)).size}</td><td data-l="Entries">${E}</td><td data-l="Total hours">${fmt(T)}</td><td data-l="Average per active day">${act.length?fmt(Math.round(T/act.length)):'-'}</td><td></td></tr>`;
- document.querySelectorAll('#dtb tr[data-day]').forEach(tr=>tr.onclick=()=>pickDay(tr.dataset.day));
-}
 
-/* ---------- matrix ---------- */
-function matrixData(){
- const days=dailyData(),by={};
- monthRows().forEach(r=>{const s=by[r.sid]=by[r.sid]||{sid:r.sid,d:{},n:0,min:0};const c=s.d[r.date]=s.d[r.date]||{n:0,min:0};const m=durMin(r);c.n++;c.min+=m;s.n++;s.min+=m});
- return{days,list:Object.values(by).sort((a,b)=>b.min-a.min)};
-}
-function renderMatrix(ml){
- const {days,list}=matrixData();
- $('#mxEmpty').hidden=list.length>0;$('#mx').hidden=!list.length;
- $('#mxsub').textContent=list.length?'Each cell shows how many times a student entered, and total hours, for every day of '+(ml||$('#mlabel').textContent)+'.':'';
- if(!list.length)return;
- let h='<thead><tr><th>Student</th>'+days.map(x=>`<th class="${x.wd>=5?'we':''}">${x.d}<small style="display:block;font-weight:400">${WD[x.wd].slice(0,2)}</small></th>`).join('')+'<th>Total</th></tr></thead><tbody>';
- h+=list.map(s=>'<tr><td><b>'+esc(nm(s.sid))+'</b></td>'+days.map(x=>{const c=s.d[x.ds];return c?`<td class="v" title="${esc(nm(s.sid))}, ${x.ds}: ${c.n} entr${c.n===1?'y':'ies'}, ${fmt(c.min)}"><b>${c.n}</b><small>${(c.min/60).toFixed(1)}h</small></td>`:'<td class="z">-</td>'}).join('')+`<td><b>${s.n}</b><small>${(s.min/60).toFixed(1)}h</small></td></tr>`).join('');
- h+='<tr class="tot"><td><b>Students per day</b></td>'+days.map(x=>`<td>${x.p?'<b>'+x.p.s.size+'</b><small>'+x.p.n+' ent</small>':'-'}</td>`).join('')+`<td><b>${list.length}</b></td></tr></tbody>`;
- $('#mx').innerHTML=h;
+function renderDay(){
+
+ const el=$('#dayPanel');
+
+ if(
+  !selDay||
+  !selDay.startsWith(ym)
+ ){
+
+  el.innerHTML=
+   '<p class="empty">'+
+   'Click a day in the calendar to see who was in the lab.'+
+   '</p>';
+
+  return;
+ }
+
+ const [y,m,d]=
+  selDay.split('-').map(Number);
+
+ const title=
+  new Date(y,m-1,d)
+  .toLocaleDateString(
+   'en-GB',
+   {
+    weekday:'long',
+    day:'numeric',
+    month:'long',
+    year:'numeric'
+   }
+  );
+
+ const g=groupDay(selDay);
+
+ const tot=
+  g.reduce(
+   (s,x)=>s+x.total,
+   0
+  );
+
+ const ent=
+  g.reduce(
+   (s,x)=>s+x.n,
+   0
+  );
+
+ if(!g.length){
+
+  el.innerHTML=
+   `<h3>${title}</h3>
+    <p class="empty">
+     No entries on this day.
+    </p>`;
+
+  return;
+ }
+
+ const exempt=
+  new Set([
+   '16207119',
+   '18207059'
+  ]);
+
+ const dailyActivityRows=
+  rows.filter(
+   r=>
+    r.date===selDay &&
+    r.tout &&
+    r.working_summary &&
+    !exempt.has(r.sid)
+  );
+
+ const summaryByEntry={};
+
+ dailyActivityRows.forEach(r=>{
+  (
+   summaryByEntry[r.sid]||
+   (summaryByEntry[r.sid]=[])
+  )
+  .push(r.working_summary);
+ });
+
+ el.innerHTML=
+  `<h3>${title}</h3>
+
+   <p class="sub">
+    ${g.length}
+    student${g.length>1?'s':''},
+    ${ent}
+    entr${ent===1?'y':'ies'},
+    ${fmt(tot)}
+    in total.
+   </p>
+
+   <div class="lh" style="margin-top:10px">
+    <div></div>
+    <button class="btn2" id="csvDay">
+     Download this day CSV
+    </button>
+   </div>
+
+   <div class="sc">
+
+   <table>
+
+   <thead>
+   <tr>
+   <th>Student</th>
+   <th>Entries</th>
+   <th>In and out times</th>
+   <th>Working Summary</th>
+   <th>Total</th>
+   </tr>
+   </thead>
+
+   <tbody>`+
+
+   g
+   .map(
+    x=>
+     `<tr>
+
+      <td data-l="Student">
+       <b>${esc(nm(x.sid))}</b>
+      </td>
+
+      <td data-l="Entries">
+       <b>${x.n}</b>
+      </td>
+
+      <td data-l="In and out times"
+          class="small">
+       ${times(x.a,selDay)}
+      </td>
+
+      <td data-l="Working Summary"
+          class="small">
+       ${
+        (summaryByEntry[x.sid]||[])
+        .map(v=>esc(v))
+        .join('<br>')
+        ||'-'
+       }
+      </td>
+
+      <td data-l="Total">
+       <span class="dur">
+        ${fmt(x.total)}
+       </span>
+      </td>
+
+     </tr>`
+   )
+   .join('')+
+
+   `</tbody>
+   </table>
+   </div>`;
+
+ $('#csvDay').onclick=()=>{
+
+  const lines=[
+   [
+    'Date',
+    'Student ID',
+    'Student Name',
+    'Entries',
+    'In and out times',
+    'Working Summary',
+    'Total'
+   ]
+  ];
+
+  g.forEach(x=>{
+
+   const summary=
+    (summaryByEntry[x.sid]||[])
+    .join(' | ');
+
+   lines.push([
+    selDay,
+    x.sid,
+    nm(x.sid),
+    x.n,
+    times(x.a,selDay)
+     .replace(/<br>/g,' | ')
+     .replace(/<[^>]+>/g,''),
+    summary,
+    fmt(x.total)
+   ]);
+
+  });
+
+  download(
+   'SODIC_CU_Daily_Report_'+selDay+'.csv',
+   lines
+  );
+ };
 }
 
 /* ---------- records ---------- */
+
 function renderTable(ml){
- const q=$('#q').value.trim().toLowerCase(),mr=monthRows(),mx=Math.max(0,...mr.map(durMin)),t=todayStr();
- const l=mr.filter(r=>!q||r.sid.includes(q)||nm(r.sid).toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date)||b.tin.localeCompare(a.tin));
- $('#lsub').innerHTML=l.length+' record'+(l.length===1?'':'s')+' in '+$('#mlabel').textContent+(mx?' &nbsp;<span class="tr" style="margin:0">'+TROPHY+'</span> longest single stay':'');
- const vis=showAll?l:l.slice(0,12);
- $('#tb').innerHTML=vis.map(r=>{
-  const d=durMin(r);
-  const badge=r.tout?`<span class="dur">${fmt(d)}</span>`:(r.date===t?`<span class="dur live">In lab ${fmt(d)}</span>`:'<span class="dur warn">No out time</span>');
-  return `<tr><td data-l="Date">${r.date}</td><td data-l="Student ID">${r.sid}</td><td data-l="Name">${esc(nm(r.sid))}</td><td data-l="In">${t12(r.tin)}</td><td data-l="Out">${r.tout?t12(r.tout):'-'}</td><td data-l="Duration"><span>${badge}${d>0&&d===mx?'<span class="tr" title="Longest single stay this month">'+TROPHY+'</span>':''}</span></td></tr>`}).join('');
- $('#tempty').hidden=l.length>0;
- $('#more').hidden=l.length<=12;$('#more').textContent=showAll?'Show fewer':'Show all '+l.length+' records';
+
+ const q=
+  $('#q').value
+  .trim()
+  .toLowerCase();
+
+ const mr=monthRows();
+
+ const mx=
+  Math.max(
+   0,
+   ...mr.map(durMin)
+  );
+
+ const t=todayStr();
+
+ const l=
+  mr
+  .filter(
+   r=>
+    !q||
+    r.sid.includes(q)||
+    nm(r.sid)
+     .toLowerCase()
+     .includes(q)
+  )
+  .sort(
+   (a,b)=>
+    b.date.localeCompare(a.date)||
+    b.tin.localeCompare(a.tin)
+  );
+
+ $('#lsub').innerHTML=
+  l.length+
+  ' record'+
+  (l.length===1?'':'s')+
+  ' in '+
+  $('#mlabel').textContent+
+  (
+   mx
+   ?' &nbsp;<span class="tr" style="margin:0">'+
+    TROPHY+
+    '</span> longest single stay'
+   :''
+  );
+
+ const vis=
+  showAll
+  ?l
+  :l.slice(0,12);
+
+ $('#tb').innerHTML=
+  vis
+  .map(r=>{
+
+   const d=durMin(r);
+
+   const badge=
+    r.tout
+    ?`<span class="dur">${fmt(d)}</span>`
+    :(r.date===t
+     ?`<span class="dur live">
+        In lab ${fmt(d)}
+       </span>`
+     :`<span class="dur warn">
+        No out time
+       </span>`);
+
+   return `
+   <tr>
+
+    <td data-l="Date">
+     ${r.date}
+    </td>
+
+    <td data-l="Student ID">
+     ${r.sid}
+    </td>
+
+    <td data-l="Name">
+     ${esc(nm(r.sid))}
+    </td>
+
+    <td data-l="In">
+     ${t12(r.tin)}
+    </td>
+
+    <td data-l="Out">
+     ${r.tout?t12(r.tout):'-'}
+    </td>
+
+    <td data-l="Duration">
+     <span>
+      ${badge}
+      ${
+       d>0&&d===mx
+       ?'<span class="tr" title="Longest single stay this month">'+
+        TROPHY+
+        '</span>'
+       :''
+      }
+     </span>
+    </td>
+
+   </tr>`;
+  })
+  .join('');
+
+ $('#tempty').hidden=
+  l.length>0;
+
+ $('#more').hidden=
+  l.length<=12;
+
+ $('#more').textContent=
+  showAll
+  ?'Show fewer'
+  :'Show all '+l.length+' records';
 }
 
 /* ---------- exports ---------- */
+
 function download(name,lines){
- const q=c=>'"'+String(c).replace(/"/g,'""')+'"';
- const a=document.createElement('a');
- a.href=URL.createObjectURL(new Blob(['\ufeff'+lines.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'}));
- a.download=name;a.click();
+
+ const q=
+  c=>
+   '"'+
+   String(c)
+    .replace(/"/g,'""')+
+   '"';
+
+ const a=
+  document.createElement('a');
+
+ a.href=
+  URL.createObjectURL(
+   new Blob(
+    [
+     '\ufeff'+
+     lines
+      .map(
+       r=>r.map(q).join(',')
+      )
+      .join('\n')
+    ],
+    {
+     type:'text/csv'
+    }
+   )
+  );
+
+ a.download=name;
+
+ a.click();
 }
+
 $('#csv').onclick=()=>{
- const l=monthRows().sort((a,b)=>a.date.localeCompare(b.date)||a.tin.localeCompare(b.tin));
- if(!l.length)return setMsg('No records to export for this month.','bad');
- download('SODIC_CU_Lab_Attendance_'+ym+'.csv',[['Date','Student ID','Student Name','In','Out','Duration','Hours']].concat(l.map(r=>[r.date,r.sid,nm(r.sid),t12(r.tin),r.tout?t12(r.tout):'No out time',fmt(durMin(r)),(durMin(r)/60).toFixed(2)])));
-};
-$('#csvD').onclick=()=>{
- const data=dailyData();
- download('SODIC_CU_Daily_Report_'+ym+'.csv',[['Date','Day','Students','Entries','Total hours','Average hours per student','Longest stay (student)','Longest stay (hours)']].concat(data.map(x=>x.p?[x.ds,WD[x.wd],x.p.s.size,x.p.n,(x.p.min/60).toFixed(2),(x.p.min/60/x.p.s.size).toFixed(2),nm(x.p.best.sid),(x.p.best.d/60).toFixed(2)]:[x.ds,WD[x.wd],0,0,'0.00','','',''])));
-};
-$('#csvM').onclick=()=>{
- const {days,list}=matrixData();
- if(!list.length)return setMsg('No records to export for this month.','bad');
- download('SODIC_CU_Student_By_Day_'+ym+'.csv',[['Student ID','Student Name'].concat(days.map(x=>x.ds+' ('+WD[x.wd]+') entries and hours'),['Total entries','Total hours'])].concat(list.map(s=>[s.sid,nm(s.sid)].concat(days.map(x=>{const c=s.d[x.ds];return c?c.n+' entr'+(c.n===1?'y':'ies')+', '+(c.min/60).toFixed(2)+' h':''}),[s.n,(s.min/60).toFixed(2)]))));
+
+ const l=
+  monthRows()
+  .sort(
+   (a,b)=>
+    a.date.localeCompare(b.date)||
+    a.tin.localeCompare(b.tin)
+  );
+
+ if(!l.length)
+  return setMsg(
+   'No records to export for this month.',
+   'bad'
+  );
+
+ download(
+  'SODIC_CU_Lab_Attendance_'+ym+'.csv',
+  [
+   [
+    'Date',
+    'Student ID',
+    'Student Name',
+    'In',
+    'Out',
+    'Duration',
+    'Hours'
+   ]
+  ]
+  .concat(
+   l.map(
+    r=>[
+     r.date,
+     r.sid,
+     nm(r.sid),
+     t12(r.tin),
+     r.tout
+      ?t12(r.tout)
+      :'No out time',
+     fmt(durMin(r)),
+     (durMin(r)/60).toFixed(2)
+    ]
+   )
+  )
+ );
 };
 
 /* ---------- admin ---------- */
+
 if(location.search.includes('admin')){
+
  $('#admin').hidden=false;
- if(CLOUD){$('#admtxt').textContent='Connected to Supabase database. You can manage student entries or wipe database records below.'}
- else $('#admtxt').textContent='Records are stored in this browser only. This removes every record saved on this device. It cannot be undone.';
+
+ if(CLOUD){
+
+  $('#admtxt').textContent=
+   'Connected to Supabase database. You can manage student entries or wipe database records below.';
+
+ }
+
+ else{
+
+  $('#admtxt').textContent=
+   'Records are stored in this browser only. This removes every record saved on this device. It cannot be undone.';
+
+ }
 }
 
 $('#btnSaveStudent').onclick=async()=>{
- const sid=$('#newSid').value.trim();
- const name=$('#newName').value.trim();
+
+ const sid=
+  $('#newSid').value.trim();
+
+ const name=
+  $('#newName').value.trim();
+
  const msg=$('#admMsg');
- if(!sid || !name){
-  msg.textContent='Please fill in both Student ID and Name.';
+
+ if(!sid||!name){
+
+  msg.textContent=
+   'Please fill in both Student ID and Name.';
+
   msg.style.color='var(--bad)';
+
   return;
  }
- msg.textContent='Saving student...';
+
+ msg.textContent=
+  'Saving student...';
+
  msg.style.color='var(--mute)';
- 
+
  STUDENTS[sid]=name;
+
  try{
-  const localSt=JSON.parse(localStorage.getItem(LS_STU))||{};
+
+  const localSt=
+   JSON.parse(
+    localStorage.getItem(LS_STU)
+   )||{};
+
   localSt[sid]=name;
-  localStorage.setItem(LS_STU,JSON.stringify(localSt));
+
+  localStorage.setItem(
+   LS_STU,
+   JSON.stringify(localSt)
+  );
+
  }catch(e){}
 
- if(CLOUD && sb){
+ if(CLOUD&&sb){
+
   try{
-   const { error } = await sb.from('students').upsert([{student_id:sid, name:name}], {onConflict:'student_id'});
-   if(error) throw error;
+
+   const {error}=await sb
+    .from('students')
+    .upsert(
+     [
+      {
+       student_id:sid,
+       name:name
+      }
+     ],
+     {
+      onConflict:'student_id'
+     }
+    );
+
+   if(error)throw error;
+
   }catch(e){
+
    console.error(e);
-   msg.textContent='Failed to save to Supabase. Check table permissions/RLS for "students". Saved locally.';
+
+   msg.textContent=
+    'Failed to save to Supabase. Check table permissions/RLS for "students". Saved locally.';
+
    msg.style.color='var(--bad)';
+
    render();
+
    return;
   }
  }
- msg.textContent='Successfully added/updated student: '+name+' ('+sid+')';
+
+ msg.textContent=
+  'Successfully added/updated student: '+
+  name+
+  ' ('+
+  sid+
+  ')';
+
  msg.style.color='var(--green)';
+
  $('#newSid').value='';
  $('#newName').value='';
+
  render();
 };
 
 $('#clr').onclick=()=>{
- if(prompt('Admin PIN')!==ADMIN_PIN)return alert('Wrong PIN.');
- if(prompt('Type DELETE to remove all records on this device.')!=='DELETE')return;
- localStorage.removeItem(LS);rows=[];showAll=false;render();setMsg('All records on this device were cleared.','ok');
+
+ if(prompt('Admin PIN')!==ADMIN_PIN)
+  return alert('Wrong PIN.');
+
+ if(
+  prompt(
+   'Type DELETE to remove all records on this device.'
+  )!=='DELETE'
+ )
+  return;
+
+ localStorage.removeItem(LS);
+
+ rows=[];
+
+ showAll=false;
+
+ render();
+
+ setMsg(
+  'All records on this device were cleared.',
+  'ok'
+ );
 };
 
 /* ---------- start ---------- */
+
 loadRows().then(render);
-setInterval(()=>{CLOUD?loadRows().then(render):render()},60000);
+
+setInterval(
+ ()=>{
+  CLOUD
+  ?loadRows().then(render)
+  :render()
+ },
+ 60000
+);
+
 </script>
+
 </body>
 </html>
