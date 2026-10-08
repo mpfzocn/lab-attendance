@@ -40,13 +40,22 @@ main{padding-top:20px;padding-bottom:30px}
 .stat{padding:16px 20px;border-right:1px solid var(--line)}.stat:last-child{border-right:0}
 .stat span{display:block;font-size:13px;color:var(--mute)}
 .stat b{font:700 28px/1.25 'Source Serif 4',serif;color:var(--navy);font-variant-numeric:tabular-nums}
-.grid{display:grid;grid-template-columns:360px 1fr;gap:18px;margin-bottom:18px;align-items:start}
+.grid{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:18px;align-items:start}
 .cgrid{display:grid;grid-template-columns:1.15fr 1fr;gap:22px;align-items:start}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;min-width:0;margin-bottom:18px}
-.grid .card{margin-bottom:0}
 .card h2{margin:0 0 4px;font:700 19px 'Source Serif 4',serif;color:var(--navy)}
 .card h3{margin:0 0 4px;font:700 16px 'Source Serif 4',serif;color:var(--navy)}
 .sub{margin:0 0 14px;font-size:13.5px;color:var(--mute)}
+
+/* Collapsible Section Styles */
+details.card-toggle{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:18px;padding:0;overflow:hidden}
+details.card-toggle summary{padding:16px 22px;font:700 18px 'Source Serif 4',serif;color:var(--navy);cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;user-select:none;background:#fff}
+details.card-toggle summary::-webkit-details-marker{display:none}
+details.card-toggle summary::after{content:'+ View Report';font:600 13px 'IBM Plex Sans',sans-serif;color:var(--teal-d);background:var(--tint);padding:5px 12px;border-radius:20px}
+details.card-toggle[open] summary::after{content:'− Hide Report';background:#f0f4f7;color:var(--mute)}
+details.card-toggle summary:hover{background:#f9fbfd}
+.toggle-body{padding:0 22px 22px;border-top:1px solid var(--line)}
+
 label{display:block;font-size:13px;font-weight:500;color:var(--mute);margin:14px 0 5px}
 input,select{width:100%;min-width:0;min-height:46px;padding:10px;font:inherit;font-size:16px;color:var(--ink);background:#fbfcfd;border:1px solid var(--line);border-radius:8px}
 input[type=date]{-webkit-appearance:none;appearance:none}
@@ -69,7 +78,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--teal);outl
 .champ svg{flex:none}
 .cbox{position:relative;width:100%;margin-top:6px}
 .empty{color:var(--mute);padding:22px 0;text-align:center}
-.lh{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.lh{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:10px;margin-top:14px}
 .lh .r{display:flex;gap:8px;align-items:center}
 .lh input{width:220px}
 .btn2{border:1px solid var(--teal);color:var(--teal-d);background:none;border-radius:8px;padding:8px 14px;min-height:46px;font:500 14px 'IBM Plex Sans',sans-serif;cursor:pointer}
@@ -160,6 +169,7 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 
  <section class="stats" id="stats"></section>
 
+ <!-- 1. WHO IS IN THE LAB NOW -->
  <section class="card" id="livecard">
   <h2>Who is in the lab now</h2>
   <p class="sub" id="liveSub"></p>
@@ -172,42 +182,45 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
   <div class="empty" id="liveEmpty" hidden>No entries yet today.</div>
  </section>
 
+ <!-- 2. LOG YOUR LAB TIME (Moved right below Who is in the lab now) -->
  <section class="card">
-  <div class="lh">
-   <div><h2>Single-day in and out times</h2><p class="sub" style="margin:0" id="tlSub">Pick a day to see every student's in and out time.</p></div>
-   <div class="r"><input type="date" id="tlDate" aria-label="Choose day"></div>
-  </div>
-  <div class="cbox" id="tlBox" hidden><canvas id="tlChart"></canvas></div>
-  <div class="empty" id="tlEmpty" hidden>No entries on this day.</div>
-  <div class="sc"><table><thead><tr><th>Student</th><th>Entry no.</th><th>In time</th><th>Out time</th><th>Duration</th></tr></thead><tbody id="tlTb"></tbody></table></div>
+  <h2>Log your lab time</h2>
+  <p class="sub">Arriving: enter your ID and tap Check in. Leaving: enter your ID and tap Check out. A blank time uses the current time.</p>
+  <form id="f" autocomplete="off" onsubmit="return false">
+   <label for="sid" style="margin-top:0">Student ID</label>
+   <input id="sid" inputmode="numeric" maxlength="8" placeholder="e.g. 22902012">
+   <div id="who" aria-live="polite"></div>
+   <label for="dt">Date</label>
+   <input type="date" id="dt">
+   <label id="lin">In time (optional)</label><div class="tp" id="tin" role="group" aria-labelledby="lin"></div>
+   <label id="lout">Out time (optional)</label><div class="tp" id="tout" role="group" aria-labelledby="lout"></div>
+   <div class="two"><button type="button" class="go in" id="bin">Check in</button><button type="button" class="go out" id="bout">Check out</button></div>
+   <button type="button" class="lnk" id="bfull">Add a complete past entry (in and out time)</button>
+   <div id="msg" role="status" aria-live="polite"></div>
+  </form>
  </section>
 
- <div class="grid">
-  <section class="card">
-   <h2>Log your lab time</h2>
-   <p class="sub">Arriving: enter your ID and tap Check in. Leaving: enter your ID and tap Check out. A blank time uses the current time.</p>
-   <form id="f" autocomplete="off" onsubmit="return false">
-    <label for="sid" style="margin-top:0">Student ID</label>
-    <input id="sid" inputmode="numeric" maxlength="8" placeholder="e.g. 22902012">
-    <div id="who" aria-live="polite"></div>
-    <label for="dt">Date</label>
-    <input type="date" id="dt">
-    <label id="lin">In time (optional)</label><div class="tp" id="tin" role="group" aria-labelledby="lin"></div>
-    <label id="lout">Out time (optional)</label><div class="tp" id="tout" role="group" aria-labelledby="lout"></div>
-    <div class="two"><button type="button" class="go in" id="bin">Check in</button><button type="button" class="go out" id="bout">Check out</button></div>
-    <button type="button" class="lnk" id="bfull">Add a complete past entry (in and out time)</button>
-    <div id="msg" role="status" aria-live="polite"></div>
-   </form>
-  </section>
+ <!-- 3. HIDDEN/COLLAPSIBLE: Single-day in and out times -->
+ <details class="card-toggle">
+  <summary>Single-day in and out times</summary>
+  <div class="toggle-body">
+   <div class="lh">
+    <div><p class="sub" style="margin:0" id="tlSub">Pick a day to see every student's in and out time.</p></div>
+    <div class="r"><input type="date" id="tlDate" aria-label="Choose day"></div>
+   </div>
+   <div class="cbox" id="tlBox" hidden><canvas id="tlChart"></canvas></div>
+   <div class="empty" id="tlEmpty" hidden>No entries on this day.</div>
+   <div class="sc"><table><thead><tr><th>Student</th><th>Entry no.</th><th>In time</th><th>Out time</th><th>Duration</th></tr></thead><tbody id="tlTb"></tbody></table></div>
+  </div>
+ </details>
 
-  <section class="card">
-   <h2>Hours in the lab</h2>
-   <p class="sub" id="csub"></p>
-   <div class="champ g" id="champ" hidden></div>
-   <div class="cbox" id="cbox"><canvas id="chart"></canvas></div>
-   <div class="empty" id="cempty" hidden>No entries for this month yet.</div>
-  </section>
- </div>
+ <section class="card">
+  <h2>Hours in the lab</h2>
+  <p class="sub" id="csub"></p>
+  <div class="champ g" id="champ" hidden></div>
+  <div class="cbox" id="cbox"><canvas id="chart"></canvas></div>
+  <div class="empty" id="cempty" hidden>No entries for this month yet.</div>
+ </section>
 
  <section class="card">
   <h2>Daily report calendar</h2>
@@ -218,26 +231,34 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
   </div>
  </section>
 
- <section class="card">
-  <div class="lh">
-   <div><h2>Student by day report</h2><p class="sub" style="margin:0" id="mxsub"></p></div>
-   <button class="btn2" id="csvM">Download student by day report</button>
+ <!-- 4. HIDDEN/COLLAPSIBLE: Student by day report -->
+ <details class="card-toggle">
+  <summary>Student by day report</summary>
+  <div class="toggle-body">
+   <div class="lh">
+    <div><p class="sub" style="margin:0" id="mxsub"></p></div>
+    <button class="btn2" id="csvM">Download student by day report</button>
+   </div>
+   <div class="mxw"><table class="mx" id="mx"></table></div>
+   <div class="empty" id="mxEmpty" hidden>No entries for this month yet.</div>
   </div>
-  <div class="mxw"><table class="mx" id="mx"></table></div>
-  <div class="empty" id="mxEmpty" hidden>No entries for this month yet.</div>
- </section>
+ </details>
+
+ <!-- 5. HIDDEN/COLLAPSIBLE: Daily report for the month -->
+ <details class="card-toggle">
+  <summary>Daily report for the month</summary>
+  <div class="toggle-body">
+   <div class="lh">
+    <div><p class="sub" style="margin:0" id="dsub"></p></div>
+    <button class="btn2" id="csvD">Download daily report</button>
+   </div>
+   <div class="sc"><table><thead><tr><th>Date</th><th>Students</th><th>Entries</th><th>Total hours</th><th>Average per student</th><th>Longest stay</th></tr></thead><tbody id="dtb"></tbody></table></div>
+  </div>
+ </details>
 
  <section class="card">
-  <div class="lh">
-   <div><h2>Daily report for the month</h2><p class="sub" style="margin:0" id="dsub"></p></div>
-   <button class="btn2" id="csvD">Download daily report</button>
-  </div>
-  <div class="sc"><table><thead><tr><th>Date</th><th>Students</th><th>Entries</th><th>Total hours</th><th>Average per student</th><th>Longest stay</th></tr></thead><tbody id="dtb"></tbody></table></div>
- </section>
-
- <section class="card">
-  <div class="lh">
-   <div><h2>Attendance records</h2><p class="sub" style="margin:0" id="lsub"></p></div>
+  <div class="lh" style="margin-top:0">
+   <div><h2 style="margin:0">Attendance records</h2><p class="sub" style="margin:0" id="lsub"></p></div>
    <div class="r"><input id="q" type="search" placeholder="Search name or ID" aria-label="Search records"><button class="btn2" id="csv">Export CSV</button></div>
   </div>
   <div class="sc"><table><thead><tr><th>Date</th><th>Student ID</th><th>Name</th><th>In</th><th>Out</th><th>Duration</th></tr></thead><tbody id="tb"></tbody></table></div>
