@@ -71,7 +71,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--teal);outl
 .go.out{background:var(--navy)}.go.out:hover{background:#12405f}
 .go:disabled{opacity:.6;cursor:wait}
 .lnk{display:block;margin:12px auto 0;border:0;background:none;color:var(--teal-d);text-decoration:underline;font:inherit;font-size:13.5px;cursor:pointer;min-height:36px}
-#msg{min-height:22px;margin-top:8px;font-size:14px}
+#msg,#admMsg{min-height:22px;margin-top:8px;font-size:14px}
 .champ{display:flex;align-items:center;gap:10px;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:14px}
 .champ.g{background:#fbf4e3;border:1px solid #ecd9a6}.champ.g svg{color:var(--gold)}
 .champ.s{background:var(--tint);border:1px solid #bcdadd}.champ.s svg{color:var(--teal-d)}
@@ -169,20 +169,7 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 
  <section class="stats" id="stats"></section>
 
- <!-- 1. WHO IS IN THE LAB NOW -->
- <section class="card" id="livecard">
-  <h2>Who is in the lab now</h2>
-  <p class="sub" id="liveSub"></p>
-  <div class="champ g" id="cLong" hidden></div>
-  <div class="champ s" id="cShort" hidden></div>
-  <div class="cbox" id="liveBox" hidden><canvas id="liveChart"></canvas></div>
-  <h3 style="margin-top:18px">Today's entries by student</h3>
-  <p class="sub" style="margin-bottom:8px" id="liveEnt">How many times each student entered the lab today, and when.</p>
-  <div class="sc"><table><thead><tr><th>Student</th><th>Entries today</th><th>Status</th><th>In and out times</th><th>Total today</th></tr></thead><tbody id="liveTb"></tbody></table></div>
-  <div class="empty" id="liveEmpty" hidden>No entries yet today.</div>
- </section>
-
- <!-- 2. LOG YOUR LAB TIME (Moved right below Who is in the lab now) -->
+ <!-- 1. LOG YOUR LAB TIME (Moved to top position) -->
  <section class="card">
   <h2>Log your lab time</h2>
   <p class="sub">Arriving: enter your ID and tap Check in. Leaving: enter your ID and tap Check out. A blank time uses the current time.</p>
@@ -198,6 +185,19 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
    <button type="button" class="lnk" id="bfull">Add a complete past entry (in and out time)</button>
    <div id="msg" role="status" aria-live="polite"></div>
   </form>
+ </section>
+
+ <!-- 2. WHO IS IN THE LAB NOW -->
+ <section class="card" id="livecard">
+  <h2>Who is in the lab now</h2>
+  <p class="sub" id="liveSub"></p>
+  <div class="champ g" id="cLong" hidden></div>
+  <div class="champ s" id="cShort" hidden></div>
+  <div class="cbox" id="liveBox" hidden><canvas id="liveChart"></canvas></div>
+  <h3 style="margin-top:18px">Today's entries by student</h3>
+  <p class="sub" style="margin-bottom:8px" id="liveEnt">How many times each student entered the lab today, and when.</p>
+  <div class="sc"><table><thead><tr><th>Student</th><th>Entries today</th><th>Status</th><th>In and out times</th><th>Total today</th></tr></thead><tbody id="liveTb"></tbody></table></div>
+  <div class="empty" id="liveEmpty" hidden>No entries yet today.</div>
  </section>
 
  <!-- 3. HIDDEN/COLLAPSIBLE: Single-day in and out times -->
@@ -266,9 +266,28 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
   <button class="btn2 more" id="more" hidden></button>
  </section>
 
+ <!-- ADMIN PANEL -->
  <section class="card" id="admin" hidden>
   <h2>Admin tools</h2>
   <p class="sub" id="admtxt"></p>
+  
+  <div style="margin-bottom:20px; border-top:1px solid var(--line); padding-top:14px">
+   <h3>Add / Update Student Directory</h3>
+   <p class="sub">Quickly register a new Student ID and Name into Supabase so students can log in immediately.</p>
+   <div style="display:grid; grid-template-columns:1fr 2fr auto; gap:10px; align-items:end">
+    <div>
+     <label for="newSid" style="margin-top:0">Student ID</label>
+     <input id="newSid" placeholder="e.g. 24902030">
+    </div>
+    <div>
+     <label for="newName" style="margin-top:0">Student Full Name</label>
+     <input id="newName" placeholder="e.g. John Doe">
+    </div>
+    <button class="btn2" id="btnSaveStudent" style="background:var(--teal); color:#fff">Save Student</button>
+   </div>
+   <div id="admMsg"></div>
+  </div>
+
   <button class="btn2" id="clr" style="border-color:var(--bad);color:var(--bad)">Clear all records on this device</button>
  </section>
 </main>
@@ -291,6 +310,7 @@ if(SUPABASE_URL && SUPABASE_KEY && window.supabase){
 }
 
 const LS='sodic_attendance_v3';
+const LS_STU='sodic_students_v1';
 const $=s=>document.querySelector(s);
 const pad=n=>String(n).padStart(2,'0');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -307,6 +327,23 @@ const WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 let rows=[],ym=todayStr().slice(0,7),selDay=todayStr(),showAll=false,charts={};
 
+/* ---------- student loader ---------- */
+async function loadStudents(){
+ try{
+  const localSt=JSON.parse(localStorage.getItem(LS_STU))||{};
+  Object.assign(STUDENTS,localSt);
+ }catch(e){}
+
+ if(CLOUD && sb){
+  try{
+   const { data, error } = await sb.from('students').select('student_id,name');
+   if(!error && data){
+    data.forEach(s=>{STUDENTS[s.student_id]=s.name;});
+   }
+  }catch(e){}
+ }
+}
+
 /* ---------- rows ---------- */
 const isOpen=r=>!r.tout;
 const elapsed=r=>Math.max(0,Math.floor((Date.now()-new Date(r.date+'T'+r.tin+':00').getTime())/60000));
@@ -321,6 +358,7 @@ const times=(a,d)=>a.map((r,i)=>(a.length>1?(i+1)+'. ':'')+'In '+t12(r.tin)+', O
 /* ---------- storage ---------- */
 const persist=()=>{try{localStorage.setItem(LS,JSON.stringify(rows))}catch(e){alert('Browser storage is unavailable.')}};
 async function loadRows(){
+ await loadStudents();
  if(!CLOUD || !sb){try{rows=JSON.parse(localStorage.getItem(LS))||[]}catch(e){rows=[]}return}
  try{
   const { data, error } = await sb.from('entries').select('id,student_id,date,time_in,time_out').order('date', {ascending: false}).order('time_in', {ascending: false});
@@ -600,9 +638,48 @@ $('#csvM').onclick=()=>{
 /* ---------- admin ---------- */
 if(location.search.includes('admin')){
  $('#admin').hidden=false;
- if(CLOUD){$('#admtxt').textContent='Records are stored in Supabase. To clear them, open your Supabase project, go to SQL Editor, and run: delete from entries;';$('#clr').hidden=true}
+ if(CLOUD){$('#admtxt').textContent='Connected to Supabase database. You can manage student entries or wipe database records below.'}
  else $('#admtxt').textContent='Records are stored in this browser only. This removes every record saved on this device. It cannot be undone.';
 }
+
+$('#btnSaveStudent').onclick=async()=>{
+ const sid=$('#newSid').value.trim();
+ const name=$('#newName').value.trim();
+ const msg=$('#admMsg');
+ if(!sid || !name){
+  msg.textContent='Please fill in both Student ID and Name.';
+  msg.style.color='var(--bad)';
+  return;
+ }
+ msg.textContent='Saving student...';
+ msg.style.color='var(--mute)';
+ 
+ STUDENTS[sid]=name;
+ try{
+  const localSt=JSON.parse(localStorage.getItem(LS_STU))||{};
+  localSt[sid]=name;
+  localStorage.setItem(LS_STU,JSON.stringify(localSt));
+ }catch(e){}
+
+ if(CLOUD && sb){
+  try{
+   const { error } = await sb.from('students').upsert([{student_id:sid, name:name}], {onConflict:'student_id'});
+   if(error) throw error;
+  }catch(e){
+   console.error(e);
+   msg.textContent='Failed to save to Supabase. Check table permissions/RLS for "students". Saved locally.';
+   msg.style.color='var(--bad)';
+   render();
+   return;
+  }
+ }
+ msg.textContent='Successfully added/updated student: '+name+' ('+sid+')';
+ msg.style.color='var(--green)';
+ $('#newSid').value='';
+ $('#newName').value='';
+ render();
+};
+
 $('#clr').onclick=()=>{
  if(prompt('Admin PIN')!==ADMIN_PIN)return alert('Wrong PIN.');
  if(prompt('Type DELETE to remove all records on this device.')!=='DELETE')return;
