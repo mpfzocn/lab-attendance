@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{--navy:#0b2a43;--teal:#0d7c86;--teal-d:#0a5f67;--tint:#e6f2f3;--gold:#c9962b;--green:#17794a;--bg:#f2f5f7;--card:#fff;--ink:#14222d;--mute:#5f7280;--line:#dbe3e8;--bad:#b3261e;--r:10px}
@@ -253,16 +254,21 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 <footer>SODIC-CU, Department of Oceanography, University of Chittagong</footer>
 
 <script>
-/* ===== Paste your Supabase details here to share one record across all phones ===== */
-const SUPABASE_URL='https://YOUR-PROJECT.supabase.co';
-const SUPABASE_KEY='YOUR-ANON-OR-PUBLISHABLE-KEY';
-/* Leave as is to save entries only in this browser. */
-const ADMIN_PIN='1234';   // change this. Add ?admin to the end of the link to see admin tools.
+/* ===== Config ===== */
+const SUPABASE_URL='https://obctddlksvgejgohmmms.supabase.co';
+const SUPABASE_KEY='sb_publishable_ttLMNzSc2_Dpt09clK-M-w_g7i_wcCo';
+const ADMIN_PIN='1234';
 
-const STUDENTS={"22902001":"Mobashira Anika","21902021":"Md. Jakaria Hasnat","21902027":"Puja Rani Dhar","21902026":"Md. Saifullah Al Hafiz Saikat","21902029":"Kapotakkhi","22902002":"Zawad Ibna Zihad","22902012":"Lily Chakma","22902009":"Maria Alam","22902029":"Marzia Morshed Mim","20902038":"Md. Mostakim","20902037":"Roman Hossain","19902003":"Tanbhir Hosen","19902036":"Fowzia Aktar","20902023":"Rupali Khatun","24902029":"Subarna Majumder","24902007":"Ipshita Hasan Hiya","23902004":"MD.Rohan Tanvir","23902005":"Md. Sabit Bin Nasim","23902018":"Nafisa Hakim","23902010":"Anamul Haque","23902017":"Zamiu Rahman","24902012":"K. M. Rashid Shariar Mehedi","16207119":"Md. Mazaharul Islam","18207059":"Tasnim Binth Abin","24902014":"M A Wasif Ur Rahman","24902005":"Tanjina Islam","24902026":"Sarah Tarannum"};
+const STUDENTS={"22902001":"Mobashira Anika","21902021":"Md. Jakaria Hasnat","21902027":"Puja Rani Dhar","21902026":"Md. Saifullah Al Hafiz Saikat","21902029":"Kapotakkhi","22902002":"Zawad Ibna Zihad","22902012":"Lily Chakma","22902009":"Maria Alam","22902010":"Marzia Morshed Mim","20902038":"Md. Mostakim","20902037":"Roman Hossain","19902003":"Tanbhir Hosen","19902036":"Fowzia Aktar","20902023":"Rupali Khatun","24902029":"Subarna Majumder","24902007":"Ipshita Hasan Hiya","23902004":"MD.Rohan Tanvir","23902005":"Md. Sabit Bin Nasim","23902018":"Nafisa Hakim","23902010":"Anamul Haque","23902017":"Zamiu Rahman","24902012":"K. M. Rashid Shariar Mehedi","16207119":"Md. Mazaharul Islam","18207059":"Tasnim Binth Abin","24902014":"M A Wasif Ur Rahman","24902005":"Tanjina Islam","24902026":"Sarah Tarannum"};
 
-const CLOUD=SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('YOUR-');
-const HD={apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY};
+let sb=null, CLOUD=false;
+if(SUPABASE_URL && SUPABASE_KEY && window.supabase){
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    CLOUD = true;
+  } catch(e) { console.error("Supabase error:", e); }
+}
+
 const LS='sodic_attendance_v3';
 const $=s=>document.querySelector(s);
 const pad=n=>String(n).padStart(2,'0');
@@ -280,7 +286,7 @@ const WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 let rows=[],ym=todayStr().slice(0,7),selDay=todayStr(),showAll=false,charts={};
 
-/* ---------- rows: {id,sid,date,tin,tout|null} ---------- */
+/* ---------- rows ---------- */
 const isOpen=r=>!r.tout;
 const elapsed=r=>Math.max(0,Math.floor((Date.now()-new Date(r.date+'T'+r.tin+':00').getTime())/60000));
 const durMin=r=>r.tout?diff(r.tin,r.tout):(r.date===todayStr()?elapsed(r):0);
@@ -294,28 +300,22 @@ const times=(a,d)=>a.map((r,i)=>(a.length>1?(i+1)+'. ':'')+'In '+t12(r.tin)+', O
 /* ---------- storage ---------- */
 const persist=()=>{try{localStorage.setItem(LS,JSON.stringify(rows))}catch(e){alert('Browser storage is unavailable.')}};
 async function loadRows(){
- if(!CLOUD){try{rows=JSON.parse(localStorage.getItem(LS))||[]}catch(e){rows=[]}return}
- let all=[],from=0;
+ if(!CLOUD || !sb){try{rows=JSON.parse(localStorage.getItem(LS))||[]}catch(e){rows=[]}return}
  try{
-  for(;;){
-   const r=await fetch(SUPABASE_URL+'/rest/v1/entries?select=id,student_id,date,time_in,time_out&order=date.desc,time_in.desc',{headers:{...HD,Range:from+'-'+(from+999)}});
-   if(!r.ok)throw 0;const p=await r.json();all=all.concat(p);
-   if(p.length<1000)break;from+=1000;
-  }
-  rows=all.map(e=>({id:e.id,sid:e.student_id,date:e.date,tin:e.time_in,tout:e.time_out||null}));
- }catch(e){setMsg('Could not load records. Check your connection.','bad')}
+  const { data, error } = await sb.from('entries').select('id,student_id,date,time_in,time_out').order('date', {ascending: false}).order('time_in', {ascending: false});
+  if(error) throw error;
+  rows = data.map(e=>({id:e.id,sid:e.student_id,date:e.date,tin:String(e.time_in).slice(0,5),tout:e.time_out?String(e.time_out).slice(0,5):null}));
+ }catch(e){console.error(e);setMsg('Could not load records. Check connection.','bad')}
 }
 async function insertRow(r){
- if(!CLOUD){rows.push({...r,id:Date.now()+Math.random()});persist();return}
- const res=await fetch(SUPABASE_URL+'/rest/v1/entries',{method:'POST',headers:{...HD,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({student_id:r.sid,date:r.date,time_in:r.tin,time_out:r.tout||null})});
- if(!res.ok)throw new Error('insert '+res.status);
+ if(!CLOUD || !sb){rows.push({...r,id:Date.now()+Math.random()});persist();return}
+ const { error } = await sb.from('entries').insert([{student_id:r.sid,date:r.date,time_in:r.tin,time_out:r.tout||null}]);
+ if(error) throw error;
 }
 async function closeRow(r,tout){
- if(!CLOUD){r.tout=tout;persist();return}
- const res=await fetch(SUPABASE_URL+'/rest/v1/entries?id=eq.'+r.id,{method:'PATCH',headers:{...HD,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({time_out:tout})});
- if(!res.ok)throw new Error('patch '+res.status);
- const out=await res.json();
- if(!out.length)throw new Error('nopolicy');
+ if(!CLOUD || !sb){r.tout=tout;persist();return}
+ const { error } = await sb.from('entries').update({time_out:tout}).eq('id',r.id);
+ if(error) throw error;
 }
 
 /* ---------- header ---------- */
@@ -328,7 +328,7 @@ setInterval(tick,1000);tick();
 $('#dot').classList.toggle('on',CLOUD);
 $('#mode').textContent=CLOUD?'Shared database connected':'Saving on this device only';
 
-/* ---------- 12-hour pickers (stored as 24-hour HH:MM) ---------- */
+/* ---------- 12-hour pickers ---------- */
 function buildTP(id){
  const hh='<option value="">Hour</option>'+[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('');
  const mm='<option value="">Min</option>'+[...Array(60)].map((_,i)=>`<option value="${pad(i)}">${pad(i)}</option>`).join('');
@@ -352,14 +352,14 @@ function resetForm(){$('#sid').value='';set24('tin','');set24('tout','');$('#sid
 async function run(btn,fn){
  const all=[...document.querySelectorAll('.go,#bfull')];all.forEach(b=>b.disabled=true);setMsg('Saving...');
  try{await fn();await loadRows();render()}
- catch(e){setMsg(e.message==='nopolicy'?'Check-out could not be saved. The database needs the check-out permission (see setup SQL).':'Could not save. Check your connection and try again.','bad')}
+ catch(e){console.error(e);setMsg('Could not save. Check database connection or RLS rules.','bad')}
  all.forEach(b=>b.disabled=false);
 }
 const openRowsOf=sid=>rows.filter(r=>r.sid===sid&&isOpen(r)).sort((a,b)=>(b.date+b.tin).localeCompare(a.date+a.tin));
 $('#bin').onclick=()=>{
  const sid=$('#sid').value.trim(),date=$('#dt').value||todayStr(),tin=get24('tin');
  if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
- if(tin===null)return setMsg('Please complete the in time (hour, minutes and AM/PM) or leave it blank.','bad');
+ if(tin===null)return setMsg('Please complete the in time or leave it blank.','bad');
  const op=openRowsOf(sid)[0];
  if(op)return setMsg(nm(sid)+' is already checked in since '+t12(op.tin)+(op.date!==todayStr()?' on '+op.date:'')+'. Tap Check out first.','bad');
  const t=tin||nowT();
@@ -368,17 +368,17 @@ $('#bin').onclick=()=>{
 $('#bout').onclick=()=>{
  const sid=$('#sid').value.trim(),tout=get24('tout');
  if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
- if(tout===null)return setMsg('Please complete the out time (hour, minutes and AM/PM) or leave it blank.','bad');
+ if(tout===null)return setMsg('Please complete the out time or leave it blank.','bad');
  const op=openRowsOf(sid)[0];
  if(!op)return setMsg('No check-in found for '+nm(sid)+'. Check in first, or add a complete past entry.','bad');
  const t=tout||nowT();
- if(op.date===todayStr()&&tm(t)<=tm(op.tin))return setMsg('Out time must be after the in time ('+t12(op.tin)+').','bad');
+ if(op.date===todayStr()&&tm(t)<=tm(op.tin))return setMsg('Out time must be after in time ('+t12(op.tin)+').','bad');
  run(null,async()=>{await closeRow(op,t);setMsg('Checked out: '+nm(sid)+' at '+t12(t)+'. Total '+fmt(diff(op.tin,t))+'. Thank you.','ok');resetForm()});
 };
 $('#bfull').onclick=()=>{
  const sid=$('#sid').value.trim(),date=$('#dt').value,tin=get24('tin'),tout=get24('tout');
  if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
- if(!date||!tin||!tout)return setMsg('For a complete entry, set the date, in time and out time.','bad');
+ if(!date||!tin||!tout)return setMsg('For a complete entry, set date, in time, and out time.','bad');
  if(tin===tout)return setMsg('In and out time are the same.','bad');
  if(rows.some(r=>r.sid===sid&&r.date===date&&r.tin===tin&&r.tout===tout))return setMsg('This entry is already recorded.','bad');
  run(null,async()=>{await insertRow({sid,date,tin,tout});setMsg('Saved: '+nm(sid)+', '+fmt(diff(tin,tout))+' on '+date+'.','ok');ym=date.slice(0,7);selDay=date;$('#tlDate').value=date;resetForm()});
@@ -445,7 +445,6 @@ function renderLive(){
   return `<tr><td data-l="Student"><b>${esc(nm(x.sid))}</b><div class="small">${x.sid}</div></td><td data-l="Entries today"><span class="pill cnt">${x.n}</span>${x.n===1?'time':'times'}</td><td data-l="Status">${st}</td><td data-l="In and out times" class="small">${times(x.a,t)}</td><td data-l="Total today"><span class="dur">${fmt(x.total)}</span></td></tr>`}).join('');
 }
 
-/* ---------- single-day timeline: each student's in and out ---------- */
 function renderTimeline(){
  const d=$('#tlDate').value||todayStr(),isT=d===todayStr(),nowM=tm(nowT());
  const g=groupDay(d).sort((a,b)=>a.a[0].tin.localeCompare(b.a[0].tin));
@@ -524,7 +523,7 @@ function renderDaily(ml){
  document.querySelectorAll('#dtb tr[data-day]').forEach(tr=>tr.onclick=()=>pickDay(tr.dataset.day));
 }
 
-/* ---------- student by day matrix (30/31 days) ---------- */
+/* ---------- matrix ---------- */
 function matrixData(){
  const days=dailyData(),by={};
  monthRows().forEach(r=>{const s=by[r.sid]=by[r.sid]||{sid:r.sid,d:{},n:0,min:0};const c=s.d[r.date]=s.d[r.date]||{n:0,min:0};const m=durMin(r);c.n++;c.min+=m;s.n++;s.min+=m});
@@ -577,7 +576,7 @@ $('#csvM').onclick=()=>{
  download('SODIC_CU_Student_By_Day_'+ym+'.csv',[['Student ID','Student Name'].concat(days.map(x=>x.ds+' ('+WD[x.wd]+') entries and hours'),['Total entries','Total hours'])].concat(list.map(s=>[s.sid,nm(s.sid)].concat(days.map(x=>{const c=s.d[x.ds];return c?c.n+' entr'+(c.n===1?'y':'ies')+', '+(c.min/60).toFixed(2)+' h':''}),[s.n,(s.min/60).toFixed(2)]))));
 };
 
-/* ---------- admin (open the page with ?admin) ---------- */
+/* ---------- admin ---------- */
 if(location.search.includes('admin')){
  $('#admin').hidden=false;
  if(CLOUD){$('#admtxt').textContent='Records are stored in Supabase. To clear them, open your Supabase project, go to SQL Editor, and run: delete from entries;';$('#clr').hidden=true}
