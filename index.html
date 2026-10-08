@@ -181,16 +181,11 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
   <p class="sub" id="admtxt"></p>
 
   <div class="admin-instructions">
-   <b>How to Add New Students:</b>
+   <b>Students are saved in the shared database.</b>
    <ol>
-    <li>Scroll down to the <b>Admin Tools</b> section (you are here).</li>
-    <li>Under <b>Add New Student</b>, enter the details:
-     <ul>
-      <li><b>Student ID:</b> Enter the new student's ID (e.g., 16207119).</li>
-      <li><b>Student Name:</b> Enter the student's full name (e.g., Md. Mazaharul Islam).</li>
-     </ul>
-    </li>
-    <li>Click the <b>Add Student</b> button. You will see a green confirmation message indicating the student has been added successfully.</li>
+    <li>Enter the Student ID and full name, then tap <b>Add Student</b>.</li>
+    <li>The student appears on every phone within a minute, or after a refresh.</li>
+    <li>Use <b>Edit</b> to fix a name and <b>Remove</b> to delete a student.</li>
    </ol>
   </div>
 
@@ -202,7 +197,7 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
       <button class="btn2" id="btn_add_student">Add Student</button>
     </div>
     <div id="student_msg" style="margin-top:6px;font-size:13.5px;"></div>
-    <div id="custlist" style="margin-top:12px"></div>
+    <div id="slist" style="margin-top:12px"></div>
   </div>
 
   <button class="btn2" id="clr" style="border-color:var(--bad);color:var(--bad)">Clear all records on this device</button>
@@ -251,10 +246,10 @@ const DEFAULT_STUDENTS = {
 
 let customStudents = {};
 try { customStudents = JSON.parse(localStorage.getItem('sodic_custom_students')) || {}; } catch(e) { customStudents = {}; }
-/* Names in DEFAULT_STUDENTS (this file) always win. Admin-added names are saved per device only. */
-Object.keys(customStudents).forEach(id=>{if(DEFAULT_STUDENTS[id])delete customStudents[id]});
-try{localStorage.setItem('sodic_custom_students',JSON.stringify(customStudents))}catch(e){}
-const STUDENTS = { ...customStudents, ...DEFAULT_STUDENTS };
+/* Students live in the shared Supabase table "students". DEFAULT_STUDENTS is only the starting list / offline fallback. */
+let STUDENTS={...DEFAULT_STUDENTS,...customStudents};
+let dbReady=false;
+const SAPI=SUPABASE_URL+'/rest/v1/students';
 
 const CLOUD=SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('YOUR-');
 const HD={apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY};
@@ -303,6 +298,15 @@ async function closeRow(r,tout){
  if(!res.ok)throw new Error(res.status);
  if(!(await res.json()).length)throw new Error('blocked');
  r.tout=tout;
+}
+
+async function loadStudents(){
+ if(!CLOUD)return;
+ try{
+  const r=await fetch(SAPI+'?select=student_id,name&order=student_id',{headers:HD});
+  if(!r.ok)throw 0;const p=await r.json();
+  if(p.length){STUDENTS={};p.forEach(x=>STUDENTS[x.student_id]=x.name);dbReady=true}
+ }catch(e){}
 }
 
 /* ---------- header clock ---------- */
@@ -484,7 +488,7 @@ $('#csv').onclick=()=>{
 /* ---------- admin ---------- */
 if(location.search.includes('admin')){
  $('#admin').hidden=false;
- renderCustom();
+ renderStudents();
  if(CLOUD){
   $('#admtxt').textContent='Records are stored in Supabase. To clear them, open your Supabase project, go to SQL Editor, and run: delete from entries;';
   $('#clr').hidden=true;
@@ -493,32 +497,61 @@ if(location.search.includes('admin')){
  }
 }
 
-const saveCustom=()=>localStorage.setItem('sodic_custom_students',JSON.stringify(customStudents));
-function renderCustom(){
- const k=Object.keys(customStudents);
- $('#custlist').innerHTML=k.length?'<h3 style="font-size:15px;margin:0 0 4px;">Added on this device</h3>'+k.map(id=>`<div style="display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)"><span style="flex:1;min-width:0">${esc(id)} - ${esc(customStudents[id])}</span><button type="button" class="lnk" data-a="edit" data-id="${esc(id)}">Edit</button><button type="button" class="lnk" data-a="del" data-id="${esc(id)}" style="color:var(--bad)">Remove</button></div>`).join(''):'';
+const smsg=(t,k)=>{const m=$('#student_msg');m.textContent=t;m.style.color=k==='ok'?'var(--ok)':'var(--bad)'};
+const SH={...HD,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'};
+const saveLocal=()=>localStorage.setItem('sodic_custom_students',JSON.stringify(customStudents));
+async function putStudents(obj){
+ if(!CLOUD){Object.assign(customStudents,obj);saveLocal();return}
+ const list=Object.entries(obj).map(([student_id,name])=>({student_id,name}));
+ const r=await fetch(SAPI+'?on_conflict=student_id',{method:'POST',headers:SH,body:JSON.stringify(list)});
+ if(!r.ok)throw new Error(r.status);
 }
-$('#custlist').onclick=e=>{
+async function delStudent(id){
+ if(!CLOUD){delete customStudents[id];saveLocal();return}
+ const r=await fetch(SAPI+'?student_id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:{...HD,Prefer:'return=representation'}});
+ if(!r.ok)throw new Error(r.status);
+ if(!(await r.json()).length)throw new Error('blocked');
+}
+function renderStudents(){
+ const ids=Object.keys(STUDENTS).sort();
+ let h='';
+ if(CLOUD&&!dbReady)h='<div class="admin-instructions">The shared student list is empty, so the built-in list is being used. Copy it once before adding or editing students.<br><button type="button" class="btn2" data-a="seed" style="margin-top:8px">Copy the built-in list to the shared database</button></div>';
+ h+='<h3 style="font-size:15px;margin:0 0 4px;">All students ('+ids.length+')</h3><div style="max-height:320px;overflow:auto">'+ids.map(id=>`<div style="display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)"><span style="flex:1;min-width:0">${esc(id)} - ${esc(STUDENTS[id])}</span><button type="button" class="lnk" data-a="edit" data-id="${esc(id)}">Edit</button><button type="button" class="lnk" data-a="del" data-id="${esc(id)}" style="color:var(--bad)">Remove</button></div>`).join('')+'</div>';
+ $('#slist').innerHTML=h;
+}
+const needSeed=()=>{if(CLOUD&&!dbReady){smsg('First tap "Copy the built-in list to the shared database".','bad');return true}};
+$('#slist').onclick=async e=>{
  const b=e.target.closest('button');if(!b)return;
- const id=b.dataset.id;
- if(b.dataset.a==='edit'){
-  const n=prompt('New name for '+id,customStudents[id]);
-  if(!n||!n.trim())return;
-  customStudents[id]=n.trim();STUDENTS[id]=n.trim();
- }else{
-  if(!confirm('Remove '+id+' - '+customStudents[id]+' from this device?'))return;
-  delete customStudents[id];delete STUDENTS[id];
- }
- saveCustom();renderCustom();render();
+ const id=b.dataset.id,act=b.dataset.a;
+ try{
+  if(act==='seed'){
+   await putStudents({...DEFAULT_STUDENTS,...customStudents});
+   customStudents={};localStorage.removeItem('sodic_custom_students');dbReady=true;
+   await loadStudents();smsg('Student list copied to the shared database.','ok');
+  }else if(act==='edit'){
+   if(needSeed())return;
+   const n=prompt('New name for '+id,STUDENTS[id]);
+   if(!n||!n.trim())return;
+   await putStudents({[id]:n.trim()});STUDENTS[id]=n.trim();smsg('Updated '+id+'.','ok');
+  }else if(act==='del'){
+   if(needSeed())return;
+   if(!confirm('Remove '+id+' - '+STUDENTS[id]+' from the student list? Past records are kept.'))return;
+   await delStudent(id);delete STUDENTS[id];smsg('Removed '+id+'.','ok');
+  }
+  renderStudents();render();$('#sid').oninput();
+ }catch(err){smsg('Could not save. Run the one-time students table setup in Supabase (supabase_students.sql).','bad')}
 };
-$('#btn_add_student').onclick=()=>{
- const sid=$('#new_sid').value.trim(),sname=$('#new_sname').value.trim(),msg=$('#student_msg');
- if(!sid||!sname){msg.textContent='Please enter both Student ID and Name.';msg.style.color='var(--bad)';return}
- if(DEFAULT_STUDENTS[sid]){msg.textContent=sid+' is already in the main list ('+DEFAULT_STUDENTS[sid]+'). Change it in index.html.';msg.style.color='var(--bad)';return}
- STUDENTS[sid]=sname;customStudents[sid]=sname;saveCustom();
- msg.textContent=`Added ${sname} (${sid}) on this device. To add it for everyone, put it in index.html.`;msg.style.color='var(--ok)';
- $('#new_sid').value='';$('#new_sname').value='';
- renderCustom();render();
+$('#btn_add_student').onclick=async()=>{
+ const sid=$('#new_sid').value.trim(),sname=$('#new_sname').value.trim();
+ if(!sid||!sname)return smsg('Please enter both Student ID and Name.','bad');
+ if(needSeed())return;
+ if(STUDENTS[sid])return smsg(sid+' already exists ('+STUDENTS[sid]+'). Use Edit in the list.','bad');
+ try{
+  await putStudents({[sid]:sname});STUDENTS[sid]=sname;
+  smsg('Added '+sname+' ('+sid+') for everyone.','ok');
+  $('#new_sid').value='';$('#new_sname').value='';
+  renderStudents();render();
+ }catch(err){smsg('Could not save. Run the one-time students table setup in Supabase (supabase_students.sql).','bad')}
 };
 
 $('#clr').onclick=()=>{
@@ -529,9 +562,14 @@ $('#clr').onclick=()=>{
 };
 
 /* ---------- start ---------- */
-loadRows().then(render);
+Promise.all([loadStudents(),loadRows()]).then(async()=>{
+ if(CLOUD&&dbReady&&Object.keys(customStudents).length&&location.search.includes('admin')){
+  try{await putStudents(customStudents);customStudents={};localStorage.removeItem('sodic_custom_students');await loadStudents()}catch(e){}
+ }
+ render();renderStudents();$('#sid').oninput();
+});
 setInterval(()=>{renderStats();renderLive();renderTable()},60000);
-if(CLOUD)setInterval(()=>loadRows().then(render),60000);
+if(CLOUD)setInterval(()=>Promise.all([loadStudents(),loadRows()]).then(render),60000);
 </script>
 </body>
 </html>
