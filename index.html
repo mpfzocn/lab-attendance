@@ -183,7 +183,20 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
    <input type="date" id="dt">
    <label id="lin">In time (optional)</label><div class="tp" id="tin" role="group" aria-labelledby="lin"></div>
    <label id="lout">Out time (optional)</label><div class="tp" id="tout" role="group" aria-labelledby="lout"></div>
-   <label for="workingSummary">Working Summary</label><textarea id="workingSummary" rows="3" maxlength="1000" placeholder="Briefly describe the work completed during this lab session."></textarea>
+   <label for="workingSummary">Working Summary</label>
+   <select id="workingSummary" multiple size="9" aria-label="Working Summary">
+    <option value="Project Works">Project Works</option>
+    <option value="Literature Review">Literature Review</option>
+    <option value="Research Methodology Development">Research Methodology Development</option>
+    <option value="Data Analysis / Interpretation">Data Analysis / Interpretation</option>
+    <option value="Figure Preparation">Figure Preparation</option>
+    <option value="Data Collection">Data Collection</option>
+    <option value="Research Documentation / Report Writing">Research Documentation / Report Writing</option>
+    <option value="Presentation Preparation">Presentation Preparation</option>
+    <option value="Preparing Manuscripts">Preparing Manuscripts</option>
+    <option value="Other Research-related Work">Other Research-related Work</option>
+   </select>
+   <div class="small" style="margin-top:5px">Select one or more activities completed during this lab session.</div>
    <div class="two"><button type="button" class="go in" id="bin">Check in</button><button type="button" class="go out" id="bout">Check out</button></div>
    <div id="msg" role="status" aria-live="polite"></div>
   </form>
@@ -384,7 +397,7 @@ async function insertRow(r){
  if(error) throw error;
 }
 async function closeRow(r,tout,workingSummary){
- if(!CLOUD || !sb){r.tout=tout;persist();return}
+ if(!CLOUD || !sb){r.tout=tout;r.working_summary=workingSummary||'';persist();return}
  const { error } = await sb.from('entries').update({time_out:tout,working_summary:workingSummary||''}).eq('id',r.id);
  if(error) throw error;
 }
@@ -419,7 +432,7 @@ $('#sid').oninput=()=>{
  else if(id.length>=8){w.textContent='ID not found. Please check and try again.';w.className='bad'}
  else{w.textContent='';w.className=''}
 };
-function resetForm(){$('#sid').value='';set24('tin','');set24('tout','');$('#workingSummary').value='';$('#sid').oninput()}
+function resetForm(){$('#sid').value='';set24('tin','');set24('tout','');Array.from($('#workingSummary').options).forEach(o=>o.selected=false);$('#sid').oninput()}
 async function run(btn,fn){
  const all=[...document.querySelectorAll('.go')];all.forEach(b=>b.disabled=true);setMsg('Saving...');
  try{await fn();await loadRows();render()}
@@ -438,7 +451,7 @@ $('#bin').onclick=()=>{
 };
 const SUMMARY_EXEMPT_IDS=new Set(['16207119','18207059']);
 $('#bout').onclick=()=>{
- const sid=$('#sid').value.trim(),tout=get24('tout'),workingSummary=$('#workingSummary').value.trim();
+ const sid=$('#sid').value.trim(),tout=get24('tout'),workingSummary=Array.from($('#workingSummary').selectedOptions).map(o=>o.value).join('; ');
  if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
  if(tout===null)return setMsg('Please complete the out time or leave it blank.','bad');
  if(!SUMMARY_EXEMPT_IDS.has(sid)&&!workingSummary)return setMsg('Please enter your Working Summary before checking out.','bad');
