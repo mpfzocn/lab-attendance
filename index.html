@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
-:root{--navy:#0b2a43;--teal:#0d7c86;--teal-d:#0a5f67;--tint:#e6f2f3;--gold:#c9962b;--bg:#f2f5f7;--card:#fff;--ink:#14222d;--mute:#5f7280;--line:#dbe3e8;--ok:#17794a;--bad:#b3261e;--r:10px}
+:root{--navy:#0b2a43;--teal:#0d7c86;--teal-d:#0a5f67;--tint:#e6f2f3;--gold:#c9962b;--green:#17794a;--bg:#f2f5f7;--card:#fff;--ink:#14222d;--mute:#5f7280;--line:#dbe3e8;--bad:#b3261e;--r:10px}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'IBM Plex Sans',system-ui,sans-serif}
@@ -23,48 +23,51 @@ h1{margin:0;font:700 24px/1.2 'Source Serif 4',serif}
 .clock{text-align:right;flex:none}
 #clk{font:600 22px 'Source Serif 4',serif;font-variant-numeric:tabular-nums}
 #cdate{font-size:13px;color:#b7cad8}
+main{padding-top:20px;padding-bottom:30px}
 .hero{position:relative;margin:0 0 18px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--navy)}
 .hero img{display:block;width:100%;height:clamp(180px,30vw,320px);object-fit:cover;object-position:50% 58%}
 .hero figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 18px 12px;color:#fff;font-size:14px;background:linear-gradient(to top,rgba(11,42,67,.88),rgba(11,42,67,0))}
 .hero figcaption b{font:700 17px 'Source Serif 4',serif}
-main{padding-top:20px;padding-bottom:30px}
 .tool{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
 .month{display:flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:4px}
 .month b{min-width:140px;text-align:center;font-weight:600}
 .ib{border:0;background:none;width:40px;height:40px;border-radius:7px;font-size:22px;line-height:1;color:var(--teal-d);cursor:pointer}
 .ib:hover{background:var(--tint)}
 .badge{font-size:13px;color:var(--mute);display:flex;align-items:center;gap:7px}
-.dot{width:9px;height:9px;border-radius:50%;background:#c28a00}.dot.on{background:var(--ok)}
+.dot{width:9px;height:9px;border-radius:50%;background:#c28a00}.dot.on{background:var(--green)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin-bottom:18px}
 .stat{padding:16px 20px;border-right:1px solid var(--line)}.stat:last-child{border-right:0}
 .stat span{display:block;font-size:13px;color:var(--mute)}
 .stat b{font:700 28px/1.25 'Source Serif 4',serif;color:var(--navy);font-variant-numeric:tabular-nums}
 .grid{display:grid;grid-template-columns:360px 1fr;gap:18px;margin-bottom:18px;align-items:start}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;min-width:0}
-.live{margin-bottom:18px}
+.cgrid{display:grid;grid-template-columns:1.15fr 1fr;gap:22px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;min-width:0;margin-bottom:18px}
+.grid .card{margin-bottom:0}
 .card h2{margin:0 0 4px;font:700 19px 'Source Serif 4',serif;color:var(--navy)}
+.card h3{margin:0 0 4px;font:700 16px 'Source Serif 4',serif;color:var(--navy)}
 .sub{margin:0 0 14px;font-size:13.5px;color:var(--mute)}
 label{display:block;font-size:13px;font-weight:500;color:var(--mute);margin:14px 0 5px}
-input,select{width:100%;min-width:0;min-height:46px;padding:10px 10px;font:inherit;font-size:16px;color:var(--ink);background:#fbfcfd;border:1px solid var(--line);border-radius:8px}
+input,select{width:100%;min-width:0;min-height:46px;padding:10px;font:inherit;font-size:16px;color:var(--ink);background:#fbfcfd;border:1px solid var(--line);border-radius:8px}
 input[type=date]{-webkit-appearance:none;appearance:none}
 input:focus,select:focus,button:focus-visible{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
 #sid{font-size:18px;letter-spacing:1px;font-variant-numeric:tabular-nums}
 #who{min-height:26px;margin-top:6px;font-weight:600;font-size:14.5px}
-#who.ok{color:var(--ok)}#who.bad{color:var(--bad)}
+#who.ok{color:var(--green)}#who.bad{color:var(--bad)}
 .tp{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:6px}
-.quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.lnk{border:1px solid var(--line);background:none;color:var(--teal-d);border-radius:8px;padding:8px 12px;min-height:40px;font:inherit;font-size:13.5px;cursor:pointer}
-.lnk:hover{background:var(--tint)}
-.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
-.go{width:100%;min-height:50px;padding:13px;border:0;border-radius:8px;background:var(--teal);color:#fff;font:600 16px 'IBM Plex Sans',sans-serif;cursor:pointer}
-.go:hover{background:var(--teal-d)}.go:disabled{opacity:.6;cursor:wait}
-.go.out{background:var(--navy)}.go.out:hover{background:#06192a}
-#msg{min-height:22px;margin-top:10px;font-size:14px}
-.champ{display:flex;align-items:center;gap:10px;background:#fbf4e3;border:1px solid #ecd9a6;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:14px}
-.champ svg{flex:none;color:var(--gold)}
-.champ.short{background:var(--tint);border-color:#bcdadd}.champ.short svg{color:var(--navy)}
-.cbox{position:relative;width:100%;margin-top:12px}
-.empty{color:var(--mute);padding:30px 0;text-align:center}
+.hint{font-size:12.5px;color:var(--mute);margin-top:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.go{min-height:50px;padding:12px;border:0;border-radius:8px;color:#fff;font:600 16px 'IBM Plex Sans',sans-serif;cursor:pointer}
+.go.in{background:var(--teal)}.go.in:hover{background:var(--teal-d)}
+.go.out{background:var(--navy)}.go.out:hover{background:#12405f}
+.go:disabled{opacity:.6;cursor:wait}
+.lnk{display:block;margin:12px auto 0;border:0;background:none;color:var(--teal-d);text-decoration:underline;font:inherit;font-size:13.5px;cursor:pointer;min-height:36px}
+#msg{min-height:22px;margin-top:8px;font-size:14px}
+.champ{display:flex;align-items:center;gap:10px;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:14px}
+.champ.g{background:#fbf4e3;border:1px solid #ecd9a6}.champ.g svg{color:var(--gold)}
+.champ.s{background:var(--tint);border:1px solid #bcdadd}.champ.s svg{color:var(--teal-d)}
+.champ svg{flex:none}
+.cbox{position:relative;width:100%;margin-top:6px}
+.empty{color:var(--mute);padding:22px 0;text-align:center}
 .lh{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .lh .r{display:flex;gap:8px;align-items:center}
 .lh input{width:220px}
@@ -73,19 +76,43 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--teal);outl
 .sc{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th{background:var(--tint);color:var(--navy);text-align:left;font-weight:600;padding:10px 12px;white-space:nowrap}
-td{padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+td{padding:10px 12px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;vertical-align:top}
 tr:last-child td{border-bottom:0}
-.dur{background:var(--tint);color:var(--teal-d);font-weight:600;border-radius:6px;padding:3px 9px;font-size:13px}
-.dur.on{background:#e3f4ea;color:var(--ok)}.dur.warn{background:#fbeceb;color:var(--bad)}
+tr.we td{background:#f6f7f8}
+tr.sel td{background:#fbf4e3}
+tr.nodata td{color:#9aa9b1}
+tr.tot td{font-weight:600;background:var(--tint)}
+tr[data-day]{cursor:pointer}
+.dur,.pill{border-radius:6px;padding:3px 9px;font-size:13px;font-weight:600;white-space:nowrap;display:inline-block}
+.dur{background:var(--tint);color:var(--teal-d)}
+.dur.live,.pill.live{background:#e3f4ea;color:var(--green)}
+.dur.warn{background:#fdf0dc;color:#8a5a00}
+.pill.left{background:#eef1f3;color:var(--mute)}
+.pill.cnt{background:var(--navy);color:#fff;margin-right:6px}
 .tr{display:inline-flex;vertical-align:middle;margin-left:6px;color:var(--gold)}
+.small{font-size:12.5px;color:var(--mute);line-height:1.5}
 .more{display:block;margin:12px auto 0}
-.admin-instructions{background:var(--tint);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:14px;font-size:13.5px}
-.admin-instructions ol{margin:6px 0 0;padding-left:18px}
-.admin-instructions li{margin-bottom:4px}
-.add-box{display:flex;gap:8px;margin-top:10px}
-.add-box input{flex:1}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.cal .wd{text-align:center;font-size:12px;color:var(--mute);padding:2px 0}
+.cal button{min-height:64px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd;color:var(--ink);padding:5px 3px;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.25}
+.cal button.we{background:#f1f3f5}
+.cal button.td{border:2px solid var(--teal)}
+.cal button.sel{outline:2px solid var(--navy);outline-offset:1px}
+.cal .dn{font-weight:600;font-size:14px}.cal .cs,.cal .ch{font-size:11px}.cal .ch{font-weight:600}
+.legend{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--mute);flex-wrap:wrap}
+.legend i{width:26px;height:10px;border-radius:3px;background:linear-gradient(to right,rgba(13,124,134,.12),rgba(13,124,134,.9))}
+.mxw{overflow-x:auto}
+.mx{width:auto;min-width:100%;font-size:12.5px}
+.mx th,.mx td{padding:6px 5px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--line)}
+.mx th:first-child,.mx td:first-child{text-align:left;position:sticky;left:0;min-width:150px;background:#fff;z-index:1;padding-left:10px}
+.mx th:first-child{background:var(--tint)}
+.mx td.v{background:rgba(13,124,134,.13)}
+.mx td.z{color:#c3ced4}
+.mx th.we{color:var(--gold)}
+.mx b{display:block;font-size:13px}.mx small{display:block;color:var(--mute);font-size:10.5px}
+.mx tr.tot td{background:var(--tint)}.mx tr.tot td:first-child{background:var(--tint)}
 footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
-@media(max-width:860px){.grid{grid-template-columns:1fr}}
+@media(max-width:860px){.grid,.cgrid{grid-template-columns:1fr}}
 @media(max-width:600px){
  .wrap{padding:0 12px}
  .bar{padding:14px 12px;flex-wrap:wrap}
@@ -101,14 +128,14 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
  .stat{padding:12px 14px}.stat b{font-size:23px}
  .stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}
  .lh input{width:100%}.lh .r{width:100%}.lh .r input{flex:1}
+ .cal{gap:3px}.cal button{min-height:54px;padding:4px 1px}.cal .cs{font-size:10px}.cal .ch{font-size:10px}
  .sc{overflow:visible}
- table,tbody{display:block}thead{display:none}
- tr{display:block;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:10px}
- td{display:flex;justify-content:space-between;align-items:center;gap:12px;border:0;padding:4px 0;white-space:normal;text-align:right}
- td::before{content:attr(data-l);color:var(--mute);text-align:left}
- .add-box{flex-direction:column}
+ .sc table,.sc tbody{display:block}.sc thead{display:none}
+ .sc tr{display:block;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:10px}
+ .sc tr.tot{background:var(--tint)}
+ .sc td{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border:0;padding:4px 0;text-align:right}
+ .sc td::before{content:attr(data-l);color:var(--mute);text-align:left;flex:none}
 }
-@media(prefers-reduced-motion:no-preference){.go{transition:background .15s}}
 </style>
 </head>
 <body>
@@ -124,6 +151,7 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
   <img src="SODIC-CU.jpg" width="1600" height="900" alt="The SODIC-CU lab building with two radomes and a satellite dish, University of Chittagong" onerror="document.getElementById('hero').hidden=true">
   <figcaption><b>Our lab</b><br>SODIC-CU, Department of Oceanography, University of Chittagong</figcaption>
  </figure>
+
  <div class="tool">
   <div class="month"><button class="ib" id="pm" aria-label="Previous month">&#8249;</button><b id="mlabel"></b><button class="ib" id="nm" aria-label="Next month">&#8250;</button></div>
   <div class="badge"><span class="dot" id="dot"></span><span id="mode"></span></div>
@@ -131,28 +159,42 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 
  <section class="stats" id="stats"></section>
 
- <section class="card live">
+ <section class="card" id="livecard">
   <h2>Who is in the lab now</h2>
-  <p class="sub" id="livesub">Students who have checked in today and not yet checked out.</p>
-  <div id="lchamps"></div>
-  <div class="cbox" id="lbox"><canvas id="lchart"></canvas></div>
-  <div class="empty" id="lempty" hidden>Nobody is checked in right now.</div>
+  <p class="sub" id="liveSub"></p>
+  <div class="champ g" id="cLong" hidden></div>
+  <div class="champ s" id="cShort" hidden></div>
+  <div class="cbox" id="liveBox" hidden><canvas id="liveChart"></canvas></div>
+  <h3 style="margin-top:18px">Today's entries by student</h3>
+  <p class="sub" style="margin-bottom:8px" id="liveEnt">How many times each student entered the lab today, and when.</p>
+  <div class="sc"><table><thead><tr><th>Student</th><th>Entries today</th><th>Status</th><th>In and out times</th><th>Total today</th></tr></thead><tbody id="liveTb"></tbody></table></div>
+  <div class="empty" id="liveEmpty" hidden>No entries yet today.</div>
+ </section>
+
+ <section class="card">
+  <div class="lh">
+   <div><h2>Single-day in and out times</h2><p class="sub" style="margin:0" id="tlSub">Pick a day to see every student's in and out time.</p></div>
+   <div class="r"><input type="date" id="tlDate" aria-label="Choose day"></div>
+  </div>
+  <div class="cbox" id="tlBox" hidden><canvas id="tlChart"></canvas></div>
+  <div class="empty" id="tlEmpty" hidden>No entries on this day.</div>
+  <div class="sc"><table><thead><tr><th>Student</th><th>Entry no.</th><th>In time</th><th>Out time</th><th>Duration</th></tr></thead><tbody id="tlTb"></tbody></table></div>
  </section>
 
  <div class="grid">
   <section class="card">
    <h2>Log your lab time</h2>
    <p class="sub">Arriving: enter your ID and tap Check in. Leaving: enter your ID and tap Check out. A blank time uses the current time.</p>
-   <form id="f" autocomplete="off">
+   <form id="f" autocomplete="off" onsubmit="return false">
     <label for="sid" style="margin-top:0">Student ID</label>
-    <input id="sid" inputmode="numeric" maxlength="15" placeholder="e.g. 22902012 or 16207119">
+    <input id="sid" inputmode="numeric" maxlength="8" placeholder="e.g. 22902012">
     <div id="who" aria-live="polite"></div>
     <label for="dt">Date</label>
     <input type="date" id="dt">
-    <label id="lin">In time</label><div class="tp" id="tin" role="group" aria-labelledby="lin"></div>
-    <label id="lout">Out time</label><div class="tp" id="tout" role="group" aria-labelledby="lout"></div>
-    <div class="quick"><button type="button" class="lnk" id="nin">Set In to now</button><button type="button" class="lnk" id="nout">Set Out to now</button></div>
-    <div class="acts"><button class="go" id="go" type="submit">Check in</button><button class="go out" id="goout" type="button">Check out</button></div>
+    <label id="lin">In time (optional)</label><div class="tp" id="tin" role="group" aria-labelledby="lin"></div>
+    <label id="lout">Out time (optional)</label><div class="tp" id="tout" role="group" aria-labelledby="lout"></div>
+    <div class="two"><button type="button" class="go in" id="bin">Check in</button><button type="button" class="go out" id="bout">Check out</button></div>
+    <button type="button" class="lnk" id="bfull">Add a complete past entry (in and out time)</button>
     <div id="msg" role="status" aria-live="polite"></div>
    </form>
   </section>
@@ -160,11 +202,37 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
   <section class="card">
    <h2>Hours in the lab</h2>
    <p class="sub" id="csub"></p>
-   <div id="champs"></div>
+   <div class="champ g" id="champ" hidden></div>
    <div class="cbox" id="cbox"><canvas id="chart"></canvas></div>
-   <div class="empty" id="cempty" hidden>No completed visits for this month yet.</div>
+   <div class="empty" id="cempty" hidden>No entries for this month yet.</div>
   </section>
  </div>
+
+ <section class="card">
+  <h2>Daily report calendar</h2>
+  <p class="sub">Every day of <span id="calMonth"></span>. Each day shows students and total hours. Click a day for details.</p>
+  <div class="cgrid">
+   <div><div class="cal" id="cal"></div><div class="legend"><i></i> fewer hours to more hours &nbsp;|&nbsp; grey = Friday and Saturday</div></div>
+   <div id="dayPanel"></div>
+  </div>
+ </section>
+
+ <section class="card">
+  <div class="lh">
+   <div><h2>Student by day report</h2><p class="sub" style="margin:0" id="mxsub"></p></div>
+   <button class="btn2" id="csvM">Download student by day report</button>
+  </div>
+  <div class="mxw"><table class="mx" id="mx"></table></div>
+  <div class="empty" id="mxEmpty" hidden>No entries for this month yet.</div>
+ </section>
+
+ <section class="card">
+  <div class="lh">
+   <div><h2>Daily report for the month</h2><p class="sub" style="margin:0" id="dsub"></p></div>
+   <button class="btn2" id="csvD">Download daily report</button>
+  </div>
+  <div class="sc"><table><thead><tr><th>Date</th><th>Students</th><th>Entries</th><th>Total hours</th><th>Average per student</th><th>Longest stay</th></tr></thead><tbody id="dtb"></tbody></table></div>
+ </section>
 
  <section class="card">
   <div class="lh">
@@ -179,137 +247,78 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
  <section class="card" id="admin" hidden>
   <h2>Admin tools</h2>
   <p class="sub" id="admtxt"></p>
-
-  <div class="admin-instructions">
-   <b>Students are saved in the shared database.</b>
-   <ol>
-    <li>Enter the Student ID and full name, then tap <b>Add Student</b>.</li>
-    <li>The student appears on every phone within a minute, or after a refresh.</li>
-    <li>Use <b>Edit</b> to fix a name and <b>Remove</b> to delete a student.</li>
-   </ol>
-  </div>
-
-  <div style="margin-bottom:20px;">
-    <h3 style="font-size:15px;margin:0 0 6px;">Add New Student</h3>
-    <div class="add-box">
-      <input id="new_sid" placeholder="Student ID (e.g. 16207119)">
-      <input id="new_sname" placeholder="Student Name (e.g. Md. Mazaharul Islam)">
-      <button class="btn2" id="btn_add_student">Add Student</button>
-    </div>
-    <div id="student_msg" style="margin-top:6px;font-size:13.5px;"></div>
-    <div id="slist" style="margin-top:12px"></div>
-  </div>
-
   <button class="btn2" id="clr" style="border-color:var(--bad);color:var(--bad)">Clear all records on this device</button>
  </section>
 </main>
 <footer>SODIC-CU, Department of Oceanography, University of Chittagong</footer>
 
 <script>
-/* One-time Supabase setup for check-in / check-out (run in SQL Editor):
-   alter table entries alter column time_out drop not null;
-   create policy "allow update" on entries for update using (true) with check (true);
-*/
-const SUPABASE_URL='https://obctddlksvgejgohmmms.supabase.co';
-const SUPABASE_KEY='sb_publishable_ttLMNzSc2_Dpt09clK-M-w_g7i_wcCo';
-const ADMIN_PIN='1234';
+/* ===== Paste your Supabase details here to share one record across all phones ===== */
+const SUPABASE_URL='https://YOUR-PROJECT.supabase.co';
+const SUPABASE_KEY='YOUR-ANON-OR-PUBLISHABLE-KEY';
+/* Leave as is to save entries only in this browser. */
+const ADMIN_PIN='1234';   // change this. Add ?admin to the end of the link to see admin tools.
 
-const DEFAULT_STUDENTS = {
-    "22902001": "Mobashira Anika",
-    "21902021": "Md. Jakaria Hasnat",
-    "21902027": "Puja Rani Dhar",
-    "21902026": "Md. Saifullah Al Hafiz Saikat",
-    "21902029": "Kapotakkhi",
-    "22902002": "Zawad Ibna Zihad",
-    "22902012": "Lily Chakma",
-    "22902009": "Maria Alam",
-    "22902029": "Marzia Morshed Mim",
-    "20902038": "Md. Mostakim",
-    "20902037": "Roman Hossain",
-    "19902003": "Tanbhir Hosen",
-    "19902036": "Fowzia Aktar",
-    "20902023": "Rupali Khatun",
-    "24902029": "Subarna Majumder",
-    "24902007": "Ipshita Hasan Hiya",
-    "23902004": "MD.Rohan Tanvir",
-    "23902005": "Md. Sabit Bin Nasim",
-    "23902018": "Nafisa Hakim",
-    "23902010": "Anamul Haque",
-    "23902017": "Zamiu Rahman",
-    "24902012": "K. M. Rashid Shariar Mehedi",
-    "16207119": "Md. Mazaharul Islam",
-    "18207059": "Tasnim Binth Abin",
-    "24902014": "M A Wasif Ur Rahman",
-    "24902005": "Tanjina Islam",
-    "24902026": "Sarah Tarannum"
-};
-
-let customStudents = {};
-try { customStudents = JSON.parse(localStorage.getItem('sodic_custom_students')) || {}; } catch(e) { customStudents = {}; }
-/* Students live in the shared Supabase table "students". DEFAULT_STUDENTS is only the starting list / offline fallback. */
-let STUDENTS={...DEFAULT_STUDENTS,...customStudents};
-let dbReady=false;
-const SAPI=SUPABASE_URL+'/rest/v1/students';
+const STUDENTS={"22902001":"Mobashira Anika","21902021":"Md. Jakaria Hasnat","21902027":"Puja Rani Dhar","21902026":"Md. Saifullah Al Hafiz Saikat","21902029":"Kapotakkhi","22902002":"Zawad Ibna Zihad","22902012":"Lily Chakma","22902009":"Maria Alam","22902029":"Marzia Morshed Mim","20902038":"Md. Mostakim","20902037":"Roman Hossain","19902003":"Tanbhir Hosen","19902036":"Fowzia Aktar","20902023":"Rupali Khatun","24902029":"Subarna Majumder","24902007":"Ipshita Hasan Hiya","23902004":"MD.Rohan Tanvir","23902005":"Md. Sabit Bin Nasim","23902018":"Nafisa Hakim","23902010":"Anamul Haque","23902017":"Zamiu Rahman","24902012":"K. M. Rashid Shariar Mehedi","16207119":"Md. Mazaharul Islam","18207059":"Tasnim Binth Abin","24902014":"M A Wasif Ur Rahman","24902005":"Tanjina Islam","24902026":"Sarah Tarannum"};
 
 const CLOUD=SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('YOUR-');
 const HD={apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY};
-const API=SUPABASE_URL+'/rest/v1/entries';
-const LS='sodic_attendance_v2';
+const LS='sodic_attendance_v3';
 const $=s=>document.querySelector(s);
 const pad=n=>String(n).padStart(2,'0');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const TROPHY='<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M7 3h10v2h3v3a4 4 0 0 1-4 4h-.4A5.5 5.5 0 0 1 13 14.9V17h3v2h1v2H7v-2h1v-2h3v-2.1A5.5 5.5 0 0 1 8.4 12H8a4 4 0 0 1-4-4V5h3V3Zm0 4H6v1a2 2 0 0 0 1 1.7V7Zm10 0v2.7A2 2 0 0 0 18 8V7h-1Z"/></svg>';
 const CLOCK='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const nowT=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
 const tm=t=>{const [h,m]=t.split(':').map(Number);return h*60+m};
 const diff=(a,b)=>{let d=tm(b)-tm(a);if(d<0)d+=1440;return d};
 const fmt=m=>Math.floor(m/60)+'h '+pad(m%60)+'m';
 const t12=t=>{const [h,m]=t.split(':').map(Number);return (h%12||12)+':'+pad(m)+' '+(h>=12?'PM':'AM')};
-const nowT=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
-const elapsed=r=>{const d=new Date();return Math.max(0,d.getHours()*60+d.getMinutes()-tm(r.tin))};
-const fmtH=h=>fmt(Math.round(h*60));
+const nm=id=>STUDENTS[id]||id;
+const WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-let rows=[],ym=todayStr().slice(0,7),showAll=false;
-const charts={};
+let rows=[],ym=todayStr().slice(0,7),selDay=todayStr(),showAll=false,charts={};
+
+/* ---------- rows: {id,sid,date,tin,tout|null} ---------- */
+const isOpen=r=>!r.tout;
+const elapsed=r=>Math.max(0,Math.floor((Date.now()-new Date(r.date+'T'+r.tin+':00').getTime())/60000));
+const durMin=r=>r.tout?diff(r.tin,r.tout):(r.date===todayStr()?elapsed(r):0);
+const monthRows=()=>rows.filter(r=>r.date.startsWith(ym));
+function groupDay(date){
+ const g={};rows.filter(r=>r.date===date).forEach(r=>{(g[r.sid]=g[r.sid]||[]).push(r)});
+ return Object.keys(g).map(sid=>{const a=g[sid].sort((x,y)=>x.tin.localeCompare(y.tin));return{sid,a,n:a.length,total:a.reduce((s,r)=>s+durMin(r),0)}}).sort((x,y)=>y.total-x.total);
+}
+const times=(a,d)=>a.map((r,i)=>(a.length>1?(i+1)+'. ':'')+'In '+t12(r.tin)+', Out '+(r.tout?t12(r.tout):(d===todayStr()?'still in lab':'not recorded'))).join('<br>');
 
 /* ---------- storage ---------- */
+const persist=()=>{try{localStorage.setItem(LS,JSON.stringify(rows))}catch(e){alert('Browser storage is unavailable.')}};
 async function loadRows(){
  if(!CLOUD){try{rows=JSON.parse(localStorage.getItem(LS))||[]}catch(e){rows=[]}return}
  let all=[],from=0;
  try{
   for(;;){
-   const r=await fetch(API+'?select=student_id,date,time_in,time_out&order=date.desc,time_in.desc',{headers:{...HD,Range:from+'-'+(from+999)}});
+   const r=await fetch(SUPABASE_URL+'/rest/v1/entries?select=id,student_id,date,time_in,time_out&order=date.desc,time_in.desc',{headers:{...HD,Range:from+'-'+(from+999)}});
    if(!r.ok)throw 0;const p=await r.json();all=all.concat(p);
    if(p.length<1000)break;from+=1000;
   }
-  rows=all.map(e=>({sid:e.student_id,date:e.date,tin:e.time_in,tout:e.time_out||null}));
+  rows=all.map(e=>({id:e.id,sid:e.student_id,date:e.date,tin:e.time_in,tout:e.time_out||null}));
  }catch(e){setMsg('Could not load records. Check your connection.','bad')}
 }
-async function addRow(r){
- if(!CLOUD){rows.push(r);localStorage.setItem(LS,JSON.stringify(rows));return}
- const res=await fetch(API,{method:'POST',headers:{...HD,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({student_id:r.sid,date:r.date,time_in:r.tin,time_out:r.tout||null})});
- if(!res.ok)throw new Error(res.status);
- rows.push(r);
+async function insertRow(r){
+ if(!CLOUD){rows.push({...r,id:Date.now()+Math.random()});persist();return}
+ const res=await fetch(SUPABASE_URL+'/rest/v1/entries',{method:'POST',headers:{...HD,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({student_id:r.sid,date:r.date,time_in:r.tin,time_out:r.tout||null})});
+ if(!res.ok)throw new Error('insert '+res.status);
 }
 async function closeRow(r,tout){
- if(!CLOUD){r.tout=tout;localStorage.setItem(LS,JSON.stringify(rows));return}
- const q='?student_id=eq.'+encodeURIComponent(r.sid)+'&date=eq.'+r.date+'&time_in=eq.'+encodeURIComponent(r.tin)+'&time_out=is.null';
- const res=await fetch(API+q,{method:'PATCH',headers:{...HD,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({time_out:tout})});
- if(!res.ok)throw new Error(res.status);
- if(!(await res.json()).length)throw new Error('blocked');
- r.tout=tout;
+ if(!CLOUD){r.tout=tout;persist();return}
+ const res=await fetch(SUPABASE_URL+'/rest/v1/entries?id=eq.'+r.id,{method:'PATCH',headers:{...HD,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({time_out:tout})});
+ if(!res.ok)throw new Error('patch '+res.status);
+ const out=await res.json();
+ if(!out.length)throw new Error('nopolicy');
 }
 
-async function loadStudents(){
- if(!CLOUD)return;
- try{
-  const r=await fetch(SAPI+'?select=student_id,name&order=student_id',{headers:HD});
-  if(!r.ok)throw 0;const p=await r.json();
-  if(p.length){STUDENTS={};p.forEach(x=>STUDENTS[x.student_id]=x.name);dbReady=true}
- }catch(e){}
-}
-
-/* ---------- header clock ---------- */
+/* ---------- header ---------- */
 function tick(){
  const d=new Date(),h=d.getHours();
  $('#clk').textContent=(h%12||12)+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())+' '+(h>=12?'PM':'AM');
@@ -319,257 +328,270 @@ setInterval(tick,1000);tick();
 $('#dot').classList.toggle('on',CLOUD);
 $('#mode').textContent=CLOUD?'Shared database connected':'Saving on this device only';
 
-/* ---------- 12-hour time pickers ---------- */
+/* ---------- 12-hour pickers (stored as 24-hour HH:MM) ---------- */
 function buildTP(id){
- const hh='<option value="">Hour</option>'+[...Array(12)].map((_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');
+ const hh='<option value="">Hour</option>'+[...Array(12)].map((_,i)=>`<option>${i+1}</option>`).join('');
  const mm='<option value="">Min</option>'+[...Array(60)].map((_,i)=>`<option value="${pad(i)}">${pad(i)}</option>`).join('');
  $('#'+id).innerHTML=`<select aria-label="Hour">${hh}</select><select aria-label="Minutes">${mm}</select><select aria-label="AM or PM"><option value="">AM/PM</option><option>AM</option><option>PM</option></select>`;
 }
-function get24(id){const [h,m,p]=[...$('#'+id).children].map(s=>s.value);if(!h||m===''||!p)return '';let H=(+h)%12;if(p==='PM')H+=12;return pad(H)+':'+m}
+function get24(id){const [h,m,p]=[...$('#'+id).children].map(s=>s.value);if(!h&&m===''&&!p)return '';if(!h||m===''||!p)return null;let H=(+h)%12;if(p==='PM')H+=12;return pad(H)+':'+m}
 function set24(id,v){const s=[...$('#'+id).children];if(!v){s.forEach(x=>x.value='');return}const [H,M]=v.split(':').map(Number);s[0].value=String(H%12||12);s[1].value=pad(M);s[2].value=H>=12?'PM':'AM'}
 buildTP('tin');buildTP('tout');
+$('#dt').value=todayStr();
+$('#tlDate').value=todayStr();
 
 /* ---------- form ---------- */
-$('#dt').value=todayStr();
-function setMsg(t,k){const m=$('#msg');m.textContent=t;m.style.color=k==='ok'?'var(--ok)':k==='bad'?'var(--bad)':'var(--mute)'}
-const openRow=(sid,date)=>rows.find(r=>r.sid===sid&&!r.tout&&r.date===date);
+function setMsg(t,k){const m=$('#msg');m.textContent=t;m.style.color=k==='ok'?'var(--green)':k==='bad'?'var(--bad)':'var(--mute)'}
 $('#sid').oninput=()=>{
  const id=$('#sid').value.trim(),w=$('#who');
- if(STUDENTS[id]){const o=openRow(id,todayStr());w.textContent='\u2713 '+STUDENTS[id]+(o?' (in lab since '+t12(o.tin)+')':'');w.className='ok'}
- else if(id.length>=5){w.textContent='ID not found. Please check or add via admin.';w.className='bad'}
+ if(STUDENTS[id]){w.textContent='\u2713 '+STUDENTS[id];w.className='ok'}
+ else if(id.length>=8){w.textContent='ID not found. Please check and try again.';w.className='bad'}
  else{w.textContent='';w.className=''}
 };
-$('#nin').onclick=()=>set24('tin',nowT());
-$('#nout').onclick=()=>set24('tout',nowT());
-
-function isOverlapping(sid,date,newIn,newOut){
- const a=tm(newIn),b=newOut?tm(newOut):a+1;
- return rows.some(r=>{
-  if(r.sid!==sid||r.date!==date)return false;
-  const s=tm(r.tin),e=r.tout?tm(r.tout):1440;
-  return Math.max(a,s)<Math.min(b,e);
- });
+function resetForm(){$('#sid').value='';set24('tin','');set24('tout','');$('#sid').oninput()}
+async function run(btn,fn){
+ const all=[...document.querySelectorAll('.go,#bfull')];all.forEach(b=>b.disabled=true);setMsg('Saving...');
+ try{await fn();await loadRows();render()}
+ catch(e){setMsg(e.message==='nopolicy'?'Check-out could not be saved. The database needs the check-out permission (see setup SQL).':'Could not save. Check your connection and try again.','bad')}
+ all.forEach(b=>b.disabled=false);
 }
-const busy=v=>{$('#go').disabled=v;$('#goout').disabled=v};
-const read=()=>({sid:$('#sid').value.trim(),date:$('#dt').value,tin:get24('tin'),tout:get24('tout')});
-function afterSave(date){
- $('#sid').value='';set24('tin','');set24('tout','');$('#sid').oninput();
- ym=date.slice(0,7);showAll=false;render();
-}
-
-/* Check in: needs only an In time (blank = now). Out time is optional. */
-$('#f').onsubmit=async ev=>{
- ev.preventDefault();
- let {sid,date,tin,tout}=read();
- if(!sid||!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
- if(!date)return setMsg('Choose a date.','bad');
- if(!tin){if(date!==todayStr())return setMsg('Choose an In time for a past date.','bad');tin=nowT()}
- if(tout&&tm(tin)>=tm(tout))return setMsg('Out time must be later than In time.','bad');
- const o=openRow(sid,date);
- if(o)return setMsg(STUDENTS[sid]+' is already in the lab since '+t12(o.tin)+'. Use Check out.','bad');
- if(isOverlapping(sid,date,tin,tout))return setMsg('Time overlaps with an existing entry for this student on this date.','bad');
- busy(true);setMsg('Saving...');
- try{
-  await addRow({sid,date,tin,tout:tout||null});
-  setMsg(tout?'Saved: '+STUDENTS[sid]+', '+fmt(diff(tin,tout))+' ('+t12(tin)+' to '+t12(tout)+') on '+date+'.':'Checked in: '+STUDENTS[sid]+' at '+t12(tin)+'.','ok');
-  afterSave(date);
- }catch(e){setMsg('Could not save. Check your connection, and make sure the one-time database setup was run.','bad')}
- busy(false);
+const openRowsOf=sid=>rows.filter(r=>r.sid===sid&&isOpen(r)).sort((a,b)=>(b.date+b.tin).localeCompare(a.date+a.tin));
+$('#bin').onclick=()=>{
+ const sid=$('#sid').value.trim(),date=$('#dt').value||todayStr(),tin=get24('tin');
+ if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
+ if(tin===null)return setMsg('Please complete the in time (hour, minutes and AM/PM) or leave it blank.','bad');
+ const op=openRowsOf(sid)[0];
+ if(op)return setMsg(nm(sid)+' is already checked in since '+t12(op.tin)+(op.date!==todayStr()?' on '+op.date:'')+'. Tap Check out first.','bad');
+ const t=tin||nowT();
+ run(null,async()=>{await insertRow({sid,date,tin:t,tout:null});setMsg('Checked in: '+nm(sid)+' at '+t12(t)+'. Remember to check out when you leave.','ok');resetForm()});
 };
-
-/* Check out: closes the open check-in for this student and date. */
-$('#goout').onclick=async()=>{
- let {sid,date,tout}=read();
- if(!sid||!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
- if(!date)return setMsg('Choose a date.','bad');
- const o=openRow(sid,date);
- if(!o)return setMsg('No open check-in found for '+STUDENTS[sid]+' on '+date+'.','bad');
- if(!tout){if(date!==todayStr())return setMsg('Choose an Out time for a past date.','bad');tout=nowT()}
- if(tm(tout)<=tm(o.tin))return setMsg('Out time must be later than the check-in time ('+t12(o.tin)+').','bad');
- busy(true);setMsg('Saving...');
- try{
-  await closeRow(o,tout);
-  setMsg('Checked out: '+STUDENTS[sid]+', '+fmt(diff(o.tin,tout))+' ('+t12(o.tin)+' to '+t12(tout)+').','ok');
-  afterSave(date);
- }catch(e){setMsg('Could not save the check-out. The database may need the one-time update setup.','bad')}
- busy(false);
+$('#bout').onclick=()=>{
+ const sid=$('#sid').value.trim(),tout=get24('tout');
+ if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
+ if(tout===null)return setMsg('Please complete the out time (hour, minutes and AM/PM) or leave it blank.','bad');
+ const op=openRowsOf(sid)[0];
+ if(!op)return setMsg('No check-in found for '+nm(sid)+'. Check in first, or add a complete past entry.','bad');
+ const t=tout||nowT();
+ if(op.date===todayStr()&&tm(t)<=tm(op.tin))return setMsg('Out time must be after the in time ('+t12(op.tin)+').','bad');
+ run(null,async()=>{await closeRow(op,t);setMsg('Checked out: '+nm(sid)+' at '+t12(t)+'. Total '+fmt(diff(op.tin,t))+'. Thank you.','ok');resetForm()});
+};
+$('#bfull').onclick=()=>{
+ const sid=$('#sid').value.trim(),date=$('#dt').value,tin=get24('tin'),tout=get24('tout');
+ if(!STUDENTS[sid])return setMsg('Enter a registered student ID.','bad');
+ if(!date||!tin||!tout)return setMsg('For a complete entry, set the date, in time and out time.','bad');
+ if(tin===tout)return setMsg('In and out time are the same.','bad');
+ if(rows.some(r=>r.sid===sid&&r.date===date&&r.tin===tin&&r.tout===tout))return setMsg('This entry is already recorded.','bad');
+ run(null,async()=>{await insertRow({sid,date,tin,tout});setMsg('Saved: '+nm(sid)+', '+fmt(diff(tin,tout))+' on '+date+'.','ok');ym=date.slice(0,7);selDay=date;$('#tlDate').value=date;resetForm()});
 };
 
 /* ---------- month nav ---------- */
-function shift(n){const [y,m]=ym.split('-').map(Number);const d=new Date(y,m-1+n,1);ym=d.getFullYear()+'-'+pad(d.getMonth()+1);showAll=false;render()}
+function shift(n){const [y,m]=ym.split('-').map(Number);const d=new Date(y,m-1+n,1);ym=d.getFullYear()+'-'+pad(d.getMonth()+1);selDay=ym===todayStr().slice(0,7)?todayStr():null;showAll=false;$('#tlDate').value=selDay||ym+'-01';render()}
 $('#pm').onclick=()=>shift(-1);$('#nm').onclick=()=>shift(1);
 $('#q').oninput=()=>{showAll=false;renderTable()};
 $('#more').onclick=()=>{showAll=!showAll;renderTable()};
+$('#tlDate').onchange=()=>{const v=$('#tlDate').value;if(!v)return;if(v.slice(0,7)!==ym){ym=v.slice(0,7);selDay=v;showAll=false;render()}else{selDay=v;renderCal();renderDaily();renderTimeline()}};
+function pickDay(ds){selDay=ds;$('#tlDate').value=ds;renderCal();renderDaily();renderTimeline()}
 
 /* ---------- charts ---------- */
-const valuePlugin={id:'val',afterDatasetsDraw(c){const x=c.ctx,t=c.data.datasets[0].txt;c.getDatasetMeta(0).data.forEach((b,i)=>{x.save();x.fillStyle='#14222d';x.font='600 12px "IBM Plex Sans"';x.textBaseline='middle';x.fillText(t[i],b.x+7,b.y);x.restore()})}};
-const colsFor=(n,base)=>Array.from({length:n},(_,i)=>i===0?'#c9962b':(n>1&&i===n-1?'#0b2a43':base));
-function bars(key,canvas,box,arr,f,base){
- $(box).hidden=!arr.length;
- if(!arr.length||typeof Chart==='undefined')return;
- $(box).style.height=Math.max(160,arr.length*38+50)+'px';
- const labels=arr.map(a=>a[0]),data=arr.map(a=>+a[1].toFixed(2)),txt=arr.map(a=>f(a[1])),cols=colsFor(arr.length,base);
- const c=charts[key];
+const valuePlugin={id:'val',afterDatasetsDraw(c){const x=c.ctx,f=c.$fmt||(v=>v.toFixed(1)+' h');c.getDatasetMeta(0).data.forEach((b,i)=>{x.save();x.fillStyle='#14222d';x.font='600 12px "IBM Plex Sans"';x.textBaseline='middle';x.fillText(f(c.data.datasets[0].data[i]),b.x+7,b.y);x.restore()})}};
+const hf=v=>fmt(Math.round(v*60));
+function drawBar(key,canvas,box,labels,vals,cols){
+ if(typeof Chart==='undefined')return;
+ $(box).style.height=Math.max(150,labels.length*38+50)+'px';
+ let c=charts[key];
  if(!c){
-  charts[key]=new Chart($(canvas),{type:'bar',plugins:[valuePlugin],
-   data:{labels,datasets:[{data,txt,backgroundColor:cols,borderRadius:4,barThickness:20}]},
+  c=charts[key]=new Chart($(canvas),{type:'bar',plugins:[valuePlugin],
+   data:{labels:[],datasets:[{data:[],backgroundColor:[],borderRadius:4,barThickness:20}]},
    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:64}},
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:x=>' '+x.dataset.txt[x.dataIndex]}}},
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>i[0].label.split('|')[0],label:i=>' '+hf(i.parsed.x)}}},
     scales:{x:{beginAtZero:true,grid:{color:'#e8eef1'},title:{display:true,text:'Hours'},ticks:{font:{family:'IBM Plex Sans'}}},
-     y:{grid:{display:false},ticks:{font:{family:'IBM Plex Sans',size:12},callback(v){const l=this.getLabelForValue(v);return l.length>18?l.slice(0,17)+'\u2026':l}}}}}});
- }else{c.data.labels=labels;const d=c.data.datasets[0];d.data=data;d.txt=txt;d.backgroundColor=cols;c.resize();c.update()}
-}
-function champs(arr,what,f){
- if(!arr.length)return '';
- const l=arr[0],s=arr[arr.length-1];
- let h='<div class="champ">'+TROPHY+'<span>Longest '+what+': <b>'+esc(l[0])+'</b>, '+f(l[1])+'</span></div>';
- if(arr.length>1)h+='<div class="champ short">'+CLOCK+'<span>Shortest '+what+': <b>'+esc(s[0])+'</b>, '+f(s[1])+'</span></div>';
- return h;
+     y:{grid:{display:false},ticks:{font:{family:'IBM Plex Sans',size:12},callback(v){const p=this.getLabelForValue(v).split('|'),n=p[0],s=n.length>16?n.slice(0,15)+'\u2026':n;return p[1]?s+' \u00d7'+p[1]:s}}}}}});
+ }
+ c.$fmt=hf;c.data.labels=labels;c.data.datasets[0].data=vals;c.data.datasets[0].backgroundColor=cols;c.resize();c.update();
 }
 
 /* ---------- render ---------- */
-const monthRows=()=>rows.filter(r=>r.date.startsWith(ym));
 function render(){
  const [y,m]=ym.split('-').map(Number);
- $('#mlabel').textContent=new Date(y,m-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
- renderStats();renderLive();renderChart();renderTable();
+ const ml=new Date(y,m-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+ $('#mlabel').textContent=ml;$('#calMonth').textContent=ml;
+ renderStats();renderLive();renderTimeline();renderChart(ml);renderCal();renderMatrix(ml);renderDaily(ml);renderTable(ml);
 }
 function renderStats(){
- const t=todayStr(),mr=monthRows(),tot=mr.filter(r=>r.tout).reduce((a,r)=>a+diff(r.tin,r.tout),0);
- const inLab=new Set(rows.filter(r=>!r.tout&&r.date===t).map(r=>r.sid)).size;
+ const t=todayStr(),mr=monthRows(),tot=mr.reduce((a,r)=>a+durMin(r),0);
+ const nowIn=rows.filter(r=>isOpen(r)&&r.date===t).length;
  const today=new Set(rows.filter(r=>r.date===t).map(r=>r.sid)).size;
- const items=[['In the lab now',inLab],['Students today',today],['Visits this month',mr.length],['Total hours this month',fmt(tot)]];
- $('#stats').innerHTML=items.map(([l,v])=>`<div class="stat"><span>${l}</span><b>${v}</b></div>`).join('');
+ $('#stats').innerHTML=[['In the lab now',nowIn],['Students today',today],['Visits this month',mr.length],['Total hours this month',fmt(tot)]].map(([l,v])=>`<div class="stat"><span>${l}</span><b>${v}</b></div>`).join('');
 }
 function renderLive(){
- const arr=rows.filter(r=>!r.tout&&r.date===todayStr()).map(r=>[STUDENTS[r.sid]||r.sid,elapsed(r)/60]).sort((a,b)=>b[1]-a[1]);
- $('#livesub').textContent=arr.length?arr.length+' student'+(arr.length===1?'':'s')+' in the lab. Time so far, updated every minute.':'Students who have checked in today and not yet checked out.';
- $('#lempty').hidden=arr.length>0;
- $('#lchamps').innerHTML=champs(arr,'time in lab so far',fmtH);
- bars('live','#lchart','#lbox',arr,fmtH,'#17794a');
+ const t=todayStr(),g=groupDay(t),live=rows.filter(r=>isOpen(r)&&r.date===t);
+ const cnt={};g.forEach(x=>cnt[x.sid]=x.n);
+ const cur=live.map(r=>({sid:r.sid,el:elapsed(r)})).sort((a,b)=>b.el-a.el);
+ $('#liveSub').textContent=cur.length?cur.length+' student'+(cur.length>1?'s':'')+' in the lab. Time so far, updated every minute.':(g.length?'Nobody is checked in right now.':'Nobody has checked in yet today.');
+ $('#cLong').hidden=!cur.length;$('#cShort').hidden=cur.length<2;$('#liveBox').hidden=!cur.length;
+ if(cur.length){
+  const a=cur[0],b=cur[cur.length-1];
+  $('#cLong').innerHTML=TROPHY+'<span>Longest time in lab so far: <b>'+esc(nm(a.sid))+'</b>, '+fmt(a.el)+'</span>';
+  $('#cShort').innerHTML=CLOCK+'<span>Shortest time in lab so far: <b>'+esc(nm(b.sid))+'</b>, '+fmt(b.el)+'</span>';
+  drawBar('live','#liveChart','#liveBox',cur.map(c=>nm(c.sid)+'|'+cnt[c.sid]),cur.map(c=>c.el/60),cur.map((c,i)=>i===0?'#c9962b':(i===cur.length-1&&cur.length>1?'#0b2a43':'#17794a')));
+ }
+ const liveS=new Set(live.map(r=>r.sid)),ent=g.reduce((s,x)=>s+x.n,0);
+ $('#liveEnt').textContent=g.length?g.length+' student'+(g.length>1?'s':'')+', '+ent+' entr'+(ent===1?'y':'ies')+' today. The number shows how many times each student entered the lab.':'How many times each student entered the lab today, and when.';
+ const gs=g.slice().sort((a,b)=>(liveS.has(b.sid)-liveS.has(a.sid))||b.total-a.total);
+ $('#liveEmpty').hidden=g.length>0;
+ $('#liveTb').innerHTML=gs.map(x=>{
+  const op=x.a.find(isOpen),outs=x.a.filter(r=>r.tout).map(r=>r.tout).sort(),lastOut=outs.length?outs[outs.length-1]:'';
+  const st=op?`<span class="pill live">In lab since ${t12(op.tin)}</span>`:`<span class="pill left">Left ${lastOut?t12(lastOut):''}</span>`;
+  return `<tr><td data-l="Student"><b>${esc(nm(x.sid))}</b><div class="small">${x.sid}</div></td><td data-l="Entries today"><span class="pill cnt">${x.n}</span>${x.n===1?'time':'times'}</td><td data-l="Status">${st}</td><td data-l="In and out times" class="small">${times(x.a,t)}</td><td data-l="Total today"><span class="dur">${fmt(x.total)}</span></td></tr>`}).join('');
 }
-function renderChart(){
- const by={};monthRows().filter(r=>r.tout).forEach(r=>{by[r.sid]=(by[r.sid]||0)+diff(r.tin,r.tout)/60});
- const arr=Object.entries(by).map(([id,h])=>[STUDENTS[id]||id,h]).sort((a,b)=>b[1]-a[1]);
- $('#cempty').hidden=arr.length>0;
- $('#csub').textContent=arr.length?'Total hours per student, '+$('#mlabel').textContent+'.':'';
- const f=h=>h.toFixed(1)+' hours';
- $('#champs').innerHTML=champs(arr,'total time in lab',f);
- bars('month','#chart','#cbox',arr,h=>h.toFixed(1)+' h','#0d7c86');
+
+/* ---------- single-day timeline: each student's in and out ---------- */
+function renderTimeline(){
+ const d=$('#tlDate').value||todayStr(),isT=d===todayStr(),nowM=tm(nowT());
+ const g=groupDay(d).sort((a,b)=>a.a[0].tin.localeCompare(b.a[0].tin));
+ if(charts.tl){charts.tl.destroy();charts.tl=null}
+ $('#tlEmpty').hidden=g.length>0;$('#tlBox').hidden=!g.length;
+ if(!g.length){$('#tlTb').innerHTML='';$('#tlSub').textContent='Pick a day to see every student\'s in and out time.';return}
+ const ent=g.reduce((s,x)=>s+x.n,0),title=new Date(d+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ $('#tlSub').textContent=title+': '+g.length+' student'+(g.length>1?'s':'')+', '+ent+' entr'+(ent===1?'y':'ies')+'.';
+ const end=r=>r.tout?(tm(r.tout)>tm(r.tin)?tm(r.tout):1440):(isT?Math.max(nowM,tm(r.tin)+1):tm(r.tin)+5);
+ const K=Math.max(...g.map(x=>x.n)),pal=['#0d7c86','#c9962b','#0b2a43','#17794a','#7a4fa3','#b3261e'];
+ let lo=1440,hi=0;g.forEach(x=>x.a.forEach(r=>{lo=Math.min(lo,tm(r.tin));hi=Math.max(hi,end(r))}));
+ const xmin=Math.max(0,Math.floor(lo/60)-1),xmax=Math.min(24,Math.ceil(hi/60)+1);
+ const ds=[...Array(K)].map((_,i)=>({label:'Entry '+(i+1),grouped:false,barThickness:18,borderRadius:3,backgroundColor:pal[i%pal.length],
+  data:g.map(x=>x.a[i]?[tm(x.a[i].tin)/60,end(x.a[i])/60]:null),rec:g.map(x=>x.a[i]||null)}));
+ $('#tlBox').style.height=Math.max(180,g.length*40+100)+'px';
+ if(typeof Chart!=='undefined')charts.tl=new Chart($('#tlChart'),{type:'bar',
+  data:{labels:g.map(x=>nm(x.sid)),datasets:ds},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+   plugins:{legend:{display:K>1,position:'bottom'},tooltip:{callbacks:{label:c=>{const r=c.dataset.rec[c.dataIndex];return r?' In '+t12(r.tin)+', Out '+(r.tout?t12(r.tout):(isT?'still in lab':'not recorded'))+' ('+fmt(durMin(r))+')':''}}}},
+   scales:{x:{min:xmin,max:xmax,grid:{color:'#e8eef1'},title:{display:true,text:'Time of day'},ticks:{stepSize:1,font:{family:'IBM Plex Sans'},callback:v=>t12(pad(Math.floor(v)%24)+':00')}},
+    y:{grid:{display:false},ticks:{font:{family:'IBM Plex Sans',size:12},callback(v){const n=this.getLabelForValue(v);return n.length>18?n.slice(0,17)+'\u2026':n}}}}}});
+ $('#tlTb').innerHTML=g.flatMap(x=>x.a.map((r,i)=>`<tr><td data-l="Student"><b>${esc(nm(x.sid))}</b></td><td data-l="Entry no.">${i+1} of ${x.n}</td><td data-l="In time">${t12(r.tin)}</td><td data-l="Out time">${r.tout?t12(r.tout):(isT?'<span class="pill live">In lab</span>':'-')}</td><td data-l="Duration"><span class="dur">${fmt(durMin(r))}</span></td></tr>`)).join('');
 }
-function renderTable(){
- const q=$('#q').value.trim().toLowerCase(),mr=monthRows(),t=todayStr();
- const mx=Math.max(0,...mr.filter(r=>r.tout).map(r=>diff(r.tin,r.tout)));
- const l=mr.filter(r=>!q||r.sid.includes(q)||(STUDENTS[r.sid]||'').toLowerCase().includes(q))
-  .sort((a,b)=>b.date.localeCompare(a.date)||b.tin.localeCompare(a.tin));
+
+function renderChart(ml){
+ const by={};monthRows().forEach(r=>{by[r.sid]=(by[r.sid]||0)+durMin(r)/60});
+ const arr=Object.entries(by).filter(a=>a[1]>0).sort((a,b)=>b[1]-a[1]);
+ $('#cempty').hidden=arr.length>0;$('#cbox').hidden=!arr.length;$('#champ').hidden=!arr.length;
+ $('#csub').textContent=arr.length?'Total hours per student, '+ml+'.':'';
+ if(!arr.length)return;
+ $('#champ').innerHTML=TROPHY+'<span>Longest total time in lab: <b>'+esc(nm(arr[0][0]))+'</b>, '+hf(arr[0][1])+'</span>';
+ drawBar('month','#chart','#cbox',arr.map(a=>nm(a[0])),arr.map(a=>+a[1].toFixed(3)),arr.map((_,i)=>i===0?'#c9962b':'#0d7c86'));
+}
+
+/* ---------- calendar + daily report ---------- */
+function dayStats(){
+ const per={};
+ monthRows().forEach(r=>{const p=per[r.date]=per[r.date]||{s:new Set(),n:0,min:0,best:null};p.s.add(r.sid);p.n++;const d=durMin(r);p.min+=d;if(!p.best||d>p.best.d)p.best={d,sid:r.sid}});
+ return per;
+}
+function renderCal(){
+ const [y,m]=ym.split('-').map(Number),n=new Date(y,m,0).getDate(),first=new Date(y,m-1,1).getDay(),per=dayStats(),t=todayStr();
+ const mx=Math.max(1,...Object.values(per).map(p=>p.min));
+ let h=WD.map(d=>`<div class="wd">${d}</div>`).join('');
+ for(let i=0;i<first;i++)h+='<span></span>';
+ for(let d=1;d<=n;d++){
+  const ds=ym+'-'+pad(d),wd=new Date(y,m-1,d).getDay(),p=per[ds],a=p?0.12+0.78*(p.min/mx):0;
+  h+=`<button type="button" data-d="${ds}" class="${wd>=5?'we ':''}${ds===t?'td ':''}${ds===selDay?'sel':''}" style="${p?`background:rgba(13,124,134,${a.toFixed(2)});color:${a>0.5?'#fff':'#14222d'};border-color:rgba(13,124,134,.5)`:''}" aria-label="${ds}"><span class="dn">${d}</span>${p?`<span class="cs">${p.s.size} st</span><span class="ch">${(p.min/60).toFixed(1)}h</span>`:''}</button>`;
+ }
+ $('#cal').innerHTML=h;
+ document.querySelectorAll('#cal button').forEach(b=>b.onclick=()=>pickDay(b.dataset.d));
+ renderDay();
+}
+function renderDay(){
+ const el=$('#dayPanel');
+ if(!selDay||!selDay.startsWith(ym)){el.innerHTML='<p class="empty">Click a day in the calendar to see who was in the lab.</p>';return}
+ const [y,m,d]=selDay.split('-').map(Number),title=new Date(y,m-1,d).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const g=groupDay(selDay),tot=g.reduce((s,x)=>s+x.total,0),ent=g.reduce((s,x)=>s+x.n,0);
+ if(!g.length){el.innerHTML=`<h3>${title}</h3><p class="empty">No entries on this day.</p>`;return}
+ el.innerHTML=`<h3>${title}</h3><p class="sub">${g.length} student${g.length>1?'s':''}, ${ent} entr${ent===1?'y':'ies'}, ${fmt(tot)} in total.</p><div class="sc"><table><thead><tr><th>Student</th><th>Entries</th><th>In and out times</th><th>Total</th></tr></thead><tbody>`+
+  g.map(x=>`<tr><td data-l="Student"><b>${esc(nm(x.sid))}</b></td><td data-l="Entries"><b>${x.n}</b></td><td data-l="In and out times" class="small">${times(x.a,selDay)}</td><td data-l="Total"><span class="dur">${fmt(x.total)}</span></td></tr>`).join('')+'</tbody></table></div>';
+}
+function dailyData(){
+ const [y,m]=ym.split('-').map(Number),n=new Date(y,m,0).getDate(),per=dayStats(),out=[];
+ for(let d=1;d<=n;d++){const ds=ym+'-'+pad(d),wd=new Date(y,m-1,d).getDay(),p=per[ds];out.push({ds,d,wd,p})}
+ return out;
+}
+function renderDaily(ml){
+ const data=dailyData(),act=data.filter(x=>x.p),T=act.reduce((a,x)=>a+x.p.min,0),E=act.reduce((a,x)=>a+x.p.n,0);
+ $('#dsub').textContent=act.length+' of '+data.length+' days with entries';
+ $('#dtb').innerHTML=data.map(x=>{
+  const lab=pad(x.d)+' '+WD[x.wd],cls=(x.wd>=5?'we ':'')+(x.ds===selDay?'sel ':'')+(x.p?'':'nodata');
+  if(!x.p)return `<tr data-day="${x.ds}" class="${cls}"><td data-l="Date">${lab}</td><td data-l="Students">-</td><td data-l="Entries">-</td><td data-l="Total hours">-</td><td data-l="Average per student">-</td><td data-l="Longest stay">-</td></tr>`;
+  return `<tr data-day="${x.ds}" class="${cls}"><td data-l="Date"><b>${lab}</b></td><td data-l="Students">${x.p.s.size}</td><td data-l="Entries">${x.p.n}</td><td data-l="Total hours"><span class="dur">${fmt(x.p.min)}</span></td><td data-l="Average per student">${fmt(Math.round(x.p.min/x.p.s.size))}</td><td data-l="Longest stay">${esc(nm(x.p.best.sid))}, ${fmt(x.p.best.d)}</td></tr>`}).join('')+
+  `<tr class="tot"><td data-l="Month total">Month total</td><td data-l="Students">${new Set(monthRows().map(r=>r.sid)).size}</td><td data-l="Entries">${E}</td><td data-l="Total hours">${fmt(T)}</td><td data-l="Average per active day">${act.length?fmt(Math.round(T/act.length)):'-'}</td><td></td></tr>`;
+ document.querySelectorAll('#dtb tr[data-day]').forEach(tr=>tr.onclick=()=>pickDay(tr.dataset.day));
+}
+
+/* ---------- student by day matrix (30/31 days) ---------- */
+function matrixData(){
+ const days=dailyData(),by={};
+ monthRows().forEach(r=>{const s=by[r.sid]=by[r.sid]||{sid:r.sid,d:{},n:0,min:0};const c=s.d[r.date]=s.d[r.date]||{n:0,min:0};const m=durMin(r);c.n++;c.min+=m;s.n++;s.min+=m});
+ return{days,list:Object.values(by).sort((a,b)=>b.min-a.min)};
+}
+function renderMatrix(ml){
+ const {days,list}=matrixData();
+ $('#mxEmpty').hidden=list.length>0;$('#mx').hidden=!list.length;
+ $('#mxsub').textContent=list.length?'Each cell shows how many times a student entered, and total hours, for every day of '+(ml||$('#mlabel').textContent)+'.':'';
+ if(!list.length)return;
+ let h='<thead><tr><th>Student</th>'+days.map(x=>`<th class="${x.wd>=5?'we':''}">${x.d}<small style="display:block;font-weight:400">${WD[x.wd].slice(0,2)}</small></th>`).join('')+'<th>Total</th></tr></thead><tbody>';
+ h+=list.map(s=>'<tr><td><b>'+esc(nm(s.sid))+'</b></td>'+days.map(x=>{const c=s.d[x.ds];return c?`<td class="v" title="${esc(nm(s.sid))}, ${x.ds}: ${c.n} entr${c.n===1?'y':'ies'}, ${fmt(c.min)}"><b>${c.n}</b><small>${(c.min/60).toFixed(1)}h</small></td>`:'<td class="z">-</td>'}).join('')+`<td><b>${s.n}</b><small>${(s.min/60).toFixed(1)}h</small></td></tr>`).join('');
+ h+='<tr class="tot"><td><b>Students per day</b></td>'+days.map(x=>`<td>${x.p?'<b>'+x.p.s.size+'</b><small>'+x.p.n+' ent</small>':'-'}</td>`).join('')+`<td><b>${list.length}</b></td></tr></tbody>`;
+ $('#mx').innerHTML=h;
+}
+
+/* ---------- records ---------- */
+function renderTable(ml){
+ const q=$('#q').value.trim().toLowerCase(),mr=monthRows(),mx=Math.max(0,...mr.map(durMin)),t=todayStr();
+ const l=mr.filter(r=>!q||r.sid.includes(q)||nm(r.sid).toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date)||b.tin.localeCompare(a.tin));
  $('#lsub').innerHTML=l.length+' record'+(l.length===1?'':'s')+' in '+$('#mlabel').textContent+(mx?' &nbsp;<span class="tr" style="margin:0">'+TROPHY+'</span> longest single stay':'');
  const vis=showAll?l:l.slice(0,12);
  $('#tb').innerHTML=vis.map(r=>{
-  let dur;
-  if(r.tout){const d=diff(r.tin,r.tout);dur='<span><span class="dur">'+fmt(d)+'</span>'+(d===mx?'<span class="tr" title="Longest single stay this month">'+TROPHY+'</span>':'')+'</span>'}
-  else if(r.date===t)dur='<span class="dur on">In lab '+fmt(elapsed(r))+'</span>';
-  else dur='<span class="dur warn">No check-out</span>';
-  return `<tr><td data-l="Date">${r.date}</td><td data-l="Student ID">${r.sid}</td><td data-l="Name">${esc(STUDENTS[r.sid]||'?')}</td><td data-l="In">${t12(r.tin)}</td><td data-l="Out">${r.tout?t12(r.tout):'-'}</td><td data-l="Duration">${dur}</td></tr>`}).join('');
+  const d=durMin(r);
+  const badge=r.tout?`<span class="dur">${fmt(d)}</span>`:(r.date===t?`<span class="dur live">In lab ${fmt(d)}</span>`:'<span class="dur warn">No out time</span>');
+  return `<tr><td data-l="Date">${r.date}</td><td data-l="Student ID">${r.sid}</td><td data-l="Name">${esc(nm(r.sid))}</td><td data-l="In">${t12(r.tin)}</td><td data-l="Out">${r.tout?t12(r.tout):'-'}</td><td data-l="Duration"><span>${badge}${d>0&&d===mx?'<span class="tr" title="Longest single stay this month">'+TROPHY+'</span>':''}</span></td></tr>`}).join('');
  $('#tempty').hidden=l.length>0;
  $('#more').hidden=l.length<=12;$('#more').textContent=showAll?'Show fewer':'Show all '+l.length+' records';
 }
 
-/* ---------- export ---------- */
+/* ---------- exports ---------- */
+function download(name,lines){
+ const q=c=>'"'+String(c).replace(/"/g,'""')+'"';
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob(['\ufeff'+lines.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'}));
+ a.download=name;a.click();
+}
 $('#csv').onclick=()=>{
  const l=monthRows().sort((a,b)=>a.date.localeCompare(b.date)||a.tin.localeCompare(b.tin));
  if(!l.length)return setMsg('No records to export for this month.','bad');
- const q=c=>'"'+String(c).replace(/"/g,'""')+'"';
- const csv=['Date,Student ID,Student Name,In,Out,Duration,Hours'].concat(l.map(r=>[r.date,r.sid,STUDENTS[r.sid]||'',t12(r.tin),r.tout?t12(r.tout):'',r.tout?fmt(diff(r.tin,r.tout)):'No check-out',r.tout?(diff(r.tin,r.tout)/60).toFixed(2):''].map(q).join(','))).join('\n');
- const a=document.createElement('a');
- a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
- a.download='SODIC_CU_Lab_Attendance_'+ym+'.csv';a.click();
+ download('SODIC_CU_Lab_Attendance_'+ym+'.csv',[['Date','Student ID','Student Name','In','Out','Duration','Hours']].concat(l.map(r=>[r.date,r.sid,nm(r.sid),t12(r.tin),r.tout?t12(r.tout):'No out time',fmt(durMin(r)),(durMin(r)/60).toFixed(2)])));
+};
+$('#csvD').onclick=()=>{
+ const data=dailyData();
+ download('SODIC_CU_Daily_Report_'+ym+'.csv',[['Date','Day','Students','Entries','Total hours','Average hours per student','Longest stay (student)','Longest stay (hours)']].concat(data.map(x=>x.p?[x.ds,WD[x.wd],x.p.s.size,x.p.n,(x.p.min/60).toFixed(2),(x.p.min/60/x.p.s.size).toFixed(2),nm(x.p.best.sid),(x.p.best.d/60).toFixed(2)]:[x.ds,WD[x.wd],0,0,'0.00','','',''])));
+};
+$('#csvM').onclick=()=>{
+ const {days,list}=matrixData();
+ if(!list.length)return setMsg('No records to export for this month.','bad');
+ download('SODIC_CU_Student_By_Day_'+ym+'.csv',[['Student ID','Student Name'].concat(days.map(x=>x.ds+' ('+WD[x.wd]+') entries and hours'),['Total entries','Total hours'])].concat(list.map(s=>[s.sid,nm(s.sid)].concat(days.map(x=>{const c=s.d[x.ds];return c?c.n+' entr'+(c.n===1?'y':'ies')+', '+(c.min/60).toFixed(2)+' h':''}),[s.n,(s.min/60).toFixed(2)]))));
 };
 
-/* ---------- admin ---------- */
+/* ---------- admin (open the page with ?admin) ---------- */
 if(location.search.includes('admin')){
  $('#admin').hidden=false;
- renderStudents();
- if(CLOUD){
-  $('#admtxt').textContent='Records are stored in Supabase. To clear them, open your Supabase project, go to SQL Editor, and run: delete from entries;';
-  $('#clr').hidden=true;
- }else{
-  $('#admtxt').textContent='Records are stored in this browser only.';
- }
+ if(CLOUD){$('#admtxt').textContent='Records are stored in Supabase. To clear them, open your Supabase project, go to SQL Editor, and run: delete from entries;';$('#clr').hidden=true}
+ else $('#admtxt').textContent='Records are stored in this browser only. This removes every record saved on this device. It cannot be undone.';
 }
-
-const smsg=(t,k)=>{const m=$('#student_msg');m.textContent=t;m.style.color=k==='ok'?'var(--ok)':'var(--bad)'};
-const SH={...HD,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'};
-const saveLocal=()=>localStorage.setItem('sodic_custom_students',JSON.stringify(customStudents));
-async function putStudents(obj){
- if(!CLOUD){Object.assign(customStudents,obj);saveLocal();return}
- const list=Object.entries(obj).map(([student_id,name])=>({student_id,name}));
- const r=await fetch(SAPI+'?on_conflict=student_id',{method:'POST',headers:SH,body:JSON.stringify(list)});
- if(!r.ok)throw new Error(r.status);
-}
-async function delStudent(id){
- if(!CLOUD){delete customStudents[id];saveLocal();return}
- const r=await fetch(SAPI+'?student_id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:{...HD,Prefer:'return=representation'}});
- if(!r.ok)throw new Error(r.status);
- if(!(await r.json()).length)throw new Error('blocked');
-}
-function renderStudents(){
- const ids=Object.keys(STUDENTS).sort();
- let h='';
- if(CLOUD&&!dbReady)h='<div class="admin-instructions">The shared student list is empty, so the built-in list is being used. Copy it once before adding or editing students.<br><button type="button" class="btn2" data-a="seed" style="margin-top:8px">Copy the built-in list to the shared database</button></div>';
- h+='<h3 style="font-size:15px;margin:0 0 4px;">All students ('+ids.length+')</h3><div style="max-height:320px;overflow:auto">'+ids.map(id=>`<div style="display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)"><span style="flex:1;min-width:0">${esc(id)} - ${esc(STUDENTS[id])}</span><button type="button" class="lnk" data-a="edit" data-id="${esc(id)}">Edit</button><button type="button" class="lnk" data-a="del" data-id="${esc(id)}" style="color:var(--bad)">Remove</button></div>`).join('')+'</div>';
- $('#slist').innerHTML=h;
-}
-const needSeed=()=>{if(CLOUD&&!dbReady){smsg('First tap "Copy the built-in list to the shared database".','bad');return true}};
-$('#slist').onclick=async e=>{
- const b=e.target.closest('button');if(!b)return;
- const id=b.dataset.id,act=b.dataset.a;
- try{
-  if(act==='seed'){
-   await putStudents({...DEFAULT_STUDENTS,...customStudents});
-   customStudents={};localStorage.removeItem('sodic_custom_students');dbReady=true;
-   await loadStudents();smsg('Student list copied to the shared database.','ok');
-  }else if(act==='edit'){
-   if(needSeed())return;
-   const n=prompt('New name for '+id,STUDENTS[id]);
-   if(!n||!n.trim())return;
-   await putStudents({[id]:n.trim()});STUDENTS[id]=n.trim();smsg('Updated '+id+'.','ok');
-  }else if(act==='del'){
-   if(needSeed())return;
-   if(!confirm('Remove '+id+' - '+STUDENTS[id]+' from the student list? Past records are kept.'))return;
-   await delStudent(id);delete STUDENTS[id];smsg('Removed '+id+'.','ok');
-  }
-  renderStudents();render();$('#sid').oninput();
- }catch(err){smsg('Could not save. Run the one-time students table setup in Supabase (supabase_students.sql).','bad')}
-};
-$('#btn_add_student').onclick=async()=>{
- const sid=$('#new_sid').value.trim(),sname=$('#new_sname').value.trim();
- if(!sid||!sname)return smsg('Please enter both Student ID and Name.','bad');
- if(needSeed())return;
- if(STUDENTS[sid])return smsg(sid+' already exists ('+STUDENTS[sid]+'). Use Edit in the list.','bad');
- try{
-  await putStudents({[sid]:sname});STUDENTS[sid]=sname;
-  smsg('Added '+sname+' ('+sid+') for everyone.','ok');
-  $('#new_sid').value='';$('#new_sname').value='';
-  renderStudents();render();
- }catch(err){smsg('Could not save. Run the one-time students table setup in Supabase (supabase_students.sql).','bad')}
-};
-
 $('#clr').onclick=()=>{
  if(prompt('Admin PIN')!==ADMIN_PIN)return alert('Wrong PIN.');
  if(prompt('Type DELETE to remove all records on this device.')!=='DELETE')return;
- localStorage.removeItem(LS);rows=[];showAll=false;render();
- setMsg('All records on this device were cleared.','ok');
+ localStorage.removeItem(LS);rows=[];showAll=false;render();setMsg('All records on this device were cleared.','ok');
 };
 
 /* ---------- start ---------- */
-Promise.all([loadStudents(),loadRows()]).then(async()=>{
- if(CLOUD&&dbReady&&Object.keys(customStudents).length&&location.search.includes('admin')){
-  try{await putStudents(customStudents);customStudents={};localStorage.removeItem('sodic_custom_students');await loadStudents()}catch(e){}
- }
- render();renderStudents();$('#sid').oninput();
-});
-setInterval(()=>{renderStats();renderLive();renderTable()},60000);
-if(CLOUD)setInterval(()=>Promise.all([loadStudents(),loadRows()]).then(render),60000);
+loadRows().then(render);
+setInterval(()=>{CLOUD?loadRows().then(render):render()},60000);
 </script>
 </body>
 </html>
