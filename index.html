@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 :root{--navy:#0b2a43;--teal:#0d7c86;--teal-d:#0a5f67;--tint:#e6f2f3;--gold:#c9962b;--green:#17794a;--bg:#f2f5f7;--card:#fff;--ink:#14222d;--mute:#5f7280;--line:#dbe3e8;--bad:#b3261e;--r:10px}
@@ -125,6 +126,25 @@ tr[data-day]{cursor:pointer}
 .labactivities h3{margin-bottom:4px}
 footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 
+
+.notice-ticker{display:flex;align-items:center;gap:12px;min-height:44px;padding:7px max(18px,calc((100% - 1060px)/2));background:#fff8e7;border-bottom:1px solid #ead8a7;color:#14222d;overflow:hidden}
+.notice-label{flex:none;background:#c9962b;color:#fff;font-size:11px;font-weight:700;letter-spacing:.7px;padding:5px 9px;border-radius:4px}
+.notice-viewport{position:relative;overflow:hidden;white-space:nowrap;flex:1;min-width:0}
+.notice-text{display:inline-block;min-width:100%;font-weight:600;color:#6b4a00;animation:notice-scroll 24s linear infinite}
+.notice-text:hover{animation-play-state:paused}
+.notice-ticker.empty-notice{background:#f7fafb;border-bottom-color:var(--line)}
+.notice-ticker.empty-notice .notice-label{background:var(--teal)}
+.notice-ticker.empty-notice .notice-text{color:var(--mute);animation:none}
+@keyframes notice-scroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+#dayPanel .day-report-capture{background:#fff;color:#14222d;padding:14px;border:1px solid var(--line);border-radius:8px}
+#dayPanel .day-report-heading{font:700 19px 'Source Serif 4',serif;color:#0b2a43;margin:0 0 6px}
+#dayPanel .day-report-meta{font-size:13px;color:#5f7280;margin:0 0 12px}
+#dayPanel .day-report-capture table{font-size:13px}
+#dayPanel .day-report-capture th,#dayPanel .day-report-capture td{padding:8px;border:1px solid #dbe3e8}
+#dayPanel .day-report-capture th{background:#e6f2f3}
+.notice-admin textarea{min-height:110px;resize:vertical}
+@media(max-width:600px){.notice-ticker{padding:7px 12px}.notice-text{animation-duration:18s}.notice-admin .notice-form{grid-template-columns:1fr!important}}
+
 @media(max-width:860px){.grid,.cgrid{grid-template-columns:1fr}}
 @media(max-width:600px){
  .wrap{padding:0 12px}
@@ -169,6 +189,11 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
  </div>
 </div>
 </header>
+
+<div class="notice-ticker empty-notice" id="noticeTicker" aria-live="polite">
+ <span class="notice-label">LAB NOTICE</span>
+ <div class="notice-viewport"><div class="notice-text" id="noticeText">No new lab notices at present.</div></div>
+</div>
 
 <main class="wrap">
 
@@ -500,6 +525,19 @@ Save Student
 
 </div>
 
+<div class="notice-admin" style="margin-bottom:20px;border-top:1px solid var(--line);padding-top:14px">
+ <h3>Lab Notice / Announcement</h3>
+ <p class="sub">Publish an announcement for all students. It will scroll below the live clock on the main dashboard.</p>
+ <label for="noticeInput" style="margin-top:0">Notice message</label>
+ <textarea id="noticeInput" maxlength="1200" placeholder="e.g. Lab meeting tomorrow at 11:00 AM in the Oceanography Department."></textarea>
+ <div class="small" style="margin-top:5px">Include the date/time for meetings where relevant.</div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button class="btn2" id="btnPublishNotice" type="button" style="background:var(--teal);color:#fff">Publish Notice</button>
+  <button class="btn2" id="btnClearNotice" type="button" style="border-color:var(--bad);color:var(--bad)">Clear Notice</button>
+ </div>
+ <div id="noticeAdminMsg" role="status" aria-live="polite" style="min-height:22px;margin-top:8px"></div>
+</div>
+
 <button class="btn2" id="clr"
 style="border-color:var(--bad);color:var(--bad)">
 Clear all records on this device
@@ -521,7 +559,7 @@ const SUPABASE_URL='https://obctddlksvgejgohmmms.supabase.co';
 
 const SUPABASE_KEY='sb_publishable_ttLMNzSc2_Dpt09clK-M-w_g7i_wcCo';
 
-const ADMIN_PIN='1234';
+const ADMIN_PIN='14141';
 
 const STUDENTS={
 "22902001":"Mobashira Anika",
@@ -2229,9 +2267,18 @@ function renderDay(){
  });
 
  el.innerHTML=
-  `<h3>${title}</h3>
+  `<div class="lh" style="margin-top:0">
+    <div></div>
+    <div class="r" style="flex-wrap:wrap">
+     <button class="btn2" id="csvDay" data-html2canvas-ignore="true">Download this day CSV</button>
+     <button class="btn2" id="imgDay" data-html2canvas-ignore="true">Export HD Image (1200-DPI-equivalent)</button>
+    </div>
+   </div>
 
-   <p class="sub">
+   <div id="dayReportCapture" class="day-report-capture">
+   <h3 class="day-report-heading">${title}</h3>
+
+   <p class="day-report-meta">
     ${g.length}
     student${g.length>1?'s':''},
     ${ent}
@@ -2239,13 +2286,6 @@ function renderDay(){
     ${fmt(tot)}
     in total.
    </p>
-
-   <div class="lh" style="margin-top:10px">
-    <div></div>
-    <button class="btn2" id="csvDay">
-     Download this day CSV
-    </button>
-   </div>
 
    <div class="sc">
 
@@ -2303,6 +2343,7 @@ function renderDay(){
 
    `</tbody>
    </table>
+   </div>
    </div>`;
 
  $('#csvDay').onclick=()=>{
@@ -2343,6 +2384,102 @@ function renderDay(){
    'SODIC_CU_Daily_Report_'+selDay+'.csv',
    lines
   );
+ };
+
+ $('#imgDay').onclick=async()=>{
+  const btn=$('#imgDay');
+  const target=$('#dayReportCapture');
+  if(!target)return;
+  if(typeof html2canvas==='undefined'){
+   alert('Image export library did not load. Check your internet connection and try again.');
+   return;
+  }
+  btn.disabled=true;
+  const oldText=btn.textContent;
+  btn.textContent='Rendering high-resolution image...';
+  try{
+   let canvas;
+   try{
+    canvas=await html2canvas(target,{
+     scale:12.5,
+     backgroundColor:'#ffffff',
+     useCORS:true,
+     logging:false,
+     windowWidth:Math.max(document.documentElement.clientWidth,target.scrollWidth)
+    });
+   }catch(highResError){
+    console.warn('Maximum image scale failed; retrying at a lower high-resolution scale.',highResError);
+    canvas=await html2canvas(target,{
+     scale:6,
+     backgroundColor:'#ffffff',
+     useCORS:true,
+     logging:false,
+     windowWidth:Math.max(document.documentElement.clientWidth,target.scrollWidth)
+    });
+   }
+   canvas.toBlob(async blob=>{
+    if(!blob){
+     alert('The browser could not create the image. Try again or use a desktop browser.');
+     return;
+    }
+    try{
+     // Add PNG pHYs metadata so image editors/readers identify the file as 1200 DPI.
+     const raw=new Uint8Array(await blob.arrayBuffer());
+     const ppm=Math.round(1200/0.0254);
+     const data=new Uint8Array(9);
+     const dv=new DataView(data.buffer);
+     dv.setUint32(0,ppm,false);
+     dv.setUint32(4,ppm,false);
+     data[8]=1;
+     const type=new TextEncoder().encode('pHYs');
+     const crcInput=new Uint8Array(type.length+data.length);
+     crcInput.set(type,0);
+     crcInput.set(data,type.length);
+     let crc=0xffffffff;
+     for(let i=0;i<crcInput.length;i++){
+      crc^=crcInput[i];
+      for(let j=0;j<8;j++)crc=(crc&1)?(0xedb88320^(crc>>>1)):(crc>>>1);
+     }
+     crc=(crc^0xffffffff)>>>0;
+     const chunk=new Uint8Array(4+4+9+4);
+     const cv=new DataView(chunk.buffer);
+     cv.setUint32(0,9,false);
+     chunk.set(type,4);
+     chunk.set(data,8);
+     cv.setUint32(17,crc,false);
+     // PNG signature + IHDR chunk is 33 bytes; place pHYs directly after IHDR.
+     const finalBytes=new Uint8Array(raw.length+chunk.length);
+     finalBytes.set(raw.slice(0,33),0);
+     finalBytes.set(chunk,33);
+     finalBytes.set(raw.slice(33),33+chunk.length);
+     const finalBlob=new Blob([finalBytes],{type:'image/png'});
+     const url=URL.createObjectURL(finalBlob);
+     const a=document.createElement('a');
+     a.href=url;
+     a.download='SODIC_CU_Daily_Report_'+selDay+'_1200dpi.png';
+     document.body.appendChild(a);
+     a.click();
+     a.remove();
+     setTimeout(()=>URL.revokeObjectURL(url),1500);
+    }catch(metaError){
+     console.error(metaError);
+     const url=URL.createObjectURL(blob);
+     const a=document.createElement('a');
+     a.href=url;
+     a.download='SODIC_CU_Daily_Report_'+selDay+'_HD.png';
+     document.body.appendChild(a);
+     a.click();
+     a.remove();
+     setTimeout(()=>URL.revokeObjectURL(url),1500);
+    }
+   },'image/png');
+  }catch(e){
+   console.error(e);
+   alert('Image export failed. The report may be too large for available browser memory. Please try again.');
+  }finally{
+   btn.disabled=false;
+   btn.textContent=oldText;
+  }
  };
 }
 
@@ -2552,25 +2689,134 @@ $('#csv').onclick=()=>{
  );
 };
 
-/* ---------- admin ---------- */
+/* ---------- shared lab notice ---------- */
 
-if(location.search.includes('admin')){
+const NOTICE_TABLE='lab_notices';
 
- $('#admin').hidden=false;
+function showNotice(message){
+ const ticker=$('#noticeTicker');
+ const text=$('#noticeText');
+ const clean=String(message||'').trim();
+ text.textContent=clean||'No new lab notices at present.';
+ ticker.classList.toggle('empty-notice',!clean);
+ ticker.hidden=false;
+}
 
- if(CLOUD){
-
-  $('#admtxt').textContent=
-   'Connected to Supabase database. You can manage student entries or wipe database records below.';
-
+async function loadNotice(){
+ if(!CLOUD||!sb){
+  try{
+   const localNotice=localStorage.getItem('sodic_lab_notice_v1')||'';
+   showNotice(localNotice);
+   if($('#noticeInput'))$('#noticeInput').value=localNotice;
+  }catch(e){showNotice('');}
+  return;
  }
-
- else{
-
-  $('#admtxt').textContent=
-   'Records are stored in this browser only. This removes every record saved on this device. It cannot be undone.';
-
+ try{
+  const {data,error}=await sb
+   .from(NOTICE_TABLE)
+   .select('message')
+   .eq('id',1)
+   .maybeSingle();
+  if(error)throw error;
+  const message=data?.message||'';
+  showNotice(message);
+  if($('#noticeInput'))$('#noticeInput').value=message;
+ }catch(e){
+  console.warn('Could not load shared lab notice. Check lab_notices table and read policy.',e);
+  showNotice('');
  }
+}
+
+function setNoticeAdminMessage(text,kind){
+ const el=$('#noticeAdminMsg');
+ if(!el)return;
+ el.textContent=text;
+ el.style.color=kind==='ok'?'var(--green)':kind==='bad'?'var(--bad)':'var(--mute)';
+}
+
+$('#btnPublishNotice').onclick=async()=>{
+ const message=$('#noticeInput').value.trim();
+ if(!message){
+  setNoticeAdminMessage('Enter a notice before publishing, or use Clear Notice to remove the current notice.','bad');
+  return;
+ }
+ if(prompt('Admin PIN to publish this notice:')!==ADMIN_PIN){
+  setNoticeAdminMessage('Incorrect Admin PIN. Notice was not changed.','bad');
+  return;
+ }
+ const btn=$('#btnPublishNotice');
+ btn.disabled=true;
+ setNoticeAdminMessage('Publishing notice','');
+ try{
+  if(CLOUD&&sb){
+   const {error}=await sb.from(NOTICE_TABLE).upsert(
+    {id:1,message:message,updated_at:new Date().toISOString()},
+    {onConflict:'id'}
+   );
+   if(error)throw error;
+  }else{
+   localStorage.setItem('sodic_lab_notice_v1',message);
+  }
+  showNotice(message);
+  setNoticeAdminMessage('Notice published. It is now displayed below the clock.','ok');
+ }catch(e){
+  console.error(e);
+  setNoticeAdminMessage('Could not publish to the shared database. Run the lab_notices SQL setup and check Supabase table policies.','bad');
+ }finally{
+  btn.disabled=false;
+ }
+};
+
+$('#btnClearNotice').onclick=async()=>{
+ if(prompt('Admin PIN to clear the notice:')!==ADMIN_PIN){
+  setNoticeAdminMessage('Incorrect Admin PIN. Notice was not changed.','bad');
+  return;
+ }
+ const btn=$('#btnClearNotice');
+ btn.disabled=true;
+ try{
+  if(CLOUD&&sb){
+   const {error}=await sb.from(NOTICE_TABLE).upsert(
+    {id:1,message:'',updated_at:new Date().toISOString()},
+    {onConflict:'id'}
+   );
+   if(error)throw error;
+  }else{
+   localStorage.removeItem('sodic_lab_notice_v1');
+  }
+  $('#noticeInput').value='';
+  showNotice('');
+  setNoticeAdminMessage('The lab notice has been cleared.','ok');
+ }catch(e){
+  console.error(e);
+  setNoticeAdminMessage('Could not clear the shared notice. Check the lab_notices table and policies.','bad');
+ }finally{
+  btn.disabled=false;
+ }
+};
+
+/* ---------- PIN-protected admin entry ---------- */
+// The ?admin URL now asks for the admin PIN before revealing admin tools.
+// This is a client-side gate only; real security for shared database writes
+// must be enforced by Supabase Auth/RLS or a trusted server-side function.
+const adminRequested = new URLSearchParams(window.location.search).has('admin');
+if (adminRequested) {
+  const enteredPin = window.prompt('Enter Admin PIN to open SODIC-CU Lab Attendance Admin Tools:');
+  if (enteredPin === ADMIN_PIN) {
+    $('#admin').hidden = false;
+    if (CLOUD) {
+      $('#admtxt').textContent =
+        'Connected to Supabase database. You can manage student entries or wipe database records below.';
+    } else {
+      $('#admtxt').textContent =
+        'Records are stored in this browser only. This removes every record saved on this device. It cannot be undone.';
+    }
+  } else {
+    $('#admin').hidden = true;
+    if (enteredPin !== null) window.alert('Incorrect PIN. Admin tools remain locked.');
+    // Remove the admin query from the address bar so it is not left open.
+    window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+  }
 }
 
 $('#btnSaveStudent').onclick=async()=>{
@@ -2695,12 +2941,14 @@ $('#clr').onclick=()=>{
 /* ---------- start ---------- */
 
 loadRows().then(render);
+loadNotice();
 
 setInterval(
  ()=>{
   CLOUD
   ?loadRows().then(render)
-  :render()
+  :render();
+  loadNotice();
  },
  60000
 );
