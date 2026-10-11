@@ -440,6 +440,38 @@ grey = Friday and Saturday
 </div>
 </section>
 
+<!-- Admin-only advanced reports: weekly and monthly -->
+<section class="card admin-only" id="advancedReports" hidden>
+  <h2>Advanced attendance reports</h2>
+  <p class="sub">Weekly and monthly summaries for administrators. Select a period to view totals and export the report as CSV.</p>
+
+  <div class="g" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+    <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--line)">
+      <h3>Weekly report</h3>
+      <label for="weeklyDate">Choose any date in the week</label>
+      <input id="weeklyDate" type="date" style="width:100%;margin:6px 0 10px">
+      <p class="sub" id="weeklyRange">Monday–Sunday</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn2" id="generateWeekly" type="button">Generate weekly report</button>
+        <button class="btn2 admin-export" id="exportWeekly" type="button">Export weekly CSV</button>
+      </div>
+      <div id="weeklyReport" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--line)">
+      <h3>Monthly report</h3>
+      <label for="monthlyPeriod">Choose month</label>
+      <input id="monthlyPeriod" type="month" style="width:100%;margin:6px 0 10px">
+      <p class="sub" id="monthlyRange">Selected calendar month</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn2" id="generateMonthly" type="button">Generate monthly report</button>
+        <button class="btn2 admin-export" id="exportMonthly" type="button">Export monthly CSV</button>
+      </div>
+      <div id="monthlyReport" style="margin-top:12px"></div>
+    </div>
+  </div>
+</section>
+
 <!-- 4. HIDDEN/COLLAPSIBLE: Attendance records -->
 <details class="card-toggle">
 
@@ -2620,6 +2652,80 @@ function renderTable(ml){
 
 /* ---------- exports ---------- */
 
+function reportRowsForRange(startDate,endDate){
+ const filtered=rows.filter(r=>r.date>=startDate && r.date<=endDate);
+ const byStudent={};
+ filtered.forEach(r=>{
+  const sid=String(r.sid);
+  if(!byStudent[sid])byStudent[sid]={sid,entries:0,days:new Set(),minutes:0,activities:new Set()};
+  const x=byStudent[sid];
+  x.entries+=1;
+  x.days.add(r.date);
+  x.minutes+=durMin(r);
+  String(r.working_summary||'').split(/[,;|]/).map(v=>v.trim()).filter(Boolean).forEach(v=>x.activities.add(v));
+ });
+ return Object.values(byStudent).map(x=>({
+  sid:x.sid,name:nm(x.sid),entries:x.entries,days:x.days.size,minutes:x.minutes,
+  activities:Array.from(x.activities).join('; ')
+ })).sort((a,b)=>b.minutes-a.minutes || a.name.localeCompare(b.name));
+}
+
+function renderAdvancedReport(targetId,rangeLabel,reportRows){
+ const el=$('#'+targetId);
+ if(!reportRows.length){el.innerHTML='<p class="empty">No attendance records found for this period.</p>';return;}
+ const totalMinutes=reportRows.reduce((sum,r)=>sum+r.minutes,0);
+ el.innerHTML=`<p class="sub"><b>${reportRows.length}</b> students · <b>${reportRows.reduce((sum,r)=>sum+r.entries,0)}</b> entries · <b>${fmt(totalMinutes)}</b> combined recorded time</p>
+ <div class="sc"><table><thead><tr><th>Student</th><th>Days</th><th>Entries</th><th>Total time</th><th>Working summaries</th></tr></thead><tbody>${reportRows.map(r=>`<tr><td>${esc(r.name)}<br><span class="sub">${esc(r.sid)}</span></td><td>${r.days}</td><td>${r.entries}</td><td>${fmt(r.minutes)}</td><td class="small">${esc(r.activities||'-')}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function weeklyBounds(dateString){
+ const d=new Date(dateString+'T12:00:00');
+ const day=d.getDay();
+ const delta=day===0?-6:1-day;
+ d.setDate(d.getDate()+delta);
+ const start=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+ const endDate=new Date(d);endDate.setDate(endDate.getDate()+6);
+ const end=endDate.getFullYear()+'-'+pad(endDate.getMonth()+1)+'-'+pad(endDate.getDate());
+ return {start,end};
+}
+
+function makeReportCsv(filename,rangeLabel,reportRows){
+ if(!IS_ADMIN){alert('Only an admin can export reports.');return;}
+ if(!reportRows.length){alert('No attendance records found for this period.');return;}
+ const lines=[['Report period',rangeLabel],[],['Student ID','Student Name','Days Present','Attendance Entries','Total Time','Working Summaries']];
+ reportRows.forEach(r=>lines.push([r.sid,r.name,r.days,r.entries,fmt(r.minutes),r.activities]));
+ download(filename,lines);
+}
+
+let cachedWeeklyReport={label:'',rows:[]};
+let cachedMonthlyReport={label:'',rows:[]};
+function generateWeeklyReport(){
+ if(!IS_ADMIN)return;
+ const date=$('#weeklyDate').value||todayStr();
+ const {start,end}=weeklyBounds(date);
+ const label=start+' to '+end;
+ $('#weeklyRange').textContent='Week: '+label+' (Monday–Sunday)';
+ const reportRows=reportRowsForRange(start,end);
+ cachedWeeklyReport={label,rows:reportRows};
+ renderAdvancedReport('weeklyReport',label,reportRows);
+}
+function generateMonthlyReport(){
+ if(!IS_ADMIN)return;
+ const month=$('#monthlyPeriod').value||todayStr().slice(0,7);
+ const [year,mon]=month.split('-').map(Number);
+ const start=month+'-01';
+ const end=month+'-'+pad(new Date(year,mon,0).getDate());
+ $('#monthlyRange').textContent='Month: '+new Date(year,mon-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'})+' ('+start+' to '+end+')';
+ const reportRows=reportRowsForRange(start,end);
+ cachedMonthlyReport={label:month,rows:reportRows};
+ renderAdvancedReport('monthlyReport',month,reportRows);
+}
+
+$('#generateWeekly').onclick=generateWeeklyReport;
+$('#generateMonthly').onclick=generateMonthlyReport;
+$('#exportWeekly').onclick=()=>makeReportCsv('SODIC_CU_Weekly_Attendance_'+(cachedWeeklyReport.label.replace(/ to /g,'_')||'report')+'.csv',cachedWeeklyReport.label,cachedWeeklyReport.rows);
+$('#exportMonthly').onclick=()=>makeReportCsv('SODIC_CU_Monthly_Attendance_'+(cachedMonthlyReport.label||'report')+'.csv',cachedMonthlyReport.label,cachedMonthlyReport.rows);
+
 function download(name,lines){
 
  const q=
@@ -2808,6 +2914,11 @@ if (adminRequested) {
     IS_ADMIN=true;
     $('#admin').hidden = false;
     document.querySelectorAll('.admin-export').forEach(b=>b.hidden=false);
+    document.querySelectorAll('.admin-only').forEach(el=>el.hidden=false);
+    $('#weeklyDate').value=weeklyBounds(todayStr()).start;
+    $('#monthlyPeriod').value=todayStr().slice(0,7);
+    generateWeeklyReport();
+    generateMonthlyReport();
     if (CLOUD) {
       $('#admtxt').textContent =
         'Connected to Supabase. Manage students, scheduled/pinned notices, and admin-only exports below.';
@@ -2944,14 +3055,14 @@ $('#clr').onclick=()=>{
 
 /* ---------- start ---------- */
 
-loadRows().then(render);
+loadRows().then(()=>{render();if(IS_ADMIN){generateWeeklyReport();generateMonthlyReport();}});
 loadNotice();
 
 setInterval(
  ()=>{
   CLOUD
-  ?loadRows().then(render)
-  :render();
+  ?loadRows().then(()=>{render();if(IS_ADMIN){generateWeeklyReport();generateMonthlyReport();}})
+  :(()=>{render();if(IS_ADMIN){generateWeeklyReport();generateMonthlyReport();}})();
   loadNotice();
  },
  60000
