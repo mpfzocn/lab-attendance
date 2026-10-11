@@ -2280,8 +2280,8 @@ function renderDay(){
   `<div class="lh" style="margin-top:0">
     <div></div>
     <div class="r" style="flex-wrap:wrap">
-     <button class="btn2" id="csvDay" class="admin-export" hidden data-html2canvas-ignore="true">Download this day CSV</button>
-     <button class="btn2" id="imgDay" class="admin-export" hidden data-html2canvas-ignore="true">Export HD Image (1200-DPI-equivalent)</button>
+     <button class="btn2 admin-export" id="csvDay" ${IS_ADMIN?'':'hidden'} data-html2canvas-ignore="true">Download this day CSV</button>
+     <button class="btn2 admin-export" id="imgDay" ${IS_ADMIN?'':'hidden'} data-html2canvas-ignore="true">Export HD Image (1200-DPI-equivalent)</button>
     </div>
    </div>
 
