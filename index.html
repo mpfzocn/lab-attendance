@@ -530,6 +530,34 @@ No records found.
 
 <p class="sub" id="admtxt"></p>
 
+
+<div class="profile-admin" style="margin-bottom:20px;border-top:1px solid var(--line);padding-top:14px">
+ <h3>Student Profiles &amp; Research Projects</h3>
+ <p class="sub">Admin directory for the 25 unique student profiles provided. Filter by student, session, or research project. Project supervisor: <b>Dr. Mohammad Muslem Uddin</b>.</p>
+ <div class="profile-metrics" id="profileMetrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:12px 0">
+  <div class="stat" style="border:1px solid var(--line);border-radius:8px"><span>Student profiles</span><b id="profileCount">25</b></div>
+  <div class="stat" style="border:1px solid var(--line);border-radius:8px"><span>Sessions</span><b id="profileSessions">6</b></div>
+  <div class="stat" style="border:1px solid var(--line);border-radius:8px"><span>Project types</span><b id="profileProjectTypes">8</b></div>
+ </div>
+ <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;align-items:end">
+  <div><label for="profileSearch" style="margin-top:0">Search profiles</label><input id="profileSearch" type="search" placeholder="Name, ID, email, mobile, project"></div>
+  <div><label for="profileSession" style="margin-top:0">Filter by session</label><select id="profileSession"><option value="">All sessions</option></select></div>
+  <div><label for="profileProject" style="margin-top:0">Filter by project</label><select id="profileProject"><option value="">All projects</option></select></div>
+ </div>
+ <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:12px 0">
+  <span class="sub" id="profileResultCount" style="margin:0">25 profiles</span>
+  <button class="btn2 admin-export" id="exportProfiles" type="button">Export student profiles CSV</button>
+ </div>
+ <div class="sc">
+  <table>
+   <thead><tr><th>Student ID</th><th>Session</th><th>Student name</th><th>Email</th><th>Mobile</th><th>Research projects</th><th>Project supervisor</th></tr></thead>
+   <tbody id="profileTableBody"></tbody>
+  </table>
+ </div>
+ <div class="empty" id="profileEmpty" hidden>No student profiles match these filters.</div>
+ <p class="small" style="margin-top:10px">Missing email/mobile details are left blank. The repeated student ID 21902021 was consolidated into one profile.</p>
+</div>
+
 <div style="margin-bottom:20px;border-top:1px solid var(--line);padding-top:14px">
 
 <h3>Add / Update Student Directory</h3>
@@ -612,7 +640,6 @@ const STUDENTS={
 "22902002":"Zawad Ibna Zihad",
 "22902012":"Lily Chakma",
 "22902009":"Maria Alam",
-"22902010":"Marzia Morshed Mim",
 "20902038":"Md. Mostakim",
 "20902037":"Roman Hossain",
 "19902003":"Tanbhir Hosen",
@@ -632,6 +659,268 @@ const STUDENTS={
 "24902005":"Tanjina Islam",
 "24902026":"Sarah Tarannum"
 };
+
+const PROFILE_DATA = [
+  {
+    "id": "22902001",
+    "session": "2021-2022",
+    "name": "Mobashira Anika",
+    "email": "mobashiraanika89@gmail.com",
+    "mobile": "1707439018",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "21902021",
+    "session": "2020-2021",
+    "name": "Md. Jakaria Hasnat",
+    "email": "hasnatjakaria621@gmail.com",
+    "mobile": "1832710696",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "21902027",
+    "session": "2020-2021",
+    "name": "Puja Rani Dhar",
+    "email": "pujaranidhar915@gmail.com",
+    "mobile": "1853000915",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "21902026",
+    "session": "2020-2021",
+    "name": "Md. Saifullah Al Hafiz Saikat",
+    "email": "saikat00110@gmail.com",
+    "mobile": "1538414814",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "21902029",
+    "session": "2020-2021",
+    "name": "Kapotakkhi",
+    "email": "kapotakkhisardar@gmail.com",
+    "mobile": "1615915462",
+    "projects": []
+  },
+  {
+    "id": "22902002",
+    "session": "2021-2022",
+    "name": "Zawad Ibna Zihad",
+    "email": "",
+    "mobile": "",
+    "projects": []
+  },
+  {
+    "id": "22902012",
+    "session": "2021-2022",
+    "name": "Lily Chakma",
+    "email": "lilychakma003@gmail.com",
+    "mobile": "1638824111",
+    "projects": [
+      "FMR",
+      "MBE"
+    ]
+  },
+  {
+    "id": "22902009",
+    "session": "2021-2022",
+    "name": "Maria Alam",
+    "email": "mariyaalam628@gmail.com",
+    "mobile": "1775502628",
+    "projects": [
+      "MBE",
+      "FMR"
+    ]
+  },
+  {
+    "id": "22902029",
+    "session": "2021-2022",
+    "name": "Marzia Morshed Mim",
+    "email": "",
+    "mobile": "",
+    "projects": [
+      "FMR",
+      "MBE"
+    ]
+  },
+  {
+    "id": "24902029",
+    "session": "2023-2024",
+    "name": "Subarna Majumder",
+    "email": "subarnamajumder444@gmail.com",
+    "mobile": "1885315354",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "24902007",
+    "session": "2023-2024",
+    "name": "Ipshita Hasan Hiya",
+    "email": "ipshita.h.hiya@gmail.com",
+    "mobile": "1978319806",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "23902004",
+    "session": "2022-2023",
+    "name": "MD.Rohan Tanvir",
+    "email": "rohantanvir373@gmail.com",
+    "mobile": "1601633634",
+    "projects": [
+      "FMR",
+      "MBE"
+    ]
+  },
+  {
+    "id": "23902005",
+    "session": "2022-2023",
+    "name": "Md. Sabit Bin Nasim",
+    "email": "sabithasan36@gmail.com",
+    "mobile": "1602854569",
+    "projects": [
+      "FMR",
+      "MBE"
+    ]
+  },
+  {
+    "id": "23902018",
+    "session": "2022-2023",
+    "name": "Nafisa Hakim",
+    "email": "nafisahakim23902028@gmail.com",
+    "mobile": "1628487470",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "23902010",
+    "session": "2022-2023",
+    "name": "Anamul Haque",
+    "email": "anamulhaque147143@gmail.com",
+    "mobile": "1705882393",
+    "projects": [
+      "MBE"
+    ]
+  },
+  {
+    "id": "23902017",
+    "session": "2022-2023",
+    "name": "Zamiu Rahman",
+    "email": "",
+    "mobile": "",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "24902012",
+    "session": "2023-2024",
+    "name": "K. M. Rashid Shariar Mehedi",
+    "email": "rashid.ocn@std.cu.ac.bd",
+    "mobile": "1606589077",
+    "projects": [
+      "Beyond The Sundarbans",
+      "FMR"
+    ]
+  },
+  {
+    "id": "23902023",
+    "session": "2022-2023",
+    "name": "Safiatul Jannat Raina",
+    "email": "safiatuljannat@gmail.com",
+    "mobile": "1886933800",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "24902014",
+    "session": "2023-2024",
+    "name": "M A Wasif Ur Rahman",
+    "email": "24902014@std.cu.ac.bd",
+    "mobile": "1793451269",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "23902009",
+    "session": "2022-2023",
+    "name": "Arnica Chowdhury Papri",
+    "email": "arnicachowdhury@gmail.com",
+    "mobile": "1521767731",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "20902038",
+    "session": "2019-2020",
+    "name": "Md. Mostakim",
+    "email": "mostakim.ocean.cu@gmail.com",
+    "mobile": "1648439289",
+    "projects": [
+      "FMR"
+    ]
+  },
+  {
+    "id": "20902037",
+    "session": "2019-2020",
+    "name": "Roman Hossain",
+    "email": "romanoceanography@gmail.com",
+    "mobile": "1894764690",
+    "projects": [
+      "FMR",
+      "MHW",
+      "Mangrove Based Ecotourism",
+      "Medical Waste Contamination",
+      "Undervalued Fish",
+      "Trash Fish"
+    ]
+  },
+  {
+    "id": "19902003",
+    "session": "2018-2019",
+    "name": "Tanbhir Hosen",
+    "email": "mdtanvirhossain705@gmail.com",
+    "mobile": "",
+    "projects": [
+      "MHW",
+      "MBE"
+    ]
+  },
+  {
+    "id": "19902036",
+    "session": "2018-2019",
+    "name": "Fowzia Aktar",
+    "email": "fowzia956@gmail.com",
+    "mobile": "1612408929",
+    "projects": [
+      "MHW",
+      "MBE"
+    ]
+  },
+  {
+    "id": "20902023",
+    "session": "2019-2020",
+    "name": "Rupali Khatun",
+    "email": "",
+    "mobile": "",
+    "projects": []
+  }
+];
+const PROFILE_SUPERVISOR = 'Dr. Mohammad Muslem Uddin';
+PROFILE_DATA.forEach(p => { STUDENTS[p.id] = p.name; });
 
 let sb=null,CLOUD=false;
 
@@ -2903,6 +3192,56 @@ $('#btnClearNotice').onclick=async()=>{
  }
 };
 
+
+/* ---------- admin student profile directory ---------- */
+const profileProjectNames = Array.from(new Set(PROFILE_DATA.flatMap(p=>p.projects))).sort((a,b)=>a.localeCompare(b));
+const profileSessions = Array.from(new Set(PROFILE_DATA.map(p=>p.session))).sort();
+function setupProfileFilters(){
+ const sess=$('#profileSession'), proj=$('#profileProject');
+ if(sess.options.length===1) profileSessions.forEach(s=>sess.add(new Option(s,s)));
+ if(proj.options.length===1) profileProjectNames.forEach(p=>proj.add(new Option(p,p)));
+ $('#profileCount').textContent=PROFILE_DATA.length;
+ $('#profileSessions').textContent=profileSessions.length;
+ $('#profileProjectTypes').textContent=profileProjectNames.length;
+ renderStudentProfiles();
+}
+function getFilteredProfiles(){
+ const query=$('#profileSearch').value.trim().toLowerCase();
+ const session=$('#profileSession').value;
+ const project=$('#profileProject').value;
+ return PROFILE_DATA.filter(p=>{
+  const hay=[p.id,p.session,p.name,p.email,p.mobile,p.projects.join(' '),PROFILE_SUPERVISOR].join(' ').toLowerCase();
+  return (!query||hay.includes(query)) && (!session||p.session===session) && (!project||p.projects.includes(project));
+ }).sort((a,b)=>a.session.localeCompare(b.session)||a.name.localeCompare(b.name));
+}
+function renderStudentProfiles(){
+ if(!IS_ADMIN)return;
+ const list=getFilteredProfiles();
+ $('#profileResultCount').textContent=list.length+' of '+PROFILE_DATA.length+' student profiles';
+ $('#profileEmpty').hidden=list.length>0;
+ $('#profileTableBody').innerHTML=list.map(p=>`<tr>
+  <td data-l="Student ID">${esc(p.id)}</td>
+  <td data-l="Session">${esc(p.session)}</td>
+  <td data-l="Student name"><b>${esc(p.name)}</b></td>
+  <td data-l="Email">${p.email?`<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:'-'}</td>
+  <td data-l="Mobile">${p.mobile?esc(p.mobile):'-'}</td>
+  <td data-l="Research projects">${p.projects.length?p.projects.map(x=>`<span class="dur">${esc(x)}</span>`).join(' '):'-'}</td>
+  <td data-l="Project supervisor">${esc(PROFILE_SUPERVISOR)}</td>
+ </tr>`).join('');
+}
+['profileSearch','profileSession','profileProject'].forEach(id=>{
+ const el=document.getElementById(id);
+ if(el) el.addEventListener(id==='profileSearch'?'input':'change',renderStudentProfiles);
+});
+$('#exportProfiles').onclick=()=>{
+ if(!IS_ADMIN){alert('Only an admin can export student profiles.');return;}
+ const list=getFilteredProfiles();
+ if(!list.length){alert('No student profiles match the current filters.');return;}
+ const lines=[['Student ID','Session','Student Name','Email','Mobile','Research Projects','Project Supervisor']];
+ list.forEach(p=>lines.push([p.id,p.session,p.name,p.email,p.mobile,p.projects.join('; '),PROFILE_SUPERVISOR]));
+ download('SODIC_CU_Student_Profiles.csv',lines);
+};
+
 /* ---------- PIN-protected admin entry ---------- */
 // The ?admin URL now asks for the admin PIN before revealing admin tools.
 // This is a client-side gate only; real security for shared database writes
@@ -2913,6 +3252,7 @@ if (adminRequested) {
   if (enteredPin === ADMIN_PIN) {
     IS_ADMIN=true;
     $('#admin').hidden = false;
+    setupProfileFilters();
     document.querySelectorAll('.admin-export').forEach(b=>b.hidden=false);
     document.querySelectorAll('.admin-only').forEach(el=>el.hidden=false);
     $('#weeklyDate').value=weeklyBounds(todayStr()).start;
