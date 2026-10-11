@@ -132,6 +132,9 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 .notice-viewport{position:relative;overflow:hidden;white-space:nowrap;flex:1;min-width:0}
 .notice-text{display:inline-block;min-width:100%;font-weight:600;color:#6b4a00;animation:notice-scroll 24s linear infinite}
 .notice-text:hover{animation-play-state:paused}
+.notice-ticker.pinned{background:#fff3cf;border-bottom:2px solid #c9962b}
+.notice-ticker.pinned .notice-text{animation:none;min-width:0;white-space:normal}
+.notice-ticker.pinned .notice-label{background:#8a5a00}
 .notice-ticker.empty-notice{background:#f7fafb;border-bottom-color:var(--line)}
 .notice-ticker.empty-notice .notice-label{background:var(--teal)}
 .notice-ticker.empty-notice .notice-text{color:var(--mute);animation:none}
@@ -257,6 +260,7 @@ A blank time uses the current time.
  <option value="Data Analysis / Interpretation">Data Analysis / Interpretation</option>
  <option value="Figure Preparation">Figure Preparation</option>
  <option value="Data Collection">Data Collection</option>
+  <option value="Field Work">Field Work</option>
  <option value="Research Documentation / Report Writing">Research Documentation / Report Writing</option>
  <option value="Presentation Preparation">Presentation Preparation</option>
  <option value="Preparing Manuscripts">Preparing Manuscripts</option>
@@ -453,7 +457,7 @@ grey = Friday and Saturday
 <input id="q" type="search"
        placeholder="Search name or ID"
        aria-label="Search records">
-<button class="btn2" id="csv">Export CSV</button>
+<button class="btn2 admin-export" id="csv" hidden>Export CSV (Admin)</button>
 </div>
 
 </div>
@@ -530,7 +534,12 @@ Save Student
  <p class="sub">Publish an announcement for all students. It will scroll below the live clock on the main dashboard.</p>
  <label for="noticeInput" style="margin-top:0">Notice message</label>
  <textarea id="noticeInput" maxlength="1200" placeholder="e.g. Lab meeting tomorrow at 11:00 AM in the Oceanography Department."></textarea>
- <div class="small" style="margin-top:5px">Include the date/time for meetings where relevant.</div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div><label for="noticeStart">Show from (optional)</label><input type="datetime-local" id="noticeStart"></div>
+  <div><label for="noticeEnd">Show until (optional)</label><input type="datetime-local" id="noticeEnd"></div>
+ </div>
+ <label style="display:flex;align-items:center;gap:8px;margin-top:12px;color:var(--ink);font-weight:600"><input type="checkbox" id="noticePinned" style="width:auto;min-height:0"> Pin this notice (keep it fixed instead of scrolling)</label>
+ <div class="small" style="margin-top:5px">Set a schedule to show the notice only during that period. Leave dates blank to show it immediately until cleared.</div>
  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
   <button class="btn2" id="btnPublishNotice" type="button" style="background:var(--teal);color:#fff">Publish Notice</button>
   <button class="btn2" id="btnClearNotice" type="button" style="border-color:var(--bad);color:var(--bad)">Clear Notice</button>
@@ -560,6 +569,7 @@ const SUPABASE_URL='https://obctddlksvgejgohmmms.supabase.co';
 const SUPABASE_KEY='sb_publishable_ttLMNzSc2_Dpt09clK-M-w_g7i_wcCo';
 
 const ADMIN_PIN='14141';
+let IS_ADMIN=false;
 
 const STUDENTS={
 "22902001":"Mobashira Anika",
@@ -2270,8 +2280,8 @@ function renderDay(){
   `<div class="lh" style="margin-top:0">
     <div></div>
     <div class="r" style="flex-wrap:wrap">
-     <button class="btn2" id="csvDay" data-html2canvas-ignore="true">Download this day CSV</button>
-     <button class="btn2" id="imgDay" data-html2canvas-ignore="true">Export HD Image (1200-DPI-equivalent)</button>
+     <button class="btn2" id="csvDay" class="admin-export" hidden data-html2canvas-ignore="true">Download this day CSV</button>
+     <button class="btn2" id="imgDay" class="admin-export" hidden data-html2canvas-ignore="true">Export HD Image (1200-DPI-equivalent)</button>
     </div>
    </div>
 
@@ -2347,6 +2357,7 @@ function renderDay(){
    </div>`;
 
  $('#csvDay').onclick=()=>{
+  if(!IS_ADMIN){alert('Only an authenticated admin can export reports.');return;}
 
   const lines=[
    [
@@ -2387,6 +2398,7 @@ function renderDay(){
  };
 
  $('#imgDay').onclick=async()=>{
+  if(!IS_ADMIN){alert('Only an authenticated admin can export reports.');return;}
   const btn=$('#imgDay');
   const target=$('#dayReportCapture');
   if(!target)return;
@@ -2643,6 +2655,7 @@ function download(name,lines){
 }
 
 $('#csv').onclick=()=>{
+ if(!IS_ADMIN){alert('Only an authenticated admin can export reports.');return;}
 
  const l=
   monthRows()
@@ -2692,39 +2705,26 @@ $('#csv').onclick=()=>{
 /* ---------- shared lab notice ---------- */
 
 const NOTICE_TABLE='lab_notices';
-
-function showNotice(message){
- const ticker=$('#noticeTicker');
- const text=$('#noticeText');
- const clean=String(message||'').trim();
- text.textContent=clean||'No new lab notices at present.';
- ticker.classList.toggle('empty-notice',!clean);
- ticker.hidden=false;
+let currentNotice={message:'',pinned:false,start:'',end:''};
+function parseNotice(raw){
+ try{const o=JSON.parse(raw);if(o&&typeof o==='object'&&Object.prototype.hasOwnProperty.call(o,'message'))return {message:String(o.message||''),pinned:!!o.pinned,start:o.start||'',end:o.end||''};}catch(e){}
+ return {message:String(raw||''),pinned:false,start:'',end:''};
 }
-
+function noticeIsActive(n){const now=Date.now(),start=n.start?new Date(n.start).getTime():null,end=n.end?new Date(n.end).getTime():null;return (!start||now>=start)&&(!end||now<=end);}
+function showNotice(notice){
+ const n=typeof notice==='string'?parseNotice(notice):notice;currentNotice=n||{message:'',pinned:false,start:'',end:''};
+ const ticker=$('#noticeTicker'),text=$('#noticeText'),label=ticker.querySelector('.notice-label');
+ const active=!!(n.message&&noticeIsActive(n));
+ text.textContent=active?n.message:(n.message&&n.start&&Date.now()<new Date(n.start).getTime()?'A lab notice is scheduled for a later time.':'No new lab notices at present.');
+ ticker.classList.toggle('empty-notice',!active);ticker.classList.toggle('pinned',active&&n.pinned);
+ label.textContent=active&&n.pinned?'📌 PINNED NOTICE':'LAB NOTICE';text.style.animation=active&&n.pinned?'none':'';ticker.hidden=false;
+}
 async function loadNotice(){
  if(!CLOUD||!sb){
-  try{
-   const localNotice=localStorage.getItem('sodic_lab_notice_v1')||'';
-   showNotice(localNotice);
-   if($('#noticeInput'))$('#noticeInput').value=localNotice;
-  }catch(e){showNotice('');}
-  return;
+  try{const n=parseNotice(localStorage.getItem('sodic_lab_notice_v1')||'');showNotice(n);if($('#noticeInput'))$('#noticeInput').value=n.message;if($('#noticePinned'))$('#noticePinned').checked=n.pinned;if($('#noticeStart'))$('#noticeStart').value=n.start;if($('#noticeEnd'))$('#noticeEnd').value=n.end;}catch(e){showNotice('');}return;
  }
- try{
-  const {data,error}=await sb
-   .from(NOTICE_TABLE)
-   .select('message')
-   .eq('id',1)
-   .maybeSingle();
-  if(error)throw error;
-  const message=data?.message||'';
-  showNotice(message);
-  if($('#noticeInput'))$('#noticeInput').value=message;
- }catch(e){
-  console.warn('Could not load shared lab notice. Check lab_notices table and read policy.',e);
-  showNotice('');
- }
+ try{const {data,error}=await sb.from(NOTICE_TABLE).select('message').eq('id',1).maybeSingle();if(error)throw error;const n=parseNotice(data?.message||'');showNotice(n);if($('#noticeInput'))$('#noticeInput').value=n.message;if($('#noticePinned'))$('#noticePinned').checked=n.pinned;if($('#noticeStart'))$('#noticeStart').value=n.start;if($('#noticeEnd'))$('#noticeEnd').value=n.end;}
+ catch(e){console.warn('Could not load shared lab notice. Check lab_notices table and read policy.',e);showNotice('');}
 }
 
 function setNoticeAdminMessage(text,kind){
@@ -2736,6 +2736,8 @@ function setNoticeAdminMessage(text,kind){
 
 $('#btnPublishNotice').onclick=async()=>{
  const message=$('#noticeInput').value.trim();
+ const start=$('#noticeStart').value,end=$('#noticeEnd').value,pinned=$('#noticePinned').checked;
+ if(start&&end&&new Date(end)<=new Date(start)){setNoticeAdminMessage('End time must be after the start time.','bad');return;}
  if(!message){
   setNoticeAdminMessage('Enter a notice before publishing, or use Clear Notice to remove the current notice.','bad');
   return;
@@ -2750,15 +2752,15 @@ $('#btnPublishNotice').onclick=async()=>{
  try{
   if(CLOUD&&sb){
    const {error}=await sb.from(NOTICE_TABLE).upsert(
-    {id:1,message:message,updated_at:new Date().toISOString()},
+    {id:1,message:JSON.stringify({message,pinned,start,end}),updated_at:new Date().toISOString()},
     {onConflict:'id'}
    );
    if(error)throw error;
   }else{
-   localStorage.setItem('sodic_lab_notice_v1',message);
+   localStorage.setItem('sodic_lab_notice_v1',JSON.stringify({message,pinned,start,end}));
   }
-  showNotice(message);
-  setNoticeAdminMessage('Notice published. It is now displayed below the clock.','ok');
+  showNotice({message,pinned,start,end});
+  setNoticeAdminMessage('Notice published with pin/schedule settings.','ok');
  }catch(e){
   console.error(e);
   setNoticeAdminMessage('Could not publish to the shared database. Run the lab_notices SQL setup and check Supabase table policies.','bad');
@@ -2803,10 +2805,12 @@ const adminRequested = new URLSearchParams(window.location.search).has('admin');
 if (adminRequested) {
   const enteredPin = window.prompt('Enter Admin PIN to open SODIC-CU Lab Attendance Admin Tools:');
   if (enteredPin === ADMIN_PIN) {
+    IS_ADMIN=true;
     $('#admin').hidden = false;
+    document.querySelectorAll('.admin-export').forEach(b=>b.hidden=false);
     if (CLOUD) {
       $('#admtxt').textContent =
-        'Connected to Supabase database. You can manage student entries or wipe database records below.';
+        'Connected to Supabase. Manage students, scheduled/pinned notices, and admin-only exports below.';
     } else {
       $('#admtxt').textContent =
         'Records are stored in this browser only. This removes every record saved on this device. It cannot be undone.';
