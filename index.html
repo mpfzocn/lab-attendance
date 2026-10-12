@@ -231,6 +231,21 @@ h1{font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:clamp(19px,3vw,24p
 .view-heading{margin:4px 0 15px}
 .view-heading h2{font-size:23px;margin:0;color:var(--navy)}
 .view-heading p{font-size:13px;color:var(--mute);margin:5px 0 0}
+
+.researcher-group-title{font:700 17px 'Source Serif 4',serif;color:var(--navy);margin:18px 0 10px}
+.senior-researcher-grid{display:grid;grid-template-columns:1fr;gap:13px}
+.senior-person-card{padding:0;overflow:hidden;display:grid;grid-template-columns:150px minmax(0,1fr);align-items:start}
+.senior-person-photo{display:block;width:100%;height:100%;min-height:220px;max-height:100%;object-fit:cover;background:var(--tint)}
+.senior-person-body{padding:14px;min-width:0}
+.senior-person-body h3{font-size:17px;margin:5px 0 8px}
+.senior-person-body p{font-size:13px;line-height:1.5;margin:5px 0;color:var(--ink)}
+.senior-person-body a{color:var(--teal-d);overflow-wrap:anywhere}
+.senior-role{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.045em;color:var(--teal-d);background:var(--tint);border-radius:20px;padding:4px 8px}
+.senior-links{display:flex;flex-wrap:wrap;gap:7px 13px;margin:9px 0}
+.senior-links a{font-size:12px;font-weight:600}
+.senior-expertise{border-top:1px solid var(--line);padding-top:8px;margin-top:9px!important}
+@media(max-width:560px){.senior-person-card{grid-template-columns:105px minmax(0,1fr)}.senior-person-photo{min-height:160px}.senior-person-body{padding:10px}.senior-person-body h3{font-size:15px}.senior-person-body p{font-size:12px}}
+
 .mobile-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .person-card,.project-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;min-width:0}
 .person-card h3,.project-card h3{margin:0 0 5px;font:700 15px 'IBM Plex Sans',sans-serif;color:var(--navy);overflow-wrap:anywhere}
@@ -382,7 +397,37 @@ body[data-view="home"] #mobileDashboard{display:grid}
 </section>
 
 <section class="view-panel" id="researcherView" aria-label="Researchers">
- <div class="view-heading"><h2>Researchers</h2><p>Student research profiles already present in this HTML. Contact details are not shown in this mobile directory.</p></div>
+ <div class="view-heading"><h2>Researchers</h2><p>Lab leadership and research associates, followed by the existing student researcher profiles.</p></div>
+ <h3 class="researcher-group-title">Lab Leadership &amp; Research Associates</h3>
+ <div class="senior-researcher-grid">
+  <article class="person-card senior-person-card">
+   <img class="senior-person-photo" src="muslem-uddin.jpeg" alt="Dr. Mohammad Muslem Uddin" loading="lazy">
+   <div class="senior-person-body"><span class="senior-role">SODIC-CU Lab Head &amp; Director</span><h3>Dr. Mohammad Muslem Uddin</h3>
+    <p>Professor, Department of Oceanography, University of Chittagong, Chittagong-4331</p>
+    <p>Additional Director, Institutional Quality Assurance Cell, University of Chittagong</p>
+    <p><b>Mobile:</b> <a href="tel:+8801711100449">+8801711100449</a></p><p><b>Email:</b> <a href="mailto:mmu_ims76@cu.ac.bd">mmu_ims76@cu.ac.bd</a></p>
+    <div class="senior-links"><a href="https://orcid.org/0000-0001-6434-6324" target="_blank" rel="noopener">ORCID</a><a href="https://www.researchgate.net/profile/Mohammad-Uddin-138" target="_blank" rel="noopener">ResearchGate</a><a href="https://cu.ac.bd/public_profile/index.php?ein=4349" target="_blank" rel="noopener">CU profile &amp; expertise</a></div>
+   </div>
+  </article>
+  <article class="person-card senior-person-card">
+   <img class="senior-person-photo" src="md-mazaharul-islam.jpeg" alt="Md. Mazaharul Islam" loading="lazy">
+   <div class="senior-person-body"><span class="senior-role">Research Associate</span><h3>Md. Mazaharul Islam</h3>
+    <p><b>System Analyst</b>, Satcom Technologies Limited</p><p><b>Research Consultant (Former)</b>, Center for Environmental and Geographic Information Services (CEGIS)</p><p><b>PhD Researcher</b>, Department of Oceanography, University of Chittagong</p>
+    <p><b>Mobile:</b> <a href="tel:+8801775256407">+8801775256407</a></p><p><b>Email:</b> <a href="mailto:mazharulocn@gmail.com">mazharulocn@gmail.com</a></p>
+    <div class="senior-links"><a href="https://orcid.org/0000-0002-1934-4159" target="_blank" rel="noopener">ORCID</a><a href="https://www.researchgate.net/profile/Md-Mazaharul-Islam" target="_blank" rel="noopener">ResearchGate</a></div>
+    <p class="senior-expertise"><b>Skills &amp; expertise:</b> Geospatial analysis and remote sensing focused on coastal dynamics, oceanographic data analysis, and climate impact assessment. Uses Google Earth Engine, R, ArcGIS Pro, and QGIS for coastal flood inundation, shoreline dynamics, mangrove extent and canopy detection, and blue carbon assessment. Experience includes high-resolution satellite image interpretation, marine spatial planning, field validation, technical proposal development, and geospatial team coordination.</p>
+   </div>
+  </article>
+  <article class="person-card senior-person-card">
+   <img class="senior-person-photo" src="tasnim-binth-abin.png" alt="Tasnim Binth Abin" loading="lazy">
+   <div class="senior-person-body"><span class="senior-role">Research Associate</span><h3>Tasnim Binth Abin</h3>
+    <p>B.Sc. graduate and M.S. student, University of Chittagong</p><p><b>Mobile:</b> <a href="tel:+8801836063404">+880 1836-063404</a></p><p><b>Email:</b> <a href="mailto:tasnimbinabin@gmail.com">tasnimbinabin@gmail.com</a></p>
+    <div class="senior-links"><a href="https://orcid.org/0009-0007-1515-4458" target="_blank" rel="noopener">ORCID</a></div>
+    <p class="senior-expertise"><b>Skills &amp; expertise:</b> Marine environmental research integrating GIS, satellite remote sensing, and cloud computing for climate resilience and sustainable ocean management. Focuses on spatial modelling of coastal dynamics and marine productivity in the Bay of Bengal. Proficient in ArcGIS Pro, Google Earth Engine, and Python, with interests in environmental impact assessment, water-quality monitoring, coastal pollution analysis, and ocean literacy initiatives.</p>
+   </div>
+  </article>
+ </div>
+ <h3 class="researcher-group-title">Student Researchers</h3>
  <div class="mobile-card-grid" id="mobileResearchers"></div>
 </section>
 
