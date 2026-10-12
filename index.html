@@ -352,10 +352,10 @@ body[data-view="home"] #mobileDashboard{display:grid}
   </div>
  </section>
  <div class="dash-metrics" aria-label="Lab overview metrics">
+  <div class="metric-card"><div class="metric-top"><span>Today's attendance</span><span class="metric-icon">◷</span></div><strong id="dashAttendance">—</strong><small>Unique students recorded today</small></div>
+  <div class="metric-card"><div class="metric-top"><span>In lab now</span><span class="metric-icon">●</span></div><strong id="dashInLab">—</strong><small>Checked in and not checked out</small></div>
   <div class="metric-card"><div class="metric-top"><span>Active researchers</span><span class="metric-icon">♙</span></div><strong id="dashResearchers">—</strong><small>Listed student profiles</small></div>
   <div class="metric-card"><div class="metric-top"><span>Research projects</span><span class="metric-icon">▤</span></div><strong id="dashProjects">—</strong><small>Project labels in profiles</small></div>
-  <div class="metric-card"><div class="metric-top"><span>Today's attendance</span><span class="metric-icon">◷</span></div><strong id="dashAttendance">—</strong><small>Unique students recorded today</small></div>
-  <div class="metric-card"><div class="metric-top"><span>Ongoing manuscripts</span><span class="metric-icon">▧</span></div><strong id="dashManuscripts">—</strong><small id="dashManuscriptsNote">Not tracked in current data</small></div>
  </div>
  <section class="dash-section chart-section">
   <div class="dash-section-head"><h3>Attendance · Last 7 days</h3><button class="dash-link" type="button" data-go="more">Reports →</button></div>
@@ -3432,11 +3432,11 @@ function updateMobileDashboard(){
   span.textContent=connected?'Cloud data loaded':(CLOUD?'Cloud status unavailable':'Offline / local mode');
  }
  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
- set('dashResearchers',Object.keys(STUDENTS).length);
- set('dashProjects',getMobileProjectGroups().length);
  const todayRows=rows.filter(r=>r.date===today);
  set('dashAttendance',new Set(todayRows.map(r=>r.sid)).size);
- set('dashManuscripts','—');
+ set('dashInLab',new Set(todayRows.filter(r=>!r.tout).map(r=>r.sid)).size);
+ set('dashResearchers',Object.keys(STUDENTS).length);
+ set('dashProjects',getMobileProjectGroups().length);
  const chart=document.getElementById('dashAttendanceChart');
  if(chart){
   const days=[];
