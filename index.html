@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SODIC-CU Lab Attendance</title>
+<title>SODIC-CU Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
@@ -56,6 +56,10 @@ details.card-toggle summary::after{content:'+ View Report';font:600 13px 'IBM Pl
 details.card-toggle[open] summary::after{content:'− Hide Report';background:#f0f4f7;color:var(--mute)}
 details.card-toggle summary:hover{background:#f9fbfd}
 .toggle-body{padding:0 22px 22px;border-top:1px solid var(--line)}
+/* collapsible admin sections */
+details.card-toggle.t-admin summary::after{content:'+ Show'}
+details.card-toggle.t-admin[open] summary::after{content:'− Hide'}
+details.card-toggle.t-admin .toggle-body{padding-top:14px}
 
 label{display:block;font-size:13px;font-weight:500;color:var(--mute);margin:14px 0 5px}
 input,select,textarea{width:100%;min-width:0;min-height:46px;padding:10px;font:inherit;font-size:16px;color:var(--ink);background:#fbfcfd;border:1px solid var(--line);border-radius:8px}
@@ -182,7 +186,7 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
  <div class="brand">
   <div class="mark" aria-hidden="true">CU</div>
   <div>
-   <h1>SODIC-CU Lab Attendance</h1>
+   <h1>SODIC-CU Lab</h1>
    <p>Department of Oceanography, University of Chittagong</p>
   </div>
  </div>
@@ -440,9 +444,10 @@ grey = Friday and Saturday
 </div>
 </section>
 
-<!-- Admin-only advanced reports: weekly and monthly -->
-<section class="card admin-only" id="advancedReports" hidden>
-  <h2>Advanced attendance reports</h2>
+<!-- Admin-only advanced reports: weekly and monthly (collapsible) -->
+<details class="card-toggle t-admin admin-only" id="advancedReports" hidden>
+  <summary>Advanced attendance reports</summary>
+  <div class="toggle-body">
   <p class="sub">Weekly and monthly summaries for administrators. Select a period to view totals and export the report as CSV.</p>
 
   <div class="g" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
@@ -470,7 +475,8 @@ grey = Friday and Saturday
       <div id="monthlyReport" style="margin-top:12px"></div>
     </div>
   </div>
-</section>
+  </div>
+</details>
 
 <!-- 4. HIDDEN/COLLAPSIBLE: Attendance records -->
 <details class="card-toggle">
@@ -523,10 +529,12 @@ No records found.
 </div>
 </details>
 
-<!-- ADMIN PANEL -->
-<section class="card" id="admin" hidden>
+<!-- ADMIN PANEL (collapsible) -->
+<details class="card-toggle t-admin" id="admin" hidden>
 
-<h2>Admin tools</h2>
+<summary>Admin tools</summary>
+
+<div class="toggle-body">
 
 <p class="sub" id="admtxt"></p>
 
@@ -612,12 +620,13 @@ style="border-color:var(--bad);color:var(--bad)">
 Clear all records on this device
 </button>
 
-</section>
+</div>
+</details>
 
 </main>
 
 <footer>
-SODIC-CU, Department of Oceanography, University of Chittagong
+SODIC-CU Lab, Department of Oceanography, University of Chittagong
 </footer>
 
 <script>
@@ -661,263 +670,31 @@ const STUDENTS={
 };
 
 const PROFILE_DATA = [
-  {
-    "id": "22902001",
-    "session": "2021-2022",
-    "name": "Mobashira Anika",
-    "email": "mobashiraanika89@gmail.com",
-    "mobile": "1707439018",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "21902021",
-    "session": "2020-2021",
-    "name": "Md. Jakaria Hasnat",
-    "email": "hasnatjakaria621@gmail.com",
-    "mobile": "1832710696",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "21902027",
-    "session": "2020-2021",
-    "name": "Puja Rani Dhar",
-    "email": "pujaranidhar915@gmail.com",
-    "mobile": "1853000915",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "21902026",
-    "session": "2020-2021",
-    "name": "Md. Saifullah Al Hafiz Saikat",
-    "email": "saikat00110@gmail.com",
-    "mobile": "1538414814",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "21902029",
-    "session": "2020-2021",
-    "name": "Kapotakkhi",
-    "email": "kapotakkhisardar@gmail.com",
-    "mobile": "1615915462",
-    "projects": []
-  },
-  {
-    "id": "22902002",
-    "session": "2021-2022",
-    "name": "Zawad Ibna Zihad",
-    "email": "",
-    "mobile": "",
-    "projects": []
-  },
-  {
-    "id": "22902012",
-    "session": "2021-2022",
-    "name": "Lily Chakma",
-    "email": "lilychakma003@gmail.com",
-    "mobile": "1638824111",
-    "projects": [
-      "FMR",
-      "MBE"
-    ]
-  },
-  {
-    "id": "22902009",
-    "session": "2021-2022",
-    "name": "Maria Alam",
-    "email": "mariyaalam628@gmail.com",
-    "mobile": "1775502628",
-    "projects": [
-      "MBE",
-      "FMR"
-    ]
-  },
-  {
-    "id": "22902029",
-    "session": "2021-2022",
-    "name": "Marzia Morshed Mim",
-    "email": "",
-    "mobile": "",
-    "projects": [
-      "FMR",
-      "MBE"
-    ]
-  },
-  {
-    "id": "24902029",
-    "session": "2023-2024",
-    "name": "Subarna Majumder",
-    "email": "subarnamajumder444@gmail.com",
-    "mobile": "1885315354",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "24902007",
-    "session": "2023-2024",
-    "name": "Ipshita Hasan Hiya",
-    "email": "ipshita.h.hiya@gmail.com",
-    "mobile": "1978319806",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "23902004",
-    "session": "2022-2023",
-    "name": "MD.Rohan Tanvir",
-    "email": "rohantanvir373@gmail.com",
-    "mobile": "1601633634",
-    "projects": [
-      "FMR",
-      "MBE"
-    ]
-  },
-  {
-    "id": "23902005",
-    "session": "2022-2023",
-    "name": "Md. Sabit Bin Nasim",
-    "email": "sabithasan36@gmail.com",
-    "mobile": "1602854569",
-    "projects": [
-      "FMR",
-      "MBE"
-    ]
-  },
-  {
-    "id": "23902018",
-    "session": "2022-2023",
-    "name": "Nafisa Hakim",
-    "email": "nafisahakim23902028@gmail.com",
-    "mobile": "1628487470",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "23902010",
-    "session": "2022-2023",
-    "name": "Anamul Haque",
-    "email": "anamulhaque147143@gmail.com",
-    "mobile": "1705882393",
-    "projects": [
-      "MBE"
-    ]
-  },
-  {
-    "id": "23902017",
-    "session": "2022-2023",
-    "name": "Zamiu Rahman",
-    "email": "",
-    "mobile": "",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "24902012",
-    "session": "2023-2024",
-    "name": "K. M. Rashid Shariar Mehedi",
-    "email": "rashid.ocn@std.cu.ac.bd",
-    "mobile": "1606589077",
-    "projects": [
-      "Beyond The Sundarbans",
-      "FMR"
-    ]
-  },
-  {
-    "id": "23902023",
-    "session": "2022-2023",
-    "name": "Safiatul Jannat Raina",
-    "email": "safiatuljannat@gmail.com",
-    "mobile": "1886933800",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "24902014",
-    "session": "2023-2024",
-    "name": "M A Wasif Ur Rahman",
-    "email": "24902014@std.cu.ac.bd",
-    "mobile": "1793451269",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "23902009",
-    "session": "2022-2023",
-    "name": "Arnica Chowdhury Papri",
-    "email": "arnicachowdhury@gmail.com",
-    "mobile": "1521767731",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "20902038",
-    "session": "2019-2020",
-    "name": "Md. Mostakim",
-    "email": "mostakim.ocean.cu@gmail.com",
-    "mobile": "1648439289",
-    "projects": [
-      "FMR"
-    ]
-  },
-  {
-    "id": "20902037",
-    "session": "2019-2020",
-    "name": "Roman Hossain",
-    "email": "romanoceanography@gmail.com",
-    "mobile": "1894764690",
-    "projects": [
-      "FMR",
-      "MHW",
-      "Mangrove Based Ecotourism",
-      "Medical Waste Contamination",
-      "Undervalued Fish",
-      "Trash Fish"
-    ]
-  },
-  {
-    "id": "19902003",
-    "session": "2018-2019",
-    "name": "Tanbhir Hosen",
-    "email": "mdtanvirhossain705@gmail.com",
-    "mobile": "",
-    "projects": [
-      "MHW",
-      "MBE"
-    ]
-  },
-  {
-    "id": "19902036",
-    "session": "2018-2019",
-    "name": "Fowzia Aktar",
-    "email": "fowzia956@gmail.com",
-    "mobile": "1612408929",
-    "projects": [
-      "MHW",
-      "MBE"
-    ]
-  },
-  {
-    "id": "20902023",
-    "session": "2019-2020",
-    "name": "Rupali Khatun",
-    "email": "",
-    "mobile": "",
-    "projects": []
-  }
+  {"id":"22902001","session":"2021-2022","name":"Mobashira Anika","email":"mobashiraanika89@gmail.com","mobile":"1707439018","projects":["FMR"]},
+  {"id":"21902021","session":"2020-2021","name":"Md. Jakaria Hasnat","email":"hasnatjakaria621@gmail.com","mobile":"1832710696","projects":["FMR"]},
+  {"id":"21902027","session":"2020-2021","name":"Puja Rani Dhar","email":"pujaranidhar915@gmail.com","mobile":"1853000915","projects":["FMR"]},
+  {"id":"21902026","session":"2020-2021","name":"Md. Saifullah Al Hafiz Saikat","email":"saikat00110@gmail.com","mobile":"1538414814","projects":["FMR"]},
+  {"id":"21902029","session":"2020-2021","name":"Kapotakkhi","email":"kapotakkhisardar@gmail.com","mobile":"1615915462","projects":[]},
+  {"id":"22902002","session":"2021-2022","name":"Zawad Ibna Zihad","email":"","mobile":"","projects":[]},
+  {"id":"22902012","session":"2021-2022","name":"Lily Chakma","email":"lilychakma003@gmail.com","mobile":"1638824111","projects":["FMR","MBE"]},
+  {"id":"22902009","session":"2021-2022","name":"Maria Alam","email":"mariyaalam628@gmail.com","mobile":"1775502628","projects":["MBE","FMR"]},
+  {"id":"22902029","session":"2021-2022","name":"Marzia Morshed Mim","email":"","mobile":"","projects":["FMR","MBE"]},
+  {"id":"24902029","session":"2023-2024","name":"Subarna Majumder","email":"subarnamajumder444@gmail.com","mobile":"1885315354","projects":["FMR"]},
+  {"id":"24902007","session":"2023-2024","name":"Ipshita Hasan Hiya","email":"ipshita.h.hiya@gmail.com","mobile":"1978319806","projects":["FMR"]},
+  {"id":"23902004","session":"2022-2023","name":"MD.Rohan Tanvir","email":"rohantanvir373@gmail.com","mobile":"1601633634","projects":["FMR","MBE"]},
+  {"id":"23902005","session":"2022-2023","name":"Md. Sabit Bin Nasim","email":"sabithasan36@gmail.com","mobile":"1602854569","projects":["FMR","MBE"]},
+  {"id":"23902018","session":"2022-2023","name":"Nafisa Hakim","email":"nafisahakim23902028@gmail.com","mobile":"1628487470","projects":["FMR"]},
+  {"id":"23902010","session":"2022-2023","name":"Anamul Haque","email":"anamulhaque147143@gmail.com","mobile":"1705882393","projects":["MBE"]},
+  {"id":"23902017","session":"2022-2023","name":"Zamiu Rahman","email":"","mobile":"","projects":["FMR"]},
+  {"id":"24902012","session":"2023-2024","name":"K. M. Rashid Shariar Mehedi","email":"rashid.ocn@std.cu.ac.bd","mobile":"1606589077","projects":["Beyond The Sundarbans","FMR"]},
+  {"id":"23902023","session":"2022-2023","name":"Safiatul Jannat Raina","email":"safiatuljannat@gmail.com","mobile":"1886933800","projects":["FMR"]},
+  {"id":"24902014","session":"2023-2024","name":"M A Wasif Ur Rahman","email":"24902014@std.cu.ac.bd","mobile":"1793451269","projects":["FMR"]},
+  {"id":"23902009","session":"2022-2023","name":"Arnica Chowdhury Papri","email":"arnicachowdhury@gmail.com","mobile":"1521767731","projects":["FMR"]},
+  {"id":"20902038","session":"2019-2020","name":"Md. Mostakim","email":"mostakim.ocean.cu@gmail.com","mobile":"1648439289","projects":["FMR"]},
+  {"id":"20902037","session":"2019-2020","name":"Roman Hossain","email":"romanoceanography@gmail.com","mobile":"1894764690","projects":["FMR","MHW","Mangrove Based Ecotourism","Medical Waste Contamination","Undervalued Fish","Trash Fish"]},
+  {"id":"19902003","session":"2018-2019","name":"Tanbhir Hosen","email":"mdtanvirhossain705@gmail.com","mobile":"","projects":["MHW","MBE"]},
+  {"id":"19902036","session":"2018-2019","name":"Fowzia Aktar","email":"fowzia956@gmail.com","mobile":"1612408929","projects":["MHW","MBE"]},
+  {"id":"20902023","session":"2019-2020","name":"Rupali Khatun","email":"","mobile":"","projects":[]}
 ];
 const PROFILE_SUPERVISOR = 'Dr. Mohammad Muslem Uddin';
 PROFILE_DATA.forEach(p => { STUDENTS[p.id] = p.name; });
@@ -3243,9 +3020,11 @@ $('#exportProfiles').onclick=()=>{
 };
 
 /* ---------- PIN-protected admin entry ---------- */
-// The ?admin URL now asks for the admin PIN before revealing admin tools.
+// The ?admin URL asks for the admin PIN before revealing admin tools.
 // This is a client-side gate only; real security for shared database writes
 // must be enforced by Supabase Auth/RLS or a trusted server-side function.
+// Admin sections (Advanced attendance reports, Admin tools) start collapsed;
+// click the heading to expand or collapse them.
 const adminRequested = new URLSearchParams(window.location.search).has('admin');
 if (adminRequested) {
   const enteredPin = window.prompt('Enter Admin PIN to open SODIC-CU Lab Attendance Admin Tools:');
