@@ -876,7 +876,7 @@ Save Student
 
 <div class="profile-admin" id="researcherEditor" style="margin-bottom:20px;border-top:1px solid var(--line);padding-top:14px">
  <h3>Manage Student Researchers &amp; Photos</h3>
- <p class="sub">Add or edit the public researcher cards without editing HTML. Upload a JPG/PNG photo, enter the student ID, name, session, and project names (comma-separated), then save. Admin ID: <b>16207119</b>. Admin PIN remains <b>14141</b>.</p>
+ <p class="sub">Add or edit the public researcher cards without editing HTML. Upload a JPG/PNG photo, enter the student ID, name, session, and project names (comma-separated), then save.</p>
  <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px">
   <div><label for="researcherId" style="margin-top:0">Student ID (admin view only)</label><input id="researcherId" inputmode="numeric" placeholder="e.g. 24902001"></div>
   <div><label for="researcherName" style="margin-top:0">Student name</label><input id="researcherName" placeholder="Full name"></div>
@@ -3072,7 +3072,7 @@ function renderAdvancedReport(targetId,rangeLabel,reportRows){
 function weeklyBounds(dateString){
  const d=new Date(dateString+'T12:00:00');
  const day=d.getDay();
- const delta=day===0?-6:1-day;
+ const delta=-((day+1)%7);
  d.setDate(d.getDate()+delta);
  const start=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
  const endDate=new Date(d);endDate.setDate(endDate.getDate()+6);
@@ -3095,7 +3095,7 @@ function generateWeeklyReport(){
  const date=$('#weeklyDate').value||todayStr();
  const {start,end}=weeklyBounds(date);
  const label=start+' to '+end;
- $('#weeklyRange').textContent='Week: '+label+' (Monday–Sunday)';
+ $('#weeklyRange').textContent='Week: '+label+' (Saturday–Friday)';
  const reportRows=reportRowsForRange(start,end);
  cachedWeeklyReport={label,rows:reportRows};
  renderAdvancedReport('weeklyReport',label,reportRows);
@@ -3548,7 +3548,9 @@ function persistResearcherData(){
 function renderMobileResearchers(){
  const target=document.getElementById('mobileResearchers');
  if(!target)return;
- target.innerHTML=PROFILE_DATA.map(p=>{
+ const sessionKey=x=>{const m=String(x.session||'').match(/^(\d{4})/);return m?parseInt(m[1],10):9999;};
+ const orderedResearchers=PROFILE_DATA.map((p,i)=>({p,i})).sort((a,b)=>sessionKey(a.p)-sessionKey(b.p)||a.i-b.i).map(o=>o.p);
+ target.innerHTML=orderedResearchers.map(p=>{
    const src=studentPhotoSrc(p.id);
    const photo=src
      ? `<img class="student-researcher-photo" src="${src}" alt="${esc(p.name)}" loading="lazy" onerror="this.style.visibility='hidden'">`
