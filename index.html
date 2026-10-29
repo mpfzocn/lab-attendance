@@ -405,7 +405,8 @@ body.is-admin .edit-col{display:table-cell}
 .exp-day{text-align:right}
 .exp-date{font:700 25px 'Source Serif 4',Georgia,serif}
 .exp-meta{font-size:17px;color:#b7cad8;margin-top:4px}
-.exp-body{padding:22px 48px 0}
+.exp-body{padding:22px 48px 0;overflow:hidden}
+.exp-scale{transform-origin:0 0}
 .exp-table{display:table!important;width:100%;border-collapse:collapse;font-size:19px;table-layout:fixed}
 .exp-table thead{display:table-header-group!important}
 .exp-table tbody{display:table-row-group!important}
@@ -2755,7 +2756,7 @@ function renderDay(){
     <div></div>
     <div class="r" style="flex-wrap:wrap">
      <button class="btn2 admin-export" id="csvDay" ${IS_ADMIN?'':'hidden'} data-html2canvas-ignore="true">Download this day CSV</button>
-     <button class="btn2 admin-export" id="imgDay" ${IS_ADMIN?'':'hidden'} data-html2canvas-ignore="true">Export Image (1536 × 1024)</button>
+     <button class="btn2 admin-export" id="imgDay" ${IS_ADMIN?'':'hidden'} data-html2canvas-ignore="true">Export HD Image (3:2)</button>
     </div>
    </div>
 
@@ -2881,78 +2882,70 @@ function renderDay(){
   const btn=$('#imgDay');
   const oldText=btn.textContent;
   btn.disabled=true;
-  btn.textContent='Rendering 1536 × 1024 image...';
-  const W=1536,H=1024,FOOT=64;
+  btn.textContent='Rendering HD image...';
+  const W=1536,H=1024,FOOT=64,PADX=48;
   const host=document.createElement('div');
   host.id='expHost';
   host.style.cssText='position:fixed;left:-20000px;top:0;width:'+W+'px;z-index:-1;pointer-events:none';
   document.body.appendChild(host);
   try{
    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
-   const mkPage=()=>{
-    const p=document.createElement('div');
-    p.className='exp-page';
-    p.innerHTML=
-     `<div class="exp-head">
-       <div class="exp-brand">
-        <div class="exp-mark">CU</div>
-        <div>
-         <div class="exp-title">Coastal Ocean Observation &amp; Prediction Lab (COOPLab)</div>
-         <div class="exp-sub">Department of Oceanography, University of Chittagong</div>
-        </div>
-       </div>
-       <div class="exp-day">
-        <div class="exp-date">${title}</div>
-        <div class="exp-meta">${g.length} student${g.length>1?'s':''} · ${ent} entr${ent===1?'y':'ies'} · ${fmt(tot)} in total</div>
+   const page=document.createElement('div');
+   page.className='exp-page';
+   page.innerHTML=
+    `<div class="exp-head">
+      <div class="exp-brand">
+       <div class="exp-mark">CU</div>
+       <div>
+        <div class="exp-title">Coastal Ocean Observation &amp; Prediction Lab (COOPLab)</div>
+        <div class="exp-sub">Department of Oceanography, University of Chittagong</div>
        </div>
       </div>
-      <div class="exp-body">
-       <table class="exp-table">
-        <colgroup><col style="width:22%"><col style="width:9%"><col style="width:27%"><col style="width:30%"><col style="width:12%"></colgroup>
-        <thead><tr><th>Student</th><th>Entries</th><th>In and out times</th><th>Working Summary</th><th>Total</th></tr></thead>
-        <tbody></tbody>
-       </table>
+      <div class="exp-day">
+       <div class="exp-date">${title}</div>
+       <div class="exp-meta">${g.length} student${g.length>1?'s':''} · ${ent} entr${ent===1?'y':'ies'} · ${fmt(tot)} in total</div>
       </div>
-      <div class="exp-foot"><span>Daily attendance report · ${selDay}</span><span class="exp-pg"></span></div>`;
-    host.appendChild(p);
-    return p;
-   };
-   const rowHtml=g.map(x=>
-    `<tr><td><b>${esc(nm(x.sid))}</b></td><td><b>${x.n}</b></td><td>${times(x.a,selDay)}</td><td>${(summaryByEntry[x.sid]||[]).map(v=>esc(v)).join('<br>')||'-'}</td><td><span class="exp-total">${fmt(x.total)}</span></td></tr>`);
-   let page=mkPage(),tb=page.querySelector('tbody');
-   const pages=[page];
-   rowHtml.forEach(h=>{
-    tb.insertAdjacentHTML('beforeend',h);
-    const last=tb.lastElementChild;
-    const bottom=last.getBoundingClientRect().bottom-page.getBoundingClientRect().top;
-    if(tb.children.length>1&&bottom>H-FOOT-8){
-     last.remove();
-     page=mkPage();
-     tb=page.querySelector('tbody');
-     tb.appendChild(last);
-     pages.push(page);
-    }
-   });
-   pages.forEach((p,i)=>{p.querySelector('.exp-pg').textContent='Page '+(i+1)+' of '+pages.length;});
-   for(let i=0;i<pages.length;i++){
-    const canvas=await html2canvas(pages[i],{
-     width:W,height:H,scale:1,
-     backgroundColor:'#ffffff',useCORS:true,logging:false,
-     windowWidth:W,windowHeight:H,
-     onclone:doc=>{const h=doc.getElementById('expHost');if(h){h.style.left='0';h.style.zIndex='0';}}
-    });
-    const blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
-    if(!blob){alert('The browser could not create the image. Try again or use a desktop browser.');break;}
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='COOPLab_Daily_Report_'+selDay+'_1536x1024'+(pages.length>1?'_p'+(i+1):'')+'.png';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),2000);
-    await new Promise(r=>setTimeout(r,400));
+     </div>
+     <div class="exp-body"><div class="exp-scale">
+      <table class="exp-table">
+       <colgroup><col style="width:22%"><col style="width:9%"><col style="width:27%"><col style="width:30%"><col style="width:12%"></colgroup>
+       <thead><tr><th>Student</th><th>Entries</th><th>In and out times</th><th>Working Summary</th><th>Total</th></tr></thead>
+       <tbody>${g.map(x=>
+        `<tr><td><b>${esc(nm(x.sid))}</b></td><td><b>${x.n}</b></td><td>${times(x.a,selDay)}</td><td>${(summaryByEntry[x.sid]||[]).map(v=>esc(v)).join('<br>')||'-'}</td><td><span class="exp-total">${fmt(x.total)}</span></td></tr>`).join('')}</tbody>
+      </table>
+     </div></div>
+     <div class="exp-foot"><span>Daily attendance report · ${selDay}</span><span>${W} × ${H} (3:2)</span></div>`;
+   host.appendChild(page);
+   // Fit ALL rows into this single 3:2 image: shrink the table content until it fits.
+   const inner=page.querySelector('.exp-scale');
+   const baseW=W-PADX*2;
+   const top=inner.getBoundingClientRect().top-page.getBoundingClientRect().top;
+   const avail=H-FOOT-12-top;
+   let sc=1;
+   for(;sc>0.12;sc=Math.round((sc-0.02)*100)/100){
+    inner.style.width=(baseW/sc)+'px';
+    inner.style.transform='scale('+sc+')';
+    if(inner.offsetHeight*sc<=avail)break;
    }
+   const opts={width:W,height:H,backgroundColor:'#ffffff',useCORS:true,logging:false,windowWidth:W,windowHeight:H,
+    onclone:doc=>{const h=doc.getElementById('expHost');if(h){h.style.left='0';h.style.zIndex='0';}}};
+   let blob=null,used=0;
+   for(const k of [3,2.5,2,1.5,1]){
+    try{
+     const canvas=await html2canvas(page,{...opts,scale:k});
+     blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
+     if(blob){used=k;break;}
+    }catch(err){console.warn('Scale '+k+' failed, trying lower',err);}
+   }
+   if(!blob){alert('The browser could not create the image. Try a desktop browser.');return;}
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement('a');
+   a.href=url;
+   a.download='COOPLab_Daily_Report_'+selDay+'_'+(W*used)+'x'+(H*used)+'.png';
+   document.body.appendChild(a);
+   a.click();
+   a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),2000);
   }catch(e){
    console.error(e);
    alert('Image export failed. Please try again.');
