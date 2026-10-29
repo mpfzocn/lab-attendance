@@ -367,6 +367,55 @@ body.is-admin .student-researcher-body .student-id{display:block!important}
  .student-researcher-photo{width:90px!important;height:112px!important}
 }
 
+
+/* ===== COOPLab additions: long-name header, admin edit UI, 1536x1024 export ===== */
+.brand h1{font-size:clamp(15px,2.1vw,21px);line-height:1.2}
+.brand p{font-size:clamp(11.5px,1.4vw,13.5px)}
+@media(max-width:600px){.brand p{max-width:none}}
+.edit-col{display:none}
+body.is-admin .edit-col{display:table-cell}
+@media(max-width:700px){body.is-admin .sc td.edit-col{display:block}}
+.btn-edit{border:1px solid var(--teal);color:var(--teal-d);background:#fff;border-radius:8px;padding:6px 12px;min-height:34px;font:500 13px 'IBM Plex Sans',sans-serif;cursor:pointer}
+.btn-edit:hover{background:var(--tint)}
+.day-edit-box{margin-top:16px;border:1px dashed var(--teal);border-radius:10px;padding:12px 14px;background:#f7fbfb}
+.day-edit-box h4{margin:0 0 8px;font:600 15px 'IBM Plex Sans',sans-serif;color:var(--navy)}
+.day-edit-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.day-edit-row:first-of-type{border-top:0}
+.day-edit-row span{font-size:14px}
+.ed-back{position:fixed;inset:0;background:rgba(11,42,67,.55);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
+.ed-back.open{display:flex}
+.ed-box{background:#fff;border-radius:14px;max-width:460px;width:100%;max-height:92vh;overflow:auto;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.ed-box h3{margin:0 0 4px;font:700 20px 'Source Serif 4',serif;color:var(--navy)}
+.ed-box label{display:block;margin:12px 0 4px;font-size:13px;font-weight:600;color:var(--mute)}
+.ed-box select,.ed-box input[type=date],.ed-box input[type=text]{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:15px 'IBM Plex Sans',sans-serif;box-sizing:border-box}
+.ed-box .tp{display:flex;gap:6px}
+.ed-box .tp select{flex:1}
+.ed-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.ed-actions .btn2{flex:1}
+.ed-save{background:var(--teal)!important;color:#fff!important}
+.ed-del{border-color:var(--bad)!important;color:var(--bad)!important}
+.ed-msg{min-height:20px;margin-top:10px;font-size:13px}
+/* export pages (rendered off-screen, exactly 1536 x 1024) */
+.exp-page{width:1536px;height:1024px;position:relative;background:#fff;color:#14222d;box-sizing:border-box;padding:0 0 64px;overflow:hidden;font-family:'IBM Plex Sans',Arial,sans-serif}
+.exp-head{display:flex!important;justify-content:space-between;align-items:center;background:#0b2a43;color:#fff;padding:26px 48px}
+.exp-brand{display:flex;align-items:center;gap:18px}
+.exp-mark{width:62px;height:62px;border:2px solid rgba(255,255,255,.6);border-radius:12px;display:grid;place-items:center;font:700 24px 'Source Serif 4',Georgia,serif}
+.exp-title{font:700 28px 'Source Serif 4',Georgia,serif;line-height:1.2}
+.exp-sub{font-size:17px;color:#b7cad8;margin-top:4px}
+.exp-day{text-align:right}
+.exp-date{font:700 25px 'Source Serif 4',Georgia,serif}
+.exp-meta{font-size:17px;color:#b7cad8;margin-top:4px}
+.exp-body{padding:22px 48px 0}
+.exp-table{display:table!important;width:100%;border-collapse:collapse;font-size:19px;table-layout:fixed}
+.exp-table thead{display:table-header-group!important}
+.exp-table tbody{display:table-row-group!important}
+.exp-table tr{display:table-row!important;border:0!important;padding:0!important;margin:0!important}
+.exp-table th,.exp-table td{display:table-cell!important;border:1px solid #dbe3e8;padding:10px 12px;vertical-align:top;text-align:left;line-height:1.35}
+.exp-table td::before{content:none!important}
+.exp-table th{background:#e6f2f3;color:#0b2a43;font-weight:700}
+.exp-table tbody tr:nth-child(even) td{background:#f7fafb}
+.exp-total{display:inline-block;background:#e6f2f3;color:#0a5f67;border-radius:999px;padding:3px 12px;font-weight:700}
+.exp-foot{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex!important;align-items:center;justify-content:space-between;padding:0 48px;border-top:2px solid #0d7c86;font-size:15px;color:#5f7280}
 </style>
 </head>
 
@@ -377,7 +426,7 @@ body.is-admin .student-researcher-body .student-id{display:block!important}
  <div class="brand">
   <div class="mark" aria-hidden="true">CU</div>
   <div>
-   <h1>SODIC-CU Lab</h1>
+   <h1>Coastal Ocean Observation &amp; Prediction Lab (COOPLab)</h1>
    <p>Department of Oceanography, University of Chittagong</p>
   </div>
  </div>
@@ -398,7 +447,7 @@ body.is-admin .student-researcher-body .student-id{display:block!important}
 
 <section class="mobile-dashboard" id="mobileDashboard" aria-label="Research lab dashboard">
  <div class="dash-welcome">
-  <div><h2>Research Lab Dashboard</h2><p id="dashDate">SODIC-CU · Department of Oceanography</p></div>
+  <div><h2>Research Lab Dashboard</h2><p id="dashDate">COOPLab · Department of Oceanography</p></div>
   <span class="connection-pill" id="dashConnection"><i></i><span>Checking connection</span></span>
  </div>
  <section class="attendance-hero" aria-label="Attendance shortcut">
@@ -446,7 +495,7 @@ body.is-admin .student-researcher-body .student-id{display:block!important}
  <div class="senior-researcher-grid">
   <article class="person-card senior-person-card">
    <img class="senior-person-photo" src="muslem-uddin.jpeg" alt="Dr. Mohammad Muslem Uddin" loading="lazy">
-   <div class="senior-person-body"><span class="senior-role">SODIC-CU Lab Head &amp; Director</span><h3>Dr. Mohammad Muslem Uddin</h3>
+   <div class="senior-person-body"><span class="senior-role">COOPLab Head &amp; Director</span><h3>Dr. Mohammad Muslem Uddin</h3>
     <p>Professor, Department of Oceanography, University of Chittagong, Chittagong-4331</p>
     <p>Additional Director, Institutional Quality Assurance Cell, University of Chittagong</p>
     <p><b>Mobile:</b> <a href="tel:+8801711100449">+8801711100449</a></p><p><b>Email:</b> <a href="mailto:mmu_ims76@cu.ac.bd">mmu_ims76@cu.ac.bd</a></p>
@@ -483,11 +532,11 @@ body.is-admin .student-researcher-body .student-id{display:block!important}
 
 <figure class="hero" id="hero">
  <img src="SODIC-CU.jpg" width="1600" height="900"
-      alt="The SODIC-CU lab building with two radomes and a satellite dish, University of Chittagong"
+      alt="The COOPLab building with two radomes and a satellite dish, University of Chittagong"
       onerror="document.getElementById('hero').hidden=true">
  <figcaption>
   <b>Our lab</b><br>
-  SODIC-CU, Department of Oceanography, University of Chittagong
+  Coastal Ocean Observation &amp; Prediction Lab (COOPLab), Department of Oceanography, University of Chittagong
  </figcaption>
 </figure>
 
@@ -789,6 +838,7 @@ grey = Friday and Saturday
 <th>In</th>
 <th>Out</th>
 <th>Duration</th>
+<th class="edit-col">Edit</th>
 </tr>
 </thead>
 
@@ -928,7 +978,7 @@ Clear all records on this device
 </main>
 
 <footer>
-SODIC-CU Lab, Department of Oceanography, University of Chittagong
+Coastal Ocean Observation &amp; Prediction Lab (COOPLab), Department of Oceanography, University of Chittagong
 </footer>
 
 <nav class="mobile-bottom-nav" aria-label="Main navigation">
@@ -2669,7 +2719,8 @@ function renderDay(){
    `<h3>${title}</h3>
     <p class="empty">
      No entries on this day.
-    </p>`;
+    </p>`+
+   (typeof adminDayEditor==='function'?adminDayEditor(selDay):'');
 
   return;
  }
@@ -2704,7 +2755,7 @@ function renderDay(){
     <div></div>
     <div class="r" style="flex-wrap:wrap">
      <button class="btn2 admin-export" id="csvDay" ${IS_ADMIN?'':'hidden'} data-html2canvas-ignore="true">Download this day CSV</button>
-     <button class="btn2 admin-export" id="imgDay" ${IS_ADMIN?'':'hidden'} data-html2canvas-ignore="true">Export HD Image (1200-DPI-equivalent)</button>
+     <button class="btn2 admin-export" id="imgDay" ${IS_ADMIN?'':'hidden'} data-html2canvas-ignore="true">Export Image (1536 × 1024)</button>
     </div>
    </div>
 
@@ -2777,7 +2828,8 @@ function renderDay(){
    `</tbody>
    </table>
    </div>
-   </div>`;
+   </div>`+
+  (typeof adminDayEditor==='function'?adminDayEditor(selDay):'');
 
  $('#csvDay').onclick=()=>{
   if(!IS_ADMIN){alert('Only an authenticated admin can export reports.');return;}
@@ -2815,103 +2867,97 @@ function renderDay(){
   });
 
   download(
-   'SODIC_CU_Daily_Report_'+selDay+'.csv',
+   'COOPLab_Daily_Report_'+selDay+'.csv',
    lines
   );
  };
 
  $('#imgDay').onclick=async()=>{
   if(!IS_ADMIN){alert('Only an authenticated admin can export reports.');return;}
-  const btn=$('#imgDay');
-  const target=$('#dayReportCapture');
-  if(!target)return;
   if(typeof html2canvas==='undefined'){
    alert('Image export library did not load. Check your internet connection and try again.');
    return;
   }
-  btn.disabled=true;
+  const btn=$('#imgDay');
   const oldText=btn.textContent;
-  btn.textContent='Rendering high-resolution image...';
+  btn.disabled=true;
+  btn.textContent='Rendering 1536 × 1024 image...';
+  const W=1536,H=1024,FOOT=64;
+  const host=document.createElement('div');
+  host.id='expHost';
+  host.style.cssText='position:fixed;left:-20000px;top:0;width:'+W+'px;z-index:-1;pointer-events:none';
+  document.body.appendChild(host);
   try{
-   let canvas;
-   try{
-    canvas=await html2canvas(target,{
-     scale:12.5,
-     backgroundColor:'#ffffff',
-     useCORS:true,
-     logging:false,
-     windowWidth:Math.max(document.documentElement.clientWidth,target.scrollWidth)
+   if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+   const mkPage=()=>{
+    const p=document.createElement('div');
+    p.className='exp-page';
+    p.innerHTML=
+     `<div class="exp-head">
+       <div class="exp-brand">
+        <div class="exp-mark">CU</div>
+        <div>
+         <div class="exp-title">Coastal Ocean Observation &amp; Prediction Lab (COOPLab)</div>
+         <div class="exp-sub">Department of Oceanography, University of Chittagong</div>
+        </div>
+       </div>
+       <div class="exp-day">
+        <div class="exp-date">${title}</div>
+        <div class="exp-meta">${g.length} student${g.length>1?'s':''} · ${ent} entr${ent===1?'y':'ies'} · ${fmt(tot)} in total</div>
+       </div>
+      </div>
+      <div class="exp-body">
+       <table class="exp-table">
+        <colgroup><col style="width:22%"><col style="width:9%"><col style="width:27%"><col style="width:30%"><col style="width:12%"></colgroup>
+        <thead><tr><th>Student</th><th>Entries</th><th>In and out times</th><th>Working Summary</th><th>Total</th></tr></thead>
+        <tbody></tbody>
+       </table>
+      </div>
+      <div class="exp-foot"><span>Daily attendance report · ${selDay}</span><span class="exp-pg"></span></div>`;
+    host.appendChild(p);
+    return p;
+   };
+   const rowHtml=g.map(x=>
+    `<tr><td><b>${esc(nm(x.sid))}</b></td><td><b>${x.n}</b></td><td>${times(x.a,selDay)}</td><td>${(summaryByEntry[x.sid]||[]).map(v=>esc(v)).join('<br>')||'-'}</td><td><span class="exp-total">${fmt(x.total)}</span></td></tr>`);
+   let page=mkPage(),tb=page.querySelector('tbody');
+   const pages=[page];
+   rowHtml.forEach(h=>{
+    tb.insertAdjacentHTML('beforeend',h);
+    const last=tb.lastElementChild;
+    const bottom=last.getBoundingClientRect().bottom-page.getBoundingClientRect().top;
+    if(tb.children.length>1&&bottom>H-FOOT-8){
+     last.remove();
+     page=mkPage();
+     tb=page.querySelector('tbody');
+     tb.appendChild(last);
+     pages.push(page);
+    }
+   });
+   pages.forEach((p,i)=>{p.querySelector('.exp-pg').textContent='Page '+(i+1)+' of '+pages.length;});
+   for(let i=0;i<pages.length;i++){
+    const canvas=await html2canvas(pages[i],{
+     width:W,height:H,scale:1,
+     backgroundColor:'#ffffff',useCORS:true,logging:false,
+     windowWidth:W,windowHeight:H,
+     onclone:doc=>{const h=doc.getElementById('expHost');if(h){h.style.left='0';h.style.zIndex='0';}}
     });
-   }catch(highResError){
-    console.warn('Maximum image scale failed; retrying at a lower high-resolution scale.',highResError);
-    canvas=await html2canvas(target,{
-     scale:6,
-     backgroundColor:'#ffffff',
-     useCORS:true,
-     logging:false,
-     windowWidth:Math.max(document.documentElement.clientWidth,target.scrollWidth)
-    });
+    const blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
+    if(!blob){alert('The browser could not create the image. Try again or use a desktop browser.');break;}
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='COOPLab_Daily_Report_'+selDay+'_1536x1024'+(pages.length>1?'_p'+(i+1):'')+'.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+    await new Promise(r=>setTimeout(r,400));
    }
-   canvas.toBlob(async blob=>{
-    if(!blob){
-     alert('The browser could not create the image. Try again or use a desktop browser.');
-     return;
-    }
-    try{
-     // Add PNG pHYs metadata so image editors/readers identify the file as 1200 DPI.
-     const raw=new Uint8Array(await blob.arrayBuffer());
-     const ppm=Math.round(1200/0.0254);
-     const data=new Uint8Array(9);
-     const dv=new DataView(data.buffer);
-     dv.setUint32(0,ppm,false);
-     dv.setUint32(4,ppm,false);
-     data[8]=1;
-     const type=new TextEncoder().encode('pHYs');
-     const crcInput=new Uint8Array(type.length+data.length);
-     crcInput.set(type,0);
-     crcInput.set(data,type.length);
-     let crc=0xffffffff;
-     for(let i=0;i<crcInput.length;i++){
-      crc^=crcInput[i];
-      for(let j=0;j<8;j++)crc=(crc&1)?(0xedb88320^(crc>>>1)):(crc>>>1);
-     }
-     crc=(crc^0xffffffff)>>>0;
-     const chunk=new Uint8Array(4+4+9+4);
-     const cv=new DataView(chunk.buffer);
-     cv.setUint32(0,9,false);
-     chunk.set(type,4);
-     chunk.set(data,8);
-     cv.setUint32(17,crc,false);
-     // PNG signature + IHDR chunk is 33 bytes; place pHYs directly after IHDR.
-     const finalBytes=new Uint8Array(raw.length+chunk.length);
-     finalBytes.set(raw.slice(0,33),0);
-     finalBytes.set(chunk,33);
-     finalBytes.set(raw.slice(33),33+chunk.length);
-     const finalBlob=new Blob([finalBytes],{type:'image/png'});
-     const url=URL.createObjectURL(finalBlob);
-     const a=document.createElement('a');
-     a.href=url;
-     a.download='SODIC_CU_Daily_Report_'+selDay+'_1200dpi.png';
-     document.body.appendChild(a);
-     a.click();
-     a.remove();
-     setTimeout(()=>URL.revokeObjectURL(url),1500);
-    }catch(metaError){
-     console.error(metaError);
-     const url=URL.createObjectURL(blob);
-     const a=document.createElement('a');
-     a.href=url;
-     a.download='SODIC_CU_Daily_Report_'+selDay+'_HD.png';
-     document.body.appendChild(a);
-     a.click();
-     a.remove();
-     setTimeout(()=>URL.revokeObjectURL(url),1500);
-    }
-   },'image/png');
   }catch(e){
    console.error(e);
-   alert('Image export failed. The report may be too large for available browser memory. Please try again.');
+   alert('Image export failed. Please try again.');
   }finally{
+   host.remove();
    btn.disabled=false;
    btn.textContent=oldText;
   }
@@ -3025,6 +3071,10 @@ function renderTable(ml){
      </span>
     </td>
 
+    <td data-l="Edit" class="edit-col">
+     <button class="btn-edit" type="button" data-edit="${esc(String(r.id))}">Edit</button>
+    </td>
+
    </tr>`;
   })
   .join('');
@@ -3114,8 +3164,8 @@ function generateMonthlyReport(){
 
 $('#generateWeekly').onclick=generateWeeklyReport;
 $('#generateMonthly').onclick=generateMonthlyReport;
-$('#exportWeekly').onclick=()=>makeReportCsv('SODIC_CU_Weekly_Attendance_'+(cachedWeeklyReport.label.replace(/ to /g,'_')||'report')+'.csv',cachedWeeklyReport.label,cachedWeeklyReport.rows);
-$('#exportMonthly').onclick=()=>makeReportCsv('SODIC_CU_Monthly_Attendance_'+(cachedMonthlyReport.label||'report')+'.csv',cachedMonthlyReport.label,cachedMonthlyReport.rows);
+$('#exportWeekly').onclick=()=>makeReportCsv('COOPLab_Weekly_Attendance_'+(cachedWeeklyReport.label.replace(/ to /g,'_')||'report')+'.csv',cachedWeeklyReport.label,cachedWeeklyReport.rows);
+$('#exportMonthly').onclick=()=>makeReportCsv('COOPLab_Monthly_Attendance_'+(cachedMonthlyReport.label||'report')+'.csv',cachedMonthlyReport.label,cachedMonthlyReport.rows);
 
 function download(name,lines){
 
@@ -3169,7 +3219,7 @@ $('#csv').onclick=()=>{
   );
 
  download(
-  'SODIC_CU_Lab_Attendance_'+ym+'.csv',
+  'COOPLab_Lab_Attendance_'+ym+'.csv',
   [
    [
     'Date',
@@ -3341,7 +3391,7 @@ $('#exportProfiles').onclick=()=>{
  if(!list.length){alert('No student profiles match the current filters.');return;}
  const lines=[['Student ID','Session','Student Name','Email','Mobile','Research Projects','Project Supervisor']];
  list.forEach(p=>lines.push([p.id,p.session,p.name,p.email,p.mobile,p.projects.join('; '),PROFILE_SUPERVISOR]));
- download('SODIC_CU_Student_Profiles.csv',lines);
+ download('COOPLab_Student_Profiles.csv',lines);
 };
 
 /* ---------- PIN-protected admin entry ---------- */
@@ -3352,7 +3402,7 @@ $('#exportProfiles').onclick=()=>{
 // click the heading to expand or collapse them.
 const adminRequested = new URLSearchParams(window.location.search).has('admin');
 if (adminRequested) {
-  const enteredPin = window.prompt('Enter Admin PIN to open SODIC-CU Lab Attendance Admin Tools:');
+  const enteredPin = window.prompt('Enter Admin PIN to open COOPLab Attendance Admin Tools:');
   if (enteredPin === ADMIN_PIN) {
     IS_ADMIN=true;
     document.body.classList.add('is-admin');
@@ -3637,7 +3687,7 @@ function setupResearcherEditor(){
  document.getElementById('newResearcher')?.addEventListener('click',resetResearcherForm);
  document.getElementById('exportResearcherData')?.addEventListener('click',()=>{
   const backup={version:1,exportedAt:new Date().toISOString(),profiles:PROFILE_DATA,photos:STORED_STUDENT_PHOTOS};
-  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='SODIC_CU_Researcher_Backup.json';a.click();URL.revokeObjectURL(url);researcherEditorMessage('Profile and photo backup exported.');
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='COOPLab_Researcher_Backup.json';a.click();URL.revokeObjectURL(url);researcherEditorMessage('Profile and photo backup exported.');
  });
  document.getElementById('importResearcherDataBtn')?.addEventListener('click',()=>document.getElementById('importResearcherData').click());
  document.getElementById('importResearcherData')?.addEventListener('change',async e=>{
@@ -3715,6 +3765,118 @@ document.getElementById('adminAccessBtn')?.addEventListener('click',()=>{
  const u=new URL(window.location.href);u.searchParams.set('admin','');window.location.href=u.toString();
 });
 setMobileView('home');
+
+/* ---------- admin: edit / add / delete attendance entries ---------- */
+
+function adminDayEditor(day){
+ if(!IS_ADMIN)return '';
+ const list=rows.filter(r=>r.date===day).sort((a,b)=>a.tin.localeCompare(b.tin));
+ return `<div class="day-edit-box" data-html2canvas-ignore="true">
+  <h4>Admin: edit check-in / check-out times for this day</h4>`+
+  (list.length?list.map(r=>`<div class="day-edit-row"><span><b>${esc(nm(r.sid))}</b> &nbsp; In ${t12(r.tin)} &ndash; Out ${r.tout?t12(r.tout):'not recorded'}</span><button class="btn-edit" type="button" data-edit="${esc(String(r.id))}">Edit</button></div>`).join(''):'<p class="small" style="margin:0 0 8px">No entries yet for this day.</p>')+
+  `<div style="margin-top:10px"><button class="btn2" type="button" data-add-day="${day}">+ Add entry for this day</button></div></div>`;
+}
+
+(function(){
+ const back=document.createElement('div');
+ back.className='ed-back';
+ back.id='edBack';
+ back.innerHTML=`<div class="ed-box" role="dialog" aria-modal="true" aria-labelledby="edTitle">
+  <h3 id="edTitle">Edit entry</h3>
+  <p class="small" id="edSub" style="margin:0"></p>
+  <label for="edSid">Student</label><select id="edSid"></select>
+  <label for="edDate">Date</label><input type="date" id="edDate">
+  <label>Check-in time</label><div class="tp" id="edIn"></div>
+  <label>Check-out time (leave blank if still in lab / not recorded)</label><div class="tp" id="edOut"></div>
+  <label for="edSum">Working summary (optional)</label><input type="text" id="edSum" maxlength="300">
+  <div class="ed-msg" id="edMsg" role="status" aria-live="polite"></div>
+  <div class="ed-actions">
+   <button class="btn2 ed-save" type="button" id="edSave">Save</button>
+   <button class="btn2" type="button" id="edCancel">Cancel</button>
+   <button class="btn2 ed-del" type="button" id="edDel">Delete</button>
+  </div>
+ </div>`;
+ document.body.appendChild(back);
+ buildTP('edIn');buildTP('edOut');
+ let cur=null;
+ const msg=(t,k)=>{const m=$('#edMsg');m.textContent=t;m.style.color=k==='ok'?'var(--green)':k==='bad'?'var(--bad)':'var(--mute)';};
+ const close=()=>{back.classList.remove('open');cur=null;};
+ function openEd(row,defDate){
+  if(!IS_ADMIN)return;
+  cur=row||null;
+  const ids=Object.keys(STUDENTS).sort();
+  $('#edSid').innerHTML=ids.map(id=>`<option value="${esc(id)}">${esc(id)} — ${esc(STUDENTS[id])}</option>`).join('');
+  $('#edTitle').textContent=row?'Edit entry':'Add entry';
+  $('#edSub').textContent=row?'Changes are saved for everyone and update all reports.':'Add a missing check-in / check-out.';
+  $('#edSid').value=row?String(row.sid):ids[0];
+  $('#edDate').value=row?row.date:(defDate||todayStr());
+  set24('edIn',row?row.tin:'');
+  set24('edOut',row&&row.tout?row.tout:'');
+  $('#edSum').value=row?(row.working_summary||''):'';
+  $('#edDel').hidden=!row;
+  msg('','');
+  back.classList.add('open');
+ }
+ async function refresh(){
+  await loadRows();
+  render();
+  try{generateWeeklyReport();generateMonthlyReport();}catch(e){}
+ }
+ $('#edCancel').onclick=close;
+ back.addEventListener('click',e=>{if(e.target===back)close();});
+ $('#edSave').onclick=async()=>{
+  if(!IS_ADMIN)return;
+  const tin=get24('edIn'),tout=get24('edOut');
+  const sid=$('#edSid').value,date=$('#edDate').value,working_summary=$('#edSum').value.trim();
+  if(!sid||!date){msg('Choose a student and a date.','bad');return;}
+  if(!tin){msg('Select a complete check-in time (hour, minute, AM/PM).','bad');return;}
+  if(tout===null){msg('Check-out time is incomplete. Complete it or clear all three boxes.','bad');return;}
+  if(tout&&tm(tout)<tm(tin)&&!confirm('Check-out is earlier than check-in, so this will count as an overnight stay. Continue?'))return;
+  const v={sid,date,tin,tout:tout||null,working_summary};
+  const btn=$('#edSave');btn.disabled=true;msg('Saving…','');
+  try{
+   if(!CLOUD||!sb){
+    if(cur)Object.assign(cur,v);else rows.push({...v,id:Date.now()+Math.random()});
+    persist();
+   }else if(cur){
+    const {error}=await sb.from('entries').update({student_id:v.sid,date:v.date,time_in:v.tin,time_out:v.tout,working_summary:v.working_summary}).eq('id',cur.id);
+    if(error)throw error;
+   }else{
+    const {error}=await sb.from('entries').insert([{student_id:v.sid,date:v.date,time_in:v.tin,time_out:v.tout,working_summary:v.working_summary}]);
+    if(error)throw error;
+   }
+   close();
+   await refresh();
+  }catch(e){
+   console.error(e);
+   msg('Could not save. Check the connection and the Supabase table policies.','bad');
+  }finally{btn.disabled=false;}
+ };
+ $('#edDel').onclick=async()=>{
+  if(!IS_ADMIN||!cur)return;
+  if(!confirm('Delete this entry for '+nm(cur.sid)+' ('+cur.date+', In '+t12(cur.tin)+')? This cannot be undone.'))return;
+  try{
+   if(!CLOUD||!sb){
+    rows.splice(rows.indexOf(cur),1);persist();
+   }else{
+    const {error,count}=await sb.from('entries').delete({count:'exact'}).eq('id',cur.id);
+    if(error)throw error;
+    if(count===0)throw new Error('No row deleted (delete policy missing?)');
+   }
+   close();
+   await refresh();
+  }catch(e){
+   console.error(e);
+   msg('Could not delete. In Supabase, add a DELETE policy on the entries table.','bad');
+  }
+ };
+ document.addEventListener('click',e=>{
+  const eb=e.target.closest('[data-edit]');
+  if(eb){const r=rows.find(x=>String(x.id)===eb.getAttribute('data-edit'));if(r)openEd(r);return;}
+  const ab=e.target.closest('[data-add-day]');
+  if(ab)openEd(null,ab.getAttribute('data-add-day'));
+ });
+})();
 
 /* ---------- start ---------- */
 
