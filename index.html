@@ -12,7 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-:root{--navy:#0b2a43;--teal:#0d7c86;--teal-d:#0a5f67;--tint:#e6f2f3;--gold:#c9962b;--green:#17794a;--bg:#f2f5f7;--card:#fff;--ink:#14222d;--mute:#5f7280;--line:#dbe3e8;--bad:#b3261e;--r:10px}
+:root{--navy:#0a2540;--teal:#0e7490;--teal-d:#155e75;--tint:#e6f3f8;--gold:#a16207;--green:#15803d;--bg:#f4f7fa;--card:#fff;--ink:#14222d;--mute:#5f7280;--line:#d6e2ea;--bad:#b3261e;--r:10px}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'IBM Plex Sans',system-ui,sans-serif}
@@ -29,7 +29,7 @@ h1{margin:0;font:700 24px/1.2 'Source Serif 4',serif}
 main{padding-top:20px;padding-bottom:30px}
 .hero{position:relative;margin:0 0 18px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--navy)}
 .hero img{display:block;width:100%;height:clamp(180px,30vw,320px);object-fit:cover;object-position:50% 58%}
-.hero figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 18px 12px;color:#fff;font-size:14px;background:linear-gradient(to top,rgba(11,42,67,.88),rgba(11,42,67,0))}
+.hero figcaption{position:absolute;left:0;right:0;bottom:0;padding:34px 18px 12px;color:#fff;font-size:14px;background:linear-gradient(to top,rgba(10,37,64,.88),rgba(10,37,64,0))}
 .hero figcaption b{font:700 17px 'Source Serif 4',serif}
 .tool{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
 .month{display:flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:4px}
@@ -73,13 +73,13 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
 .go{min-height:50px;padding:12px;border:0;border-radius:8px;color:#fff;font:600 16px 'IBM Plex Sans',sans-serif;cursor:pointer}
 .go.in{background:var(--teal)}.go.in:hover{background:var(--teal-d)}
-.go.out{background:var(--navy)}.go.out:hover{background:#12405f}
+.go.out{background:var(--navy)}.go.out:hover{background:#14385c}
 .go:disabled{opacity:.6;cursor:wait}
 .lnk{display:block;margin:12px auto 0;border:0;background:none;color:var(--teal-d);text-decoration:underline;font:inherit;font-size:13.5px;cursor:pointer;min-height:36px}
 #msg,#admMsg{min-height:22px;margin-top:8px;font-size:14px}
 .champ{display:flex;align-items:center;gap:10px;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:14px}
 .champ.g{background:#fbf4e3;border:1px solid #ecd9a6}.champ.g svg{color:var(--gold)}
-.champ.s{background:var(--tint);border:1px solid #bcdadd}.champ.s svg{color:var(--teal-d)}
+.champ.s{background:var(--tint);border:1px solid #b9d9e6}.champ.s svg{color:var(--teal-d)}
 .champ svg{flex:none}
 .cbox{position:relative;width:100%;margin-top:6px}
 .empty{color:var(--mute);padding:22px 0;text-align:center}
@@ -115,15 +115,15 @@ tr[data-day]{cursor:pointer}
 .cal button.sel{outline:2px solid var(--navy);outline-offset:1px}
 .cal .dn{font-weight:600;font-size:14px}.cal .cs,.cal .ch{font-size:11px}.cal .ch{font-weight:600}
 .legend{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:var(--mute);flex-wrap:wrap}
-.legend i{width:26px;height:10px;border-radius:3px;background:linear-gradient(to right,rgba(13,124,134,.12),rgba(13,124,134,.9))}
+.legend i{width:26px;height:10px;border-radius:3px;background:linear-gradient(to right,rgba(14,116,144,.12),rgba(14,116,144,.9))}
 .mxw{overflow-x:auto}
 .mx{width:auto;min-width:100%;font-size:12.5px}
 .mx th,.mx td{padding:6px 5px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--line)}
 .mx th:first-child,.mx td:first-child{text-align:left;position:sticky;left:0;min-width:150px;background:#fff;z-index:1;padding-left:10px}
 .mx th:first-child{background:var(--tint)}
-.mx td.v{background:rgba(13,124,134,.13)}
+.mx td.v{background:rgba(14,116,144,.13)}
 .mx td.z{color:#c3ced4}
-.mx th.we{color:#8a6411}
+.mx th.we{color:var(--gold)}
 .mx b{display:block;font-size:13px}.mx small{display:block;color:var(--mute);font-size:10.5px}
 .mx tr.tot td{background:var(--tint)}.mx tr.tot td:first-child{background:var(--tint)}
 .labactivities{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
@@ -132,11 +132,11 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 
 
 .notice-ticker{display:flex;align-items:center;gap:12px;min-height:44px;padding:7px max(18px,calc((100% - 1060px)/2));background:#fff8e7;border-bottom:1px solid #ead8a7;color:#14222d;overflow:hidden}
-.notice-label{flex:none;background:#c9962b;color:#fff;font-size:11px;font-weight:700;letter-spacing:.7px;padding:5px 9px;border-radius:4px}
+.notice-label{flex:none;background:#a16207;color:#fff;font-size:11px;font-weight:700;letter-spacing:.7px;padding:5px 9px;border-radius:4px}
 .notice-viewport{position:relative;overflow:hidden;white-space:nowrap;flex:1;min-width:0}
 .notice-text{display:inline-block;min-width:100%;font-weight:600;color:#6b4a00;animation:notice-scroll 24s linear infinite}
 .notice-text:hover{animation-play-state:paused}
-.notice-ticker.pinned{background:#fff3cf;border-bottom:2px solid #c9962b}
+.notice-ticker.pinned{background:#fff3cf;border-bottom:2px solid #a16207}
 .notice-ticker.pinned .notice-text{animation:none;min-width:0;white-space:normal}
 .notice-ticker.pinned .notice-label{background:#8a5a00}
 .notice-ticker.empty-notice{background:#f7fafb;border-bottom-color:var(--line)}
@@ -144,11 +144,11 @@ footer{text-align:center;color:var(--mute);font-size:13px;padding:6px 18px 28px}
 .notice-ticker.empty-notice .notice-text{color:var(--mute);animation:none}
 @keyframes notice-scroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 #dayPanel .day-report-capture{background:#fff;color:#14222d;padding:14px;border:1px solid var(--line);border-radius:8px}
-#dayPanel .day-report-heading{font:700 19px 'Source Serif 4',serif;color:#0b2a43;margin:0 0 6px}
+#dayPanel .day-report-heading{font:700 19px 'Source Serif 4',serif;color:#0a2540;margin:0 0 6px}
 #dayPanel .day-report-meta{font-size:13px;color:#5f7280;margin:0 0 12px}
 #dayPanel .day-report-capture table{font-size:13px}
-#dayPanel .day-report-capture th,#dayPanel .day-report-capture td{padding:8px;border:1px solid #dbe3e8}
-#dayPanel .day-report-capture th{background:#e6f2f3}
+#dayPanel .day-report-capture th,#dayPanel .day-report-capture td{padding:8px;border:1px solid #d6e2ea}
+#dayPanel .day-report-capture th{background:#e6f3f8}
 .notice-admin textarea{min-height:110px;resize:vertical}
 @media(max-width:600px){.notice-ticker{padding:7px 12px}.notice-text{animation-duration:18s}.notice-admin .notice-form{grid-template-columns:1fr!important}}
 
@@ -382,7 +382,7 @@ body.is-admin .edit-col{display:table-cell}
 .day-edit-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);flex-wrap:wrap}
 .day-edit-row:first-of-type{border-top:0}
 .day-edit-row span{font-size:14px}
-.ed-back{position:fixed;inset:0;background:rgba(11,42,67,.55);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
+.ed-back{position:fixed;inset:0;background:rgba(10,37,64,.55);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
 .ed-back.open{display:flex}
 .ed-box{background:#fff;border-radius:14px;max-width:460px;width:100%;max-height:92vh;overflow:auto;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .ed-box h3{margin:0 0 4px;font:700 20px 'Source Serif 4',serif;color:var(--navy)}
@@ -396,9 +396,8 @@ body.is-admin .edit-col{display:table-cell}
 .ed-del{border-color:var(--bad)!important;color:var(--bad)!important}
 .ed-msg{min-height:20px;margin-top:10px;font-size:13px}
 /* export pages (rendered off-screen, exactly 1536 x 1024) */
-.admin-export[hidden]{display:none!important}
 .exp-page{width:1536px;height:1024px;position:relative;background:#fff;color:#14222d;box-sizing:border-box;padding:0 0 64px;overflow:hidden;font-family:'IBM Plex Sans',Arial,sans-serif}
-.exp-head{display:flex!important;justify-content:space-between;align-items:center;background:#0b2a43;color:#fff;padding:26px 48px}
+.exp-head{display:flex!important;justify-content:space-between;align-items:center;background:#0a2540;color:#fff;padding:26px 48px}
 .exp-brand{display:flex;align-items:center;gap:18px}
 .exp-mark{width:62px;height:62px;border:2px solid rgba(255,255,255,.6);border-radius:12px;display:grid;place-items:center;font:700 24px 'Source Serif 4',Georgia,serif}
 .exp-title{font:700 28px 'Source Serif 4',Georgia,serif;line-height:1.2}
@@ -408,20 +407,16 @@ body.is-admin .edit-col{display:table-cell}
 .exp-meta{font-size:17px;color:#b7cad8;margin-top:4px}
 .exp-body{padding:22px 48px 0;overflow:hidden}
 .exp-scale{transform-origin:0 0}
-.exp-table{display:table!important;width:100%;border-collapse:collapse;font-size:26px;table-layout:fixed}
+.exp-table{display:table!important;width:100%;border-collapse:collapse;font-size:19px;table-layout:fixed}
 .exp-table thead{display:table-header-group!important}
 .exp-table tbody{display:table-row-group!important}
 .exp-table tr{display:table-row!important;border:0!important;padding:0!important;margin:0!important}
-.exp-table th,.exp-table td{display:table-cell!important;border:1px solid #dbe3e8;padding:10px 12px;vertical-align:top;text-align:left;line-height:1.35}
+.exp-table th,.exp-table td{display:table-cell!important;border:1px solid #d6e2ea;padding:10px 12px;vertical-align:top;text-align:left;line-height:1.35}
 .exp-table td::before{content:none!important}
-.exp-table th{background:#0d7c86;color:#fff;font-weight:800;border-color:#0a5f67}
-.exp-table td{font-weight:700;color:#0b2a43}
-.exp-table td:nth-child(3){color:#0a5f67;font-weight:800}
-.exp-table td:nth-child(4){font-weight:600;color:#14222d}
-.exp-table td b{font-weight:800}
+.exp-table th{background:#e6f3f8;color:#0a2540;font-weight:700}
 .exp-table tbody tr:nth-child(even) td{background:#f7fafb}
-.exp-total{display:inline-block;background:#e6f2f3;color:#0a5f67;border-radius:999px;padding:3px 12px;font-weight:700}
-.exp-foot{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex!important;align-items:center;justify-content:space-between;padding:0 48px;border-top:2px solid #0d7c86;font-size:15px;color:#5f7280}
+.exp-total{display:inline-block;background:#e6f3f8;color:#155e75;border-radius:999px;padding:3px 12px;font-weight:700}
+.exp-foot{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex!important;align-items:center;justify-content:space-between;padding:0 48px;border-top:2px solid #0e7490;font-size:15px;color:#5f7280}
 </style>
 </head>
 
@@ -735,8 +730,6 @@ No entries on this day.
 <h2>Hours in the lab</h2>
 
 <p class="sub" id="csub"></p>
-
-<div style="margin:0 0 10px"><button class="btn2 admin-export" id="imgHours" type="button" hidden>Export HD Image (3:2)</button></div>
 
 <div class="champ g" id="champ" hidden></div>
 
@@ -1060,6 +1053,7 @@ const PROFILE_DATA = [
   {"id":"24902014","session":"2023-2024","name":"M A Wasif Ur Rahman","email":"24902014@std.cu.ac.bd","mobile":"1793451269","projects":["FMR"]},
   {"id":"23902009","session":"2022-2023","name":"Arnica Chowdhury Papri","email":"arnicachowdhury@gmail.com","mobile":"1521767731","projects":["FMR"]},
   {"id":"20902038","session":"2019-2020","name":"Md. Mostakim","email":"mostakim.ocean.cu@gmail.com","mobile":"1648439289","projects":["FMR"]},
+  {"id":"20902031","session":"2019-2020","name":"Md. Ridwanul Banna Rifat","email":"","mobile":"","projects":[]},
   {"id":"20902037","session":"2019-2020","name":"Roman Hossain","email":"romanoceanography@gmail.com","mobile":"1894764690","projects":["FMR","MHW","Mangrove Based Ecotourism","Medical Waste Contamination","Undervalued Fish","Trash Fish"]},
   {"id":"19902003","session":"2018-2019","name":"Tanbhir Hosen","email":"mdtanvirhossain705@gmail.com","mobile":"","projects":["MHW","MBE"]},
   {"id":"19902036","session":"2018-2019","name":"Fowzia Aktar","email":"fowzia956@gmail.com","mobile":"1612408929","projects":["MHW","MBE"]},
@@ -1077,9 +1071,6 @@ try {
  }
 } catch(e) { console.warn('Could not load saved researcher profiles',e); }
 const PROFILE_SUPERVISOR = 'Dr. Mohammad Muslem Uddin';
-// Built-in students must always exist on every device (saved browser profiles must not hide them).
-[{"id":"20902031","session":"2019-2020","name":"Md. Ridwanul Banna Rifat","email":"","mobile":"","projects":[]}]
- .forEach(d=>{ if(!PROFILE_DATA.some(p=>p.id===d.id)) PROFILE_DATA.push(d); });
 PROFILE_DATA.forEach(p => { STUDENTS[p.id] = p.name; });
 
 let sb=null,CLOUD=false;
@@ -1171,6 +1162,20 @@ async function loadStudents(){
    }
   }catch(e){}
  }
+}
+
+
+/* Live lookup: if an ID is not in the built-in list, ask the shared students table
+   so students added by the admin on another device are recognised everywhere. */
+async function ensureStudent(id){
+ if(!id||STUDENTS[id])return !!STUDENTS[id];
+ if(CLOUD&&sb){
+  try{
+   const {data}=await sb.from('students').select('student_id,name').eq('student_id',id).maybeSingle();
+   if(data&&data.name){STUDENTS[data.student_id]=data.name;return true;}
+  }catch(e){console.warn('Student lookup failed',e);}
+ }
+ return false;
 }
 
 /* ---------- rows ---------- */
@@ -1437,9 +1442,11 @@ function setMsg(t,k){
    :'var(--mute)';
 }
 
-$('#sid').oninput=()=>{
+$('#sid').oninput=async()=>{
  const id=$('#sid').value.trim();
  const w=$('#who');
+ if(!STUDENTS[id]&&id.length>=8)await ensureStudent(id);
+ if($('#sid').value.trim()!==id)return;
  if(STUDENTS[id]){
   const todays=rows.filter(r=>r.sid===id&&r.date===todayStr());
   const open=todays.filter(r=>!r.tout).sort((a,b)=>b.tin.localeCompare(a.tin))[0];
@@ -1507,11 +1514,12 @@ const openRowsOf=sid=>
 
 /* ---------- check in ---------- */
 
-$('#bin').onclick=()=>{
+$('#bin').onclick=async()=>{
 
  const sid=$('#sid').value.trim();
  const date=$('#dt').value||todayStr();
  const tin=get24('tin');
+ await ensureStudent(sid);
 
  if(!STUDENTS[sid])
   return setMsg(
@@ -1565,9 +1573,10 @@ const SUMMARY_EXEMPT_IDS=
   '18207059'
  ]);
 
-$('#bout').onclick=()=>{
+$('#bout').onclick=async()=>{
 
  const sid=$('#sid').value.trim();
+ await ensureStudent(sid);
 
  const tout=get24('tout');
 
@@ -2041,10 +2050,10 @@ function renderLive(){
    cur.map(
     (c,i)=>
      i===0
-     ?'#c9962b'
+     ?'#a16207'
      :(i===cur.length-1&&cur.length>1
-       ?'#0b2a43'
-       :'#17794a')
+       ?'#0a2540'
+       :'#15803d')
    )
   );
  }
@@ -2272,10 +2281,10 @@ function renderTimeline(){
   );
 
  const pal=[
-  '#0d7c86',
-  '#c9962b',
-  '#0b2a43',
-  '#17794a',
+  '#0e7490',
+  '#a16207',
+  '#0a2540',
+  '#15803d',
   '#7a4fa3',
   '#b3261e'
  ];
@@ -2538,97 +2547,11 @@ function renderChart(ml){
   arr.map(
    (_,i)=>
     i===0
-    ?'#c9962b'
-    :'#0d7c86'
+    ?'#a16207'
+    :'#0e7490'
   )
  );
 }
-
-/* ---------- Hours in the lab: admin-only HD image (3:2) ---------- */
-
-$('#imgHours').onclick=async()=>{
- if(!IS_ADMIN){alert('Only an authenticated admin can export reports.');return;}
- if(typeof Chart==='undefined'){alert('Chart library did not load. Check your internet connection.');return;}
- const by={};
- monthRows().forEach(r=>{by[r.sid]=(by[r.sid]||0)+durMin(r)/60;});
- const arr=Object.entries(by).filter(a=>a[1]>0).sort((a,b)=>b[1]-a[1]);
- if(!arr.length){alert('No entries for this month yet.');return;}
- const btn=$('#imgHours'),old=btn.textContent;
- btn.disabled=true;btn.textContent='Rendering HD image...';
- try{
-  if(document.fonts&&document.fonts.ready)await document.fonts.ready;
-  const W=1536,H=1024,HEAD=112,FOOT=56,CH=H-HEAD-FOOT;
-  const mobile=navigator.maxTouchPoints>0&&/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-  const ml=$('#mlabel').textContent;
-  const FF='"IBM Plex Sans",Arial,sans-serif',SF='"Source Serif 4",Georgia,serif';
-  const n=arr.length;
-  const lab=Math.max(11,Math.min(30,Math.floor(CH/n*0.5)));
-  let out=null,used=0;
-  for(const k of (mobile?[3,2,1.5,1]:[4,3,2,1.5,1])){
-   const cc=document.createElement('canvas');
-   cc.width=W*k;cc.height=CH*k;
-   let ch=null;
-   try{
-    ch=new Chart(cc.getContext('2d'),{
-     type:'bar',
-     plugins:[{id:'valx',afterDatasetsDraw(c){
-       const x=c.ctx;
-       c.getDatasetMeta(0).data.forEach((b,i)=>{
-        x.save();x.fillStyle='#0b2a43';x.font='800 '+lab+'px '+FF;x.textBaseline='middle';
-        x.fillText(hf(c.data.datasets[0].data[i]),b.x+10,b.y);x.restore();
-       });}}],
-     data:{labels:arr.map(a=>nm(a[0])),datasets:[{data:arr.map(a=>+a[1].toFixed(3)),
-       backgroundColor:arr.map((_,i)=>i===0?'#c9962b':'#0d7c86'),borderRadius:6,
-       categoryPercentage:0.86,barPercentage:0.84}]},
-     options:{indexAxis:'y',responsive:false,animation:false,devicePixelRatio:k,
-      layout:{padding:{left:30,right:Math.round(lab*6),top:12,bottom:10}},
-      plugins:{legend:{display:false},tooltip:{enabled:false}},
-      scales:{
-       x:{beginAtZero:true,grid:{color:'#d5dfe5'},border:{color:'#9fb2bf'},
-        title:{display:true,text:'Hours',color:'#0b2a43',font:{family:FF,size:22,weight:'700'}},
-        ticks:{color:'#14222d',font:{family:FF,size:20,weight:'600'}}},
-       y:{grid:{display:false},ticks:{color:'#0b2a43',font:{family:FF,size:lab,weight:'700'},autoSkip:false}}}}
-    });
-    ch.resize(W,CH);
-    ch.update('none');
-    const fin=document.createElement('canvas');
-    fin.width=W*k;fin.height=H*k;
-    const g=fin.getContext('2d');
-    g.scale(k,k);
-    g.fillStyle='#ffffff';g.fillRect(0,0,W,H);
-    g.fillStyle='#0b2a43';g.fillRect(0,0,W,HEAD);
-    g.strokeStyle='rgba(255,255,255,.65)';g.lineWidth=2;
-    g.beginPath();g.roundRect?g.roundRect(48,26,60,60,12):g.rect(48,26,60,60);g.stroke();
-    g.fillStyle='#fff';g.textBaseline='middle';g.textAlign='center';
-    g.font='700 24px '+SF;g.fillText('CU',78,56);
-    g.textAlign='left';
-    g.font='700 30px '+SF;g.fillText('Coastal Ocean Observation & Prediction Lab (COOPLab)',128,42);
-    g.fillStyle='#b7cad8';g.font='500 19px '+FF;g.fillText('Department of Oceanography, University of Chittagong',128,80);
-    g.textAlign='right';g.fillStyle='#fff';g.font='700 28px '+SF;g.fillText('Hours in the lab · '+ml,W-48,42);
-    g.fillStyle='#b7cad8';g.font='500 19px '+FF;
-    g.fillText(n+' student'+(n>1?'s':'')+' · '+hf(arr.reduce((a,b)=>a+b[1],0))+' in total',W-48,80);
-    g.drawImage(ch.canvas,0,HEAD,W,CH);
-    g.fillStyle='#0d7c86';g.fillRect(0,H-FOOT,W,2);
-    g.textAlign='left';g.textBaseline='middle';g.fillStyle='#5f7280';g.font='500 16px '+FF;
-    g.fillText('Longest total time: '+nm(arr[0][0])+', '+hf(arr[0][1]),48,H-FOOT/2+1);
-    g.textAlign='right';g.fillText(W+' × '+H+' (3:2)',W-48,H-FOOT/2+1);
-    ch.destroy();
-    out=await new Promise(res=>fin.toBlob(res,'image/png'));
-    if(out){used=k;break;}
-   }catch(err){console.warn('Scale '+k+' failed, trying lower',err);try{ch&&ch.destroy();}catch(e){}}
-  }
-  if(!out){alert('The browser could not create the image. Try a desktop browser.');return;}
-  const url=URL.createObjectURL(out);
-  const a=document.createElement('a');
-  a.href=url;a.download='COOPLab_Hours_in_Lab_'+ym+'_'+(W*used)+'x'+(H*used)+'.png';
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),2000);
- }catch(e){
-  console.error(e);alert('Image export failed. Please try again.');
- }finally{
-  btn.disabled=false;btn.textContent=old;
- }
-};
 
 /* ---------- calendar ---------- */
 
@@ -2729,9 +2652,9 @@ function renderCal(){
     }"
     style="${
      p
-     ?`background:rgba(13,124,134,${a.toFixed(2)});
+     ?`background:rgba(14,116,144,${a.toFixed(2)});
        color:${a>0.5?'#fff':'#14222d'};
-       border-color:rgba(13,124,134,.5)`
+       border-color:rgba(14,116,144,.5)`
      :''
     }"
     aria-label="${ds}">
@@ -3005,7 +2928,7 @@ function renderDay(){
      </div>
      <div class="exp-body"><div class="exp-scale">
       <table class="exp-table">
-       <colgroup><col style="width:21%"><col style="width:8%"><col style="width:33%"><col style="width:26%"><col style="width:12%"></colgroup>
+       <colgroup><col style="width:22%"><col style="width:9%"><col style="width:27%"><col style="width:30%"><col style="width:12%"></colgroup>
        <thead><tr><th>Student</th><th>Entries</th><th>In and out times</th><th>Working Summary</th><th>Total</th></tr></thead>
        <tbody>${g.map(x=>
         `<tr><td><b>${esc(nm(x.sid))}</b></td><td><b>${x.n}</b></td><td>${times(x.a,selDay)}</td><td>${(summaryByEntry[x.sid]||[]).map(v=>esc(v)).join('<br>')||'-'}</td><td><span class="exp-total">${fmt(x.total)}</span></td></tr>`).join('')}</tbody>
@@ -3013,23 +2936,21 @@ function renderDay(){
      </div></div>
      <div class="exp-foot"><span>Daily attendance report · ${selDay}</span><span>${W} × ${H} (3:2)</span></div>`;
    host.appendChild(page);
-   // Fit ALL rows into this single 3:2 image: use the LARGEST font size that still fits.
+   // Fit ALL rows into this single 3:2 image: shrink the table content until it fits.
    const inner=page.querySelector('.exp-scale');
-   const tbl=page.querySelector('.exp-table');
-   inner.style.width=(W-PADX*2)+'px';
+   const baseW=W-PADX*2;
    const top=inner.getBoundingClientRect().top-page.getBoundingClientRect().top;
-   const avail=H-FOOT-16-top;
-   for(let fs=40;fs>=9;fs--){
-    tbl.style.fontSize=fs+'px';
-    const pad=Math.max(3,Math.round(fs*0.4));
-    tbl.querySelectorAll('th,td').forEach(c=>{c.style.padding=pad+'px '+Math.round(pad*1.2)+'px';});
-    if(inner.offsetHeight<=avail)break;
+   const avail=H-FOOT-12-top;
+   let sc=1;
+   for(;sc>0.12;sc=Math.round((sc-0.02)*100)/100){
+    inner.style.width=(baseW/sc)+'px';
+    inner.style.transform='scale('+sc+')';
+    if(inner.offsetHeight*sc<=avail)break;
    }
    const opts={width:W,height:H,backgroundColor:'#ffffff',useCORS:true,logging:false,windowWidth:W,windowHeight:H,
     onclone:doc=>{const h=doc.getElementById('expHost');if(h){h.style.left='0';h.style.zIndex='0';}}};
    let blob=null,used=0;
-   const mobile=navigator.maxTouchPoints>0&&/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-   for(const k of (mobile?[3,2,1.5,1]:[4,3,2,1.5,1])){
+   for(const k of [3,2.5,2,1.5,1]){
     try{
      const canvas=await html2canvas(page,{...opts,scale:k});
      blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
