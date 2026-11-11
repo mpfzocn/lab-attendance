@@ -123,7 +123,7 @@ tr[data-day]{cursor:pointer}
 .mx th:first-child{background:var(--tint)}
 .mx td.v{background:rgba(13,124,134,.13)}
 .mx td.z{color:#c3ced4}
-.mx th.we{color:var(--gold)}
+.mx th.we{color:#8a6411}
 .mx b{display:block;font-size:13px}.mx small{display:block;color:var(--mute);font-size:10.5px}
 .mx tr.tot td{background:var(--tint)}.mx tr.tot td:first-child{background:var(--tint)}
 .labactivities{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
@@ -396,6 +396,7 @@ body.is-admin .edit-col{display:table-cell}
 .ed-del{border-color:var(--bad)!important;color:var(--bad)!important}
 .ed-msg{min-height:20px;margin-top:10px;font-size:13px}
 /* export pages (rendered off-screen, exactly 1536 x 1024) */
+.admin-export[hidden]{display:none!important}
 .exp-page{width:1536px;height:1024px;position:relative;background:#fff;color:#14222d;box-sizing:border-box;padding:0 0 64px;overflow:hidden;font-family:'IBM Plex Sans',Arial,sans-serif}
 .exp-head{display:flex!important;justify-content:space-between;align-items:center;background:#0b2a43;color:#fff;padding:26px 48px}
 .exp-brand{display:flex;align-items:center;gap:18px}
@@ -407,13 +408,17 @@ body.is-admin .edit-col{display:table-cell}
 .exp-meta{font-size:17px;color:#b7cad8;margin-top:4px}
 .exp-body{padding:22px 48px 0;overflow:hidden}
 .exp-scale{transform-origin:0 0}
-.exp-table{display:table!important;width:100%;border-collapse:collapse;font-size:19px;table-layout:fixed}
+.exp-table{display:table!important;width:100%;border-collapse:collapse;font-size:26px;table-layout:fixed}
 .exp-table thead{display:table-header-group!important}
 .exp-table tbody{display:table-row-group!important}
 .exp-table tr{display:table-row!important;border:0!important;padding:0!important;margin:0!important}
 .exp-table th,.exp-table td{display:table-cell!important;border:1px solid #dbe3e8;padding:10px 12px;vertical-align:top;text-align:left;line-height:1.35}
 .exp-table td::before{content:none!important}
-.exp-table th{background:#e6f2f3;color:#0b2a43;font-weight:700}
+.exp-table th{background:#0d7c86;color:#fff;font-weight:800;border-color:#0a5f67}
+.exp-table td{font-weight:700;color:#0b2a43}
+.exp-table td:nth-child(3){color:#0a5f67;font-weight:800}
+.exp-table td:nth-child(4){font-weight:600;color:#14222d}
+.exp-table td b{font-weight:800}
 .exp-table tbody tr:nth-child(even) td{background:#f7fafb}
 .exp-total{display:inline-block;background:#e6f2f3;color:#0a5f67;border-radius:999px;padding:3px 12px;font-weight:700}
 .exp-foot{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex!important;align-items:center;justify-content:space-between;padding:0 48px;border-top:2px solid #0d7c86;font-size:15px;color:#5f7280}
@@ -731,6 +736,8 @@ No entries on this day.
 
 <p class="sub" id="csub"></p>
 
+<div style="margin:0 0 10px"><button class="btn2 admin-export" id="imgHours" type="button" hidden>Export HD Image (3:2)</button></div>
+
 <div class="champ g" id="champ" hidden></div>
 
 <div class="cbox" id="cbox">
@@ -1012,6 +1019,7 @@ const STUDENTS={
 "22902009":"Maria Alam",
 "20902038":"Md. Mostakim",
 "20902037":"Roman Hossain",
+"20902031":"Md. Ridwanul Banna Rifat",
 "19902003":"Tanbhir Hosen",
 "19902036":"Fowzia Aktar",
 "20902023":"Rupali Khatun",
@@ -1069,6 +1077,9 @@ try {
  }
 } catch(e) { console.warn('Could not load saved researcher profiles',e); }
 const PROFILE_SUPERVISOR = 'Dr. Mohammad Muslem Uddin';
+// Built-in students must always exist on every device (saved browser profiles must not hide them).
+[{"id":"20902031","session":"2019-2020","name":"Md. Ridwanul Banna Rifat","email":"","mobile":"","projects":[]}]
+ .forEach(d=>{ if(!PROFILE_DATA.some(p=>p.id===d.id)) PROFILE_DATA.push(d); });
 PROFILE_DATA.forEach(p => { STUDENTS[p.id] = p.name; });
 
 let sb=null,CLOUD=false;
@@ -2533,6 +2544,92 @@ function renderChart(ml){
  );
 }
 
+/* ---------- Hours in the lab: admin-only HD image (3:2) ---------- */
+
+$('#imgHours').onclick=async()=>{
+ if(!IS_ADMIN){alert('Only an authenticated admin can export reports.');return;}
+ if(typeof Chart==='undefined'){alert('Chart library did not load. Check your internet connection.');return;}
+ const by={};
+ monthRows().forEach(r=>{by[r.sid]=(by[r.sid]||0)+durMin(r)/60;});
+ const arr=Object.entries(by).filter(a=>a[1]>0).sort((a,b)=>b[1]-a[1]);
+ if(!arr.length){alert('No entries for this month yet.');return;}
+ const btn=$('#imgHours'),old=btn.textContent;
+ btn.disabled=true;btn.textContent='Rendering HD image...';
+ try{
+  if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+  const W=1536,H=1024,HEAD=112,FOOT=56,CH=H-HEAD-FOOT;
+  const mobile=navigator.maxTouchPoints>0&&/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  const ml=$('#mlabel').textContent;
+  const FF='"IBM Plex Sans",Arial,sans-serif',SF='"Source Serif 4",Georgia,serif';
+  const n=arr.length;
+  const lab=Math.max(11,Math.min(30,Math.floor(CH/n*0.5)));
+  let out=null,used=0;
+  for(const k of (mobile?[3,2,1.5,1]:[4,3,2,1.5,1])){
+   const cc=document.createElement('canvas');
+   cc.width=W*k;cc.height=CH*k;
+   let ch=null;
+   try{
+    ch=new Chart(cc.getContext('2d'),{
+     type:'bar',
+     plugins:[{id:'valx',afterDatasetsDraw(c){
+       const x=c.ctx;
+       c.getDatasetMeta(0).data.forEach((b,i)=>{
+        x.save();x.fillStyle='#0b2a43';x.font='800 '+lab+'px '+FF;x.textBaseline='middle';
+        x.fillText(hf(c.data.datasets[0].data[i]),b.x+10,b.y);x.restore();
+       });}}],
+     data:{labels:arr.map(a=>nm(a[0])),datasets:[{data:arr.map(a=>+a[1].toFixed(3)),
+       backgroundColor:arr.map((_,i)=>i===0?'#c9962b':'#0d7c86'),borderRadius:6,
+       categoryPercentage:0.86,barPercentage:0.84}]},
+     options:{indexAxis:'y',responsive:false,animation:false,devicePixelRatio:k,
+      layout:{padding:{left:30,right:Math.round(lab*6),top:12,bottom:10}},
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{
+       x:{beginAtZero:true,grid:{color:'#d5dfe5'},border:{color:'#9fb2bf'},
+        title:{display:true,text:'Hours',color:'#0b2a43',font:{family:FF,size:22,weight:'700'}},
+        ticks:{color:'#14222d',font:{family:FF,size:20,weight:'600'}}},
+       y:{grid:{display:false},ticks:{color:'#0b2a43',font:{family:FF,size:lab,weight:'700'},autoSkip:false}}}}
+    });
+    ch.resize(W,CH);
+    ch.update('none');
+    const fin=document.createElement('canvas');
+    fin.width=W*k;fin.height=H*k;
+    const g=fin.getContext('2d');
+    g.scale(k,k);
+    g.fillStyle='#ffffff';g.fillRect(0,0,W,H);
+    g.fillStyle='#0b2a43';g.fillRect(0,0,W,HEAD);
+    g.strokeStyle='rgba(255,255,255,.65)';g.lineWidth=2;
+    g.beginPath();g.roundRect?g.roundRect(48,26,60,60,12):g.rect(48,26,60,60);g.stroke();
+    g.fillStyle='#fff';g.textBaseline='middle';g.textAlign='center';
+    g.font='700 24px '+SF;g.fillText('CU',78,56);
+    g.textAlign='left';
+    g.font='700 30px '+SF;g.fillText('Coastal Ocean Observation & Prediction Lab (COOPLab)',128,42);
+    g.fillStyle='#b7cad8';g.font='500 19px '+FF;g.fillText('Department of Oceanography, University of Chittagong',128,80);
+    g.textAlign='right';g.fillStyle='#fff';g.font='700 28px '+SF;g.fillText('Hours in the lab · '+ml,W-48,42);
+    g.fillStyle='#b7cad8';g.font='500 19px '+FF;
+    g.fillText(n+' student'+(n>1?'s':'')+' · '+hf(arr.reduce((a,b)=>a+b[1],0))+' in total',W-48,80);
+    g.drawImage(ch.canvas,0,HEAD,W,CH);
+    g.fillStyle='#0d7c86';g.fillRect(0,H-FOOT,W,2);
+    g.textAlign='left';g.textBaseline='middle';g.fillStyle='#5f7280';g.font='500 16px '+FF;
+    g.fillText('Longest total time: '+nm(arr[0][0])+', '+hf(arr[0][1]),48,H-FOOT/2+1);
+    g.textAlign='right';g.fillText(W+' × '+H+' (3:2)',W-48,H-FOOT/2+1);
+    ch.destroy();
+    out=await new Promise(res=>fin.toBlob(res,'image/png'));
+    if(out){used=k;break;}
+   }catch(err){console.warn('Scale '+k+' failed, trying lower',err);try{ch&&ch.destroy();}catch(e){}}
+  }
+  if(!out){alert('The browser could not create the image. Try a desktop browser.');return;}
+  const url=URL.createObjectURL(out);
+  const a=document.createElement('a');
+  a.href=url;a.download='COOPLab_Hours_in_Lab_'+ym+'_'+(W*used)+'x'+(H*used)+'.png';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+ }catch(e){
+  console.error(e);alert('Image export failed. Please try again.');
+ }finally{
+  btn.disabled=false;btn.textContent=old;
+ }
+};
+
 /* ---------- calendar ---------- */
 
 function dayStats(){
@@ -2908,7 +3005,7 @@ function renderDay(){
      </div>
      <div class="exp-body"><div class="exp-scale">
       <table class="exp-table">
-       <colgroup><col style="width:22%"><col style="width:9%"><col style="width:27%"><col style="width:30%"><col style="width:12%"></colgroup>
+       <colgroup><col style="width:21%"><col style="width:8%"><col style="width:33%"><col style="width:26%"><col style="width:12%"></colgroup>
        <thead><tr><th>Student</th><th>Entries</th><th>In and out times</th><th>Working Summary</th><th>Total</th></tr></thead>
        <tbody>${g.map(x=>
         `<tr><td><b>${esc(nm(x.sid))}</b></td><td><b>${x.n}</b></td><td>${times(x.a,selDay)}</td><td>${(summaryByEntry[x.sid]||[]).map(v=>esc(v)).join('<br>')||'-'}</td><td><span class="exp-total">${fmt(x.total)}</span></td></tr>`).join('')}</tbody>
@@ -2916,21 +3013,23 @@ function renderDay(){
      </div></div>
      <div class="exp-foot"><span>Daily attendance report · ${selDay}</span><span>${W} × ${H} (3:2)</span></div>`;
    host.appendChild(page);
-   // Fit ALL rows into this single 3:2 image: shrink the table content until it fits.
+   // Fit ALL rows into this single 3:2 image: use the LARGEST font size that still fits.
    const inner=page.querySelector('.exp-scale');
-   const baseW=W-PADX*2;
+   const tbl=page.querySelector('.exp-table');
+   inner.style.width=(W-PADX*2)+'px';
    const top=inner.getBoundingClientRect().top-page.getBoundingClientRect().top;
-   const avail=H-FOOT-12-top;
-   let sc=1;
-   for(;sc>0.12;sc=Math.round((sc-0.02)*100)/100){
-    inner.style.width=(baseW/sc)+'px';
-    inner.style.transform='scale('+sc+')';
-    if(inner.offsetHeight*sc<=avail)break;
+   const avail=H-FOOT-16-top;
+   for(let fs=40;fs>=9;fs--){
+    tbl.style.fontSize=fs+'px';
+    const pad=Math.max(3,Math.round(fs*0.4));
+    tbl.querySelectorAll('th,td').forEach(c=>{c.style.padding=pad+'px '+Math.round(pad*1.2)+'px';});
+    if(inner.offsetHeight<=avail)break;
    }
    const opts={width:W,height:H,backgroundColor:'#ffffff',useCORS:true,logging:false,windowWidth:W,windowHeight:H,
     onclone:doc=>{const h=doc.getElementById('expHost');if(h){h.style.left='0';h.style.zIndex='0';}}};
    let blob=null,used=0;
-   for(const k of [3,2.5,2,1.5,1]){
+   const mobile=navigator.maxTouchPoints>0&&/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+   for(const k of (mobile?[3,2,1.5,1]:[4,3,2,1.5,1])){
     try{
      const canvas=await html2canvas(page,{...opts,scale:k});
      blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
